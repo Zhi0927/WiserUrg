@@ -1,8 +1,8 @@
 ﻿#ifndef HKY_OBJECT_H_
 #define HKY_OBJECT_H_
 
-#include "vector3d.hpp"
-#include "utils.hpp"
+#include "Vector3.hpp"
+#include "Common.hpp"
 #include <vector>
 
 class RawObject

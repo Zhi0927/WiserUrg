@@ -30,21 +30,15 @@ std::string SCIP_Writer::SCIP2(){
 std::string SCIP_Writer::QT(){
 	return UrgDevice::GetCMDString(UrgDevice::CMD::QT) + END();
 }
-//std::string SCIP_Writer::ToString(const int& value, const int pad) {
-//	std::stringstream ss;
-//	ss << std::setw(pad) << std::setfill('0') << value;
-//	std::string s = ss.str();
-//	return s;
-//}
 
 
 
 bool SCIP_Reader::MD(const std::string& get_command, long& time_stamp, std::vector<long>& distances) {
 	std::vector<std::string> split_command = { SplitString(get_command) };
-	if (split_command[1].starts_with("00")) {
+	if (startswith(split_command[1], "00")) {
 		return true;
 	}
-	else if(split_command[1].starts_with("99")){
+	else if(startswith(split_command[1], "99")){
 		time_stamp = decode(split_command[2], 4);
 		distance_data(split_command, 3, distances);
 		return true;
@@ -56,7 +50,7 @@ bool SCIP_Reader::MD(const std::string& get_command, long& time_stamp, std::vect
 
 bool SCIP_Reader::GD(const std::string& get_command, long& time_stamp, std::vector<long>& distances) {
 	std::vector<std::string> split_command = { SplitString(get_command) };
-	if (split_command[1].starts_with("00")) {
+	if (startswith(split_command[1], "00")) {
 		time_stamp = decode(split_command[2], 4);
 		distance_data(split_command, 3, distances);
 		return true;
@@ -92,10 +86,10 @@ bool SCIP_Reader::decode_array(const std::string& data, int size, std::vector<lo
 
 bool SCIP_Reader::ME(const std::string& get_command, long& time_stamp, std::vector<long>& distances, std::vector<long>& strengths) {
 	std::vector<std::string> split_command = { SplitString(get_command) };
-	if (split_command[1].starts_with("00")) {
+	if (startswith(split_command[1], "00")) {
 		return true;
 	}
-	else if (split_command[1].starts_with("99")) {
+	else if (startswith(split_command[1], "99")) {
 		time_stamp = decode(split_command[2], 4);
 		distance_strength_data(split_command, 3, distances, strengths);
 		return true;
@@ -120,14 +114,3 @@ bool SCIP_Reader::decode_array(const std::string& data, int size, std::vector<lo
 	}
 	return true;
 }
-
-
-//std::vector<std::string> SCIP_Reader::SplitString(const std::string& str) {
-//	auto result = std::vector<std::string>{};
-//	auto ss = std::stringstream{ str };
-//
-//	for (std::string line; std::getline(ss, line, '\n');)
-//		result.emplace_back(line);
-//
-//	return result;
-//}

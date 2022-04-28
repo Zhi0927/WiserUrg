@@ -79,7 +79,7 @@ std::string UrgDeviceEthernet::GetCommand(const std::string get_command) {
 
 bool UrgDeviceEthernet::CheckCommand(const std::string& get_command, const std::string& cmd) {
     std::vector<std::string> split_command = { SplitString(get_command) };
-    return split_command[0].starts_with(cmd);
+    return startswith(split_command[0], cmd);
 }
 
 std::string UrgDeviceEthernet::read_line(asio::ip::tcp::socket& sock) {

@@ -11,7 +11,7 @@ URGSensorObjectDetector::URGSensorObjectDetector(const std::string& ip, const in
 }
 
 URGSensorObjectDetector::~URGSensorObjectDetector() {
-
+    m_urg.reset();
 }
 
 
@@ -260,10 +260,10 @@ void URGSensorObjectDetector::UpdateObjectList() {
         {
             if (m_detectedObjects[i].isClear())
             {
+                if (m_OnLostObject != nullptr) { m_OnLostObject(m_detectedObjects[i]); }
+
                 m_detectedObjects.erase(m_detectedObjects.begin() + i);
                 --i;
-
-                //if (OnLostObject != null) { OnLostObject(obj); }
             }
         }
 
@@ -272,7 +272,7 @@ void URGSensorObjectDetector::UpdateObjectList() {
             ProcessedObject newbie(leftOverNewObject.getPosition(), leftOverNewObject.size(), m_objectPositionSmoothTime);
             m_detectedObjects.emplace_back(newbie);
 
-            //if (OnNewObject != null) { OnNewObject(newbie); }
+            if (m_OnNewObject != nullptr) { m_OnNewObject(newbie); }
         }
     }
     else 
@@ -282,7 +282,7 @@ void URGSensorObjectDetector::UpdateObjectList() {
             ProcessedObject newbie(obj.getPosition(), obj.size(), m_objectPositionSmoothTime);
             m_detectedObjects.emplace_back(newbie);
 
-            //if (OnNewObject != null) { OnNewObject(newbie); }
+            if (m_OnNewObject != nullptr) { m_OnNewObject(newbie); }
         }
     }   
 }

@@ -9,13 +9,14 @@
 #include <cmath>
 #include <thread>
 #include <algorithm>
+#include <functional>
 
 #include "UrgDeviceEthernet.hpp"
 #include "HKYObject.hpp"
 #include "SCIP_library.hpp"
 #include "Rect.hpp"
-#include "vector3d.hpp"
-#include "utils.hpp"
+#include "Vector3.hpp"
+#include "Common.hpp"
 
 
 class URGSensorObjectDetector
@@ -62,6 +63,9 @@ public:
 	float									m_objectPositionSmoothTime				= 0.2f;
 	vector3									m_positionOffset;
 	bool									m_useOffset								= true;
+
+	std::function<void(ProcessedObject)>	m_OnNewObject							= nullptr;
+	std::function<void(ProcessedObject)>	m_OnLostObject							= nullptr;
 
 private:
 	std::unique_ptr<UrgDeviceEthernet>		m_urg;

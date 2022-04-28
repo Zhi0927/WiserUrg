@@ -1,4 +1,4 @@
-#include "utils.hpp"
+#include "Common.hpp"
 
 Screen screen = { GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN) };
 
@@ -60,6 +60,77 @@ std::vector<std::string> SplitString(const std::string& str) {
 
     return result;
 }
+
+std::vector<std::string> split(const std::string& srcstr, const std::string& delimeter) {
+    std::vector<std::string> ret(0);
+    if (srcstr.empty())    
+    {
+        return ret;
+    }
+    std::string::size_type pos_begin = srcstr.find_first_not_of(delimeter);
+
+    std::string::size_type dlm_pos;
+    std::string temp;              
+    while (pos_begin != std::string::npos)
+    {
+        dlm_pos = srcstr.find(delimeter, pos_begin);
+        if (dlm_pos != std::string::npos)
+        {
+            temp = srcstr.substr(pos_begin, dlm_pos - pos_begin);
+            pos_begin = dlm_pos + delimeter.length();
+        }
+        else
+        {
+            temp = srcstr.substr(pos_begin);
+            pos_begin = dlm_pos;
+        }
+        if (!temp.empty())
+            ret.push_back(temp);
+    }
+    return ret;
+}
+
+bool startswith(const std::string& str, const std::string& start) {
+    int srclen = str.size();
+    int startlen = start.size();
+    if (srclen >= startlen)
+    {
+        std::string temp = str.substr(0, startlen);
+        if (temp == start)
+            return true;
+    }
+    return false;
+}
+
+bool endswith(const std::string& str, const std::string& end) {
+    int srclen = str.size();
+    int endlen = end.size();
+    if (srclen >= endlen)
+    {
+        std::string temp = str.substr(srclen - endlen, endlen);
+        if (temp == end)
+            return true;
+    }
+
+    return false;
+}
+
+std::string trim(const std::string& str)
+{
+    std::string ret;
+    std::string::size_type pos_begin = str.find_first_not_of(" \t");
+    if (pos_begin == std::string::npos)
+        return str;
+
+    std::string::size_type pos_end = str.find_last_not_of(" \t");
+    if (pos_end == std::string::npos)
+        return str;
+
+    ret = str.substr(pos_begin, pos_end - pos_begin);
+
+    return ret;
+}
+
 
 DataTranslator::DataTranslator(const int& xOffset, const int& yOffset, const int& sensorDetectWidth, const int& sensorDetectHeight){
     m_xOffset = xOffset;
