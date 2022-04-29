@@ -2,23 +2,36 @@
 
 
 URGSensorObjectDetector::URGSensorObjectDetector(const std::string& ip, const int& port)
-    :m_ip_address(ip), m_port_number(port)
-{
-    m_urg.reset(new UrgDeviceEthernet(m_ip_address, m_port_number));
-    m_urg->StartTCP();
-
-    StartMeasureDistance();
-}
+    :   m_ip_address(ip),
+        m_port_number(port),
+        m_urg(m_ip_address, m_port_number)
+{}
 
 URGSensorObjectDetector::~URGSensorObjectDetector() {
-    m_urg.reset();
+    m_urg.close();
 }
 
 
-Rect URGSensorObjectDetector::detectAreaRect() {
+Rect URGSensorObjectDetector::detectAreaRect() const {
 	Rect rect(0, 0, m_detectRectWidth, m_detectRectHeight);
 	rect.xmin -= (m_detectRectWidth / 2);
 	return rect;
+}
+
+std::vector<long> URGSensorObjectDetector::GetcroppedDistances() const {
+    return m_croppedDistances;
+}
+
+std::vector<vector3> URGSensorObjectDetector::GetDirection() const {
+    return m_directions;
+}
+
+std::vector<RawObject> URGSensorObjectDetector::GetRawObjectList() const {
+    return m_rawObjectList;
+}
+
+std::vector<ProcessedObject> URGSensorObjectDetector::GetDetectObjects() const {
+    return m_detectedObjects;
 }
 
 ProcessedObject* URGSensorObjectDetector::GetProcessedObjectByGuid(const std::string& guid) {
@@ -124,7 +137,7 @@ std::vector<long> URGSensorObjectDetector::ConstrainDetectionArea(const std::vec
 }
 
 void URGSensorObjectDetector::StartMeasureDistance() {
-    m_urg->Write(SCIP_Writer::MD(0, 1080, 1, 0, 0));
+    m_urg.Write(SCIP_Writer::MD(0, 1080, 1, 0, 0));
 }
 
 void URGSensorObjectDetector::CacheDirections() {
@@ -284,7 +297,8 @@ void URGSensorObjectDetector::UpdateObjectList() {
 
             if (m_OnNewObject != nullptr) { m_OnNewObject(newbie); }
         }
-    }   
+    } 
+    lockdata.unlock();
 }
 
 std::vector<long> URGSensorObjectDetector::SmoothDistanceCurveByTime(const std::vector<long>& newList, std::vector<long>& previousList, float smoothFactor) {
@@ -318,6 +332,11 @@ std::vector<long> URGSensorObjectDetector::SmoothDistanceCurveByTime(const std::
     }
 }
 
+void URGSensorObjectDetector::start() {
+    m_urg.StartTCP();
+    StartMeasureDistance();
+}
+
 void URGSensorObjectDetector::mainloop() {
 
     if (m_smoothKernelSize % 2 == 0) {
@@ -328,17 +347,15 @@ void URGSensorObjectDetector::mainloop() {
 
     std::unique_lock<std::mutex> lockurg(m_urgdistance_guard);
 
-    if (m_urg->m_distances.size() <= 0) return;
-    originalDistances.assign(m_urg->m_distances.begin(), m_urg->m_distances.end());
+    if (m_urg.m_distances.size() <= 0) return;
+    originalDistances.assign(m_urg.m_distances.begin(), m_urg.m_distances.end());
 
     lockurg.unlock();
 
     if (originalDistances.size() <= 0) return;
 
-
-    //Setting up things, one time
     if (m_sensorScanSteps <= 0){
-        m_sensorScanSteps = m_urg->m_distances.size();
+        m_sensorScanSteps = m_urg.m_distances.size();
         m_distanceConstrainList.reserve(m_sensorScanSteps);
         CacheDirections();
         CalculateDistanceConstrainList(m_sensorScanSteps);
@@ -351,7 +368,7 @@ void URGSensorObjectDetector::mainloop() {
     }
 
     if (m_gd_loop){
-        m_urg->Write(SCIP_Writer::GD(0, 1080));
+        m_urg.Write(SCIP_Writer::GD(0, 1080));
     }
 
     auto cropped = ConstrainDetectionArea(originalDistances, m_distanceCroppingMethod);

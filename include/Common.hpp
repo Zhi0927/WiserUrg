@@ -11,14 +11,14 @@
 #include <vector>
 #include <sstream>
 #include <iomanip>
-#include <windows.h>
+//#include <windows.h>
 
-struct Screen
-{	
-	int width;
-	int height;
-};
-extern struct Screen screen;
+//struct Screen
+//{	
+//	int width;
+//	int height;
+//};
+//extern struct Screen screen;
 
 std::vector<long> movingAverages(const std::vector<long>& data, int period);
 inline void flipy(vector3& vec);
@@ -41,15 +41,18 @@ enum class ZeroPosition {
 class DataTranslator
 {
 public:
-	DataTranslator(const int& xOffset, const int& yOffset, const int& sensorDetectWidth, const int& sensorDetectHeight);
+	DataTranslator(const int xOffset, const int yOffset, const int sensorDetectWidth, const int sensorDetectHeight, const int sceneWidth, const int sceneHeight);
 	~DataTranslator();
 
 	void Sensor2Screen(vector3& inputData, const ZeroPosition zeroPosition = ZeroPosition::LEFT_BOTTOM);
+	vector3 flipy(const vector3& vec);
 
 	int m_xOffset;
 	int m_yOffest;
 	int m_sensorDetectWidth;
 	int m_sensorDetectHeight;
+	int m_sceneWidth;
+	int m_sceneHeight;
 };
 #endif // !HKY_UTILS_H_
 

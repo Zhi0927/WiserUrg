@@ -21,6 +21,7 @@ void UrgDeviceEthernet::StartTCP() {
         m_sock.close();
         m_sock.connect(m_endpoints);
         std::cout << "Connect setting = IP Address : " << m_ip_address << " Port number : " << std::to_string(m_port_number) << std::endl;
+        ListenForClients();
     }
     catch (const system::system_error& e)
     {
@@ -33,8 +34,7 @@ void UrgDeviceEthernet::Write(const std::string scip) {
 }
 
 void UrgDeviceEthernet::ListenForClients() {
-    std::unique_ptr<std::thread> th(new std::thread([this]() { HandleClientComm(m_sock); }));
-    m_thread = std::move(th);
+    m_thread.reset(new std::thread([this]() { HandleClientComm(m_sock); }));
 }
 
 void UrgDeviceEthernet::HandleClientComm(asio::ip::tcp::socket& sock) {
@@ -63,6 +63,7 @@ void UrgDeviceEthernet::HandleClientComm(asio::ip::tcp::socket& sock) {
             else {
                 std::cout << ">>" << receive_data << std::endl;
             }
+            lock.unlock();
         }
     }
     catch (const std::exception& e)

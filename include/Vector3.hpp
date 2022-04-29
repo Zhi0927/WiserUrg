@@ -5,6 +5,7 @@
 #include <cmath>
 #include <numeric>
 #include <limits>
+#include <sstream>
 
 #define M_PI 3.14159265358979323846
 #define DELTATIME 0.015
@@ -56,6 +57,7 @@ struct alignas(float) vector3
 	float magnitude() const;
 	void normalize();
 	float sqrMagnitude() const;
+	std::string ToString() const;
 
 	static float Dot(const vector3& a, const vector3& b);
 

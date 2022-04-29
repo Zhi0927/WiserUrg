@@ -1,6 +1,6 @@
 #include "Common.hpp"
 
-Screen screen = { GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN) };
+//Screen screen = { GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN) };
 
 
 std::vector<long> movingAverages(const std::vector<long>& data, int period) {
@@ -17,10 +17,6 @@ std::vector<long> movingAverages(const std::vector<long>& data, int period) {
         currrent_index = (currrent_index + 1) % period;
     }
     return output;
-}
-
-void flipy(vector3& vec) {
-    vec.y = screen.width - vec.y;
 }
 
 void map(float& value, const float& fromsource, const float& tosource, const float& fromtarget, const float& totarget) {
@@ -132,12 +128,14 @@ std::string trim(const std::string& str)
 }
 
 
-DataTranslator::DataTranslator(const int& xOffset, const int& yOffset, const int& sensorDetectWidth, const int& sensorDetectHeight){
-    m_xOffset = xOffset;
-    m_yOffest = yOffset;
-    m_sensorDetectWidth  = sensorDetectWidth;
-    m_sensorDetectHeight = sensorDetectHeight;
-}
+DataTranslator::DataTranslator(const int xOffset, const int yOffset, const int sensorDetectWidth, const int sensorDetectHeight, const int sceneWidth, const int sceneHeight)
+    :   m_xOffset(xOffset), 
+        m_yOffest(yOffset),
+        m_sensorDetectWidth(sensorDetectWidth),
+        m_sensorDetectHeight(sensorDetectHeight),
+        m_sceneWidth(sceneWidth),
+        m_sceneHeight(sceneHeight)
+{}
 
 DataTranslator::~DataTranslator(){
 
@@ -154,11 +152,15 @@ void DataTranslator::Sensor2Screen(vector3& inputData, const ZeroPosition zeroPo
     inputData.x /= m_sensorDetectWidth;
     inputData.y /= m_sensorDetectHeight;
 
-    inputData.x *= screen.width;
-    inputData.y *= screen.width;
+    inputData.x *= m_sceneWidth;
+    inputData.y *= m_sceneHeight;
 
     if (zeroPosition == ZeroPosition::LEFT_BOTTOM) {
         flipy(inputData);
     }
+}
+
+vector3 DataTranslator::flipy(const vector3& vec) {
+    return vector3(vec.x, m_sceneWidth - vec.y, 0);
 }
 

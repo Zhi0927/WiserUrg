@@ -128,6 +128,13 @@ float vector3::sqrMagnitude() const {
 	return x * x + y * y + z * z;
 }
 
+std::string vector3::ToString() const {
+	std::stringstream ss;
+	ss << "( " << x << ", " << y << ", " << z << " )";
+	std::string s = ss.str();
+	return s;
+}
+
 float vector3::Dot(const vector3& a, const vector3& b){
 	return a.x * b.x + a.y * b.y + a.z * b.z;
 }

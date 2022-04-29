@@ -5,6 +5,7 @@
 //#define _WIN32_WINNT 0X0A00
 //#endif
 //#define ASIO_STANDALONE
+// 
 #ifdef BOOST_OS_WINDOWS
 #define _WIN32_WINNT 0x0501
 #if _WIN32_WINNT <= 0x0501
