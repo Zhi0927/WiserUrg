@@ -27,6 +27,7 @@ public:
 
 	Rect detectAreaRect() const;
 	void setrecalculateConstrainAreaEveryFrame(bool swich);
+	void setConstraintWH(int width, int height);
 	std::vector<long> GetcroppedDistances() const;
 	std::vector<vector3> GetDirection() const;
 	std::vector<RawObject> GetRawObjectList() const;
@@ -52,8 +53,8 @@ public:
 	int										m_port_number							= 10940;
 
 	std::vector<long>						m_distanceConstrainList;
-	int										m_detectRectWidth						= 50;	//Unit is MM
-	int										m_detectRectHeight						= 50;	//Unit is MM
+	int										m_detectRectWidth						= 1000;	//Unit is MM
+	int										m_detectRectHeight						= 1000;	//Unit is MM
 
 	long									m_maxDetectionDist						= 7000;
 	int										m_timeSmoothBreakingDistanceChange		= 200;
@@ -66,12 +67,12 @@ public:
 	vector3									m_positionOffset;
 	bool									m_useOffset								= true;
 
-
+	UrgDeviceEthernet						m_urg;
 	std::function<void(ProcessedObject)>	m_OnNewObject							= nullptr;
 	std::function<void(ProcessedObject)>	m_OnLostObject							= nullptr;
 
 private:
-	UrgDeviceEthernet						m_urg;
+	
 	int										m_sensorScanSteps						= 0;
 	bool									m_gd_loop								= false;
 	bool									m_smoothDistanceCurve					= false;

@@ -22,6 +22,11 @@ void URGSensorObjectDetector::setrecalculateConstrainAreaEveryFrame(bool swich) 
     m_recalculateConstrainAreaEveryFrame = swich;
 }
 
+void URGSensorObjectDetector::setConstraintWH(int width, int height) {
+    m_detectRectHeight = width;
+    m_detectRectHeight = height;
+}
+
 std::vector<long> URGSensorObjectDetector::GetcroppedDistances() const {
     return m_croppedDistances;
 }
@@ -99,14 +104,11 @@ void URGSensorObjectDetector::CalculateDistanceConstrainList(const int steps) {
                 float x = y * tan(angle2);
                 r = x / sin(angle2);
             }
-            std::cout << r << std::endl;
             if (r < 0 || std::isnan(r)) {
                 r = 0;
             }
-            m_distanceConstrainList[i] = static_cast<long>(r);
-            
+            m_distanceConstrainList[i] = static_cast<long>(r);         
         }
-        //std::cout << m_distanceConstrainList[i] << std::endl;
     }
 
 }
@@ -132,8 +134,7 @@ void URGSensorObjectDetector::CacheDirections() {
     float d = M_PI * 2 / 1440;  // there are 1440 rays in a curcle. 
     float offset = d * 540;     // rotate 135 degrees to the left.
     m_directions.resize(m_sensorScanSteps);
-    for (size_t i = 0; i < m_directions.size(); i++)
-    {
+    for (size_t i = 0; i < m_directions.size(); i++){
         float a = d * i + offset;
         m_directions[i] = vector3(-cos(a), -sin(a), 0);
     }
@@ -322,6 +323,7 @@ std::vector<long> URGSensorObjectDetector::SmoothDistanceCurveByTime(const std::
 void URGSensorObjectDetector::start() {
     m_urg.StartTCP();
     StartMeasureDistance();
+    std::cout << "Start Tcp" << std::endl;
 }
 
 void URGSensorObjectDetector::mainloop() {
@@ -341,8 +343,8 @@ void URGSensorObjectDetector::mainloop() {
     if (m_sensorScanSteps <= 0){
         m_sensorScanSteps = m_urg.m_distances.size();
         m_distanceConstrainList.resize(m_sensorScanSteps);
-        CacheDirections(); //m_directions
-        CalculateDistanceConstrainList(m_sensorScanSteps); //m_distanceConstrainList
+        CacheDirections();                                  //m_directions
+        CalculateDistanceConstrainList(m_sensorScanSteps);  //m_distanceConstrainList
     }
 
     if (m_recalculateConstrainAreaEveryFrame){
@@ -359,8 +361,6 @@ void URGSensorObjectDetector::mainloop() {
     m_croppedDistances.clear();
     m_croppedDistances.insert(m_croppedDistances.end(), cropped.begin(), cropped.end());
 
-
-
     if (m_smoothDistanceCurve){
         m_croppedDistances = SmoothDistanceCurve(m_croppedDistances, m_smoothKernelSize);
     }
@@ -368,7 +368,7 @@ void URGSensorObjectDetector::mainloop() {
         m_croppedDistances = SmoothDistanceCurveByTime(m_croppedDistances, m_smoothByTimePreviousList, m_timeSmoothFactor);
     }
 
-    UpdateObjectList();
+    //UpdateObjectList();
 
     m_frameTime+= 1;
 }
