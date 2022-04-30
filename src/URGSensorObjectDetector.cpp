@@ -8,7 +8,7 @@ URGSensorObjectDetector::URGSensorObjectDetector(const std::string& ip, const in
 {}
 
 URGSensorObjectDetector::~URGSensorObjectDetector() {
-    m_urg.close();
+    //m_urg.close();
 }
 
 
@@ -16,6 +16,10 @@ Rect URGSensorObjectDetector::detectAreaRect() const {
 	Rect rect(0, 0, m_detectRectWidth, m_detectRectHeight);
 	rect.xmin -= (m_detectRectWidth / 2);
 	return rect;
+}
+
+void URGSensorObjectDetector::setrecalculateConstrainAreaEveryFrame(bool swich) {
+    m_recalculateConstrainAreaEveryFrame = swich;
 }
 
 std::vector<long> URGSensorObjectDetector::GetcroppedDistances() const {
@@ -73,57 +77,41 @@ std::vector<ProcessedObject> URGSensorObjectDetector::GetObjects(const std::vect
 }
 
 void URGSensorObjectDetector::CalculateDistanceConstrainList(const int steps) {
-    switch (m_distanceCroppingMethod)
-    {
-    case DistanceCroppingMethod::RADIUS:
-        for (size_t i = 0; i < steps; i++) {
-            if (m_directions[i].y < 0) {
-                m_distanceConstrainList[i] = 0;
-            }
-            else
-            {
-                m_distanceConstrainList[i] = m_maxDetectionDist;
-            }
+    float keyAngle = atan(m_detectRectHeight / (m_detectRectWidth / 2.f));
+    for (size_t i = 0; i < steps; i++) {
+        if (m_directions[i].y <= 0) {
+            m_distanceConstrainList[i] = 0;
         }
-        break;
+        else {
+            float a = vector3::Angle(m_directions[i], vector3(1, 0, 0)) * Deg2Rad;
+            float tanAngle = tan(a);
+            float pn = tanAngle / abs(tanAngle);
 
-    case DistanceCroppingMethod::RECT:
-        float keyAngle = atan(m_detectRectHeight / (m_detectRectWidth / 2.f));
-
-        for (size_t i = 0; i < steps; i++) {
-            if (m_directions[i].y <= 0) {
-                m_distanceConstrainList[i] = 0;
+            float r = 0;
+            if (a < keyAngle || a > M_PI - keyAngle) {
+                float x = pn * m_detectRectWidth / 2;
+                float y = x * tan(a);
+                r = y / sin(a);
             }
-            else {
-                float a = vector3::Angle(m_directions[i], vector3(1, 0, 0)) * Deg2Rad;
-                float tanAngle = tan(a);
-                float pn = tanAngle / abs(tanAngle);
-
-                float r = 0;
-                if (a < keyAngle || a > M_PI - keyAngle) {
-                    float x = pn * m_detectRectWidth / 2;
-                    float y = x * tan(a);
-                    r = y / sin(a);
-                }
-                else if (a >= keyAngle && a <= M_PI - keyAngle) {
-                    float angle2 = M_PI / 2 - a;
-                    float y = m_detectRectHeight;
-                    float x = y * tan(angle2);
-                    r = x / sin(angle2);
-                }
-
-                if (r < 0 || std::isnan(r)) {
-                    r = 0;
-                }
-
-                m_distanceConstrainList[i] = static_cast<long>(r);
+            else if (a >= keyAngle && a <= M_PI - keyAngle) {
+                float angle2 = M_PI / 2 - a;
+                float y = m_detectRectHeight;
+                float x = y * tan(angle2);
+                r = x / sin(angle2);
             }
+            std::cout << r << std::endl;
+            if (r < 0 || std::isnan(r)) {
+                r = 0;
+            }
+            m_distanceConstrainList[i] = static_cast<long>(r);
+            
         }
-        break;
+        //std::cout << m_distanceConstrainList[i] << std::endl;
     }
+
 }
 
-std::vector<long> URGSensorObjectDetector::ConstrainDetectionArea(const std::vector<long>& beforeCrop, DistanceCroppingMethod method) {
+std::vector<long> URGSensorObjectDetector::ConstrainDetectionArea(const std::vector<long>& beforeCrop) {
     std::vector<long> result;
     for (size_t i = 0; i < beforeCrop.size(); i++) {
         if (beforeCrop[i] > m_distanceConstrainList[i] || beforeCrop[i] <= 0) {
@@ -141,8 +129,8 @@ void URGSensorObjectDetector::StartMeasureDistance() {
 }
 
 void URGSensorObjectDetector::CacheDirections() {
-    float d = M_PI * 2 / 1440;
-    float offset = d * 540;
+    float d = M_PI * 2 / 1440;  // there are 1440 rays in a curcle. 
+    float offset = d * 540;     // rotate 135 degrees to the left.
     m_directions.resize(m_sensorScanSteps);
     for (size_t i = 0; i < m_directions.size(); i++)
     {
@@ -298,7 +286,6 @@ void URGSensorObjectDetector::UpdateObjectList() {
             if (m_OnNewObject != nullptr) { m_OnNewObject(newbie); }
         }
     } 
-    lockdata.unlock();
 }
 
 std::vector<long> URGSensorObjectDetector::SmoothDistanceCurveByTime(const std::vector<long>& newList, std::vector<long>& previousList, float smoothFactor) {
@@ -343,22 +330,19 @@ void URGSensorObjectDetector::mainloop() {
         m_smoothKernelSize += 1;
     }
 
-    std::vector<long> originalDistances;
-
-    std::unique_lock<std::mutex> lockurg(m_urgdistance_guard);
+    std::unique_lock<std::mutex> lockurg(m_urg.m_guard);
 
     if (m_urg.m_distances.size() <= 0) return;
-    originalDistances.assign(m_urg.m_distances.begin(), m_urg.m_distances.end());
-
+    std::vector<long> originalDistances(m_urg.m_distances);
     lockurg.unlock();
 
     if (originalDistances.size() <= 0) return;
 
     if (m_sensorScanSteps <= 0){
         m_sensorScanSteps = m_urg.m_distances.size();
-        m_distanceConstrainList.reserve(m_sensorScanSteps);
-        CacheDirections();
-        CalculateDistanceConstrainList(m_sensorScanSteps);
+        m_distanceConstrainList.resize(m_sensorScanSteps);
+        CacheDirections(); //m_directions
+        CalculateDistanceConstrainList(m_sensorScanSteps); //m_distanceConstrainList
     }
 
     if (m_recalculateConstrainAreaEveryFrame){
@@ -371,9 +355,10 @@ void URGSensorObjectDetector::mainloop() {
         m_urg.Write(SCIP_Writer::GD(0, 1080));
     }
 
-    auto cropped = ConstrainDetectionArea(originalDistances, m_distanceCroppingMethod);
+    auto cropped = ConstrainDetectionArea(originalDistances);
     m_croppedDistances.clear();
     m_croppedDistances.insert(m_croppedDistances.end(), cropped.begin(), cropped.end());
+
 
 
     if (m_smoothDistanceCurve){

@@ -11,14 +11,6 @@
 #include <vector>
 #include <sstream>
 #include <iomanip>
-//#include <windows.h>
-
-//struct Screen
-//{	
-//	int width;
-//	int height;
-//};
-//extern struct Screen screen;
 
 std::vector<long> movingAverages(const std::vector<long>& data, int period);
 inline void flipy(vector3& vec);

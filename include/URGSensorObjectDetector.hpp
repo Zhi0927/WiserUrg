@@ -22,14 +22,11 @@
 class URGSensorObjectDetector
 {
 public:
-	enum class DistanceCroppingMethod {
-		RECT, RADIUS
-	};
-
 	URGSensorObjectDetector(const std::string& ip, const int& port);
 	~URGSensorObjectDetector();
 
 	Rect detectAreaRect() const;
+	void setrecalculateConstrainAreaEveryFrame(bool swich);
 	std::vector<long> GetcroppedDistances() const;
 	std::vector<vector3> GetDirection() const;
 	std::vector<RawObject> GetRawObjectList() const;
@@ -39,7 +36,7 @@ public:
 	std::vector<ProcessedObject> GetObjects(const std::vector<ProcessedObject>& detectobj, const float ageFilter = 0.5f);
 
 	void CalculateDistanceConstrainList(const int steps);
-	std::vector<long> ConstrainDetectionArea(const std::vector<long>& beforeCrop, DistanceCroppingMethod method);
+	std::vector<long> ConstrainDetectionArea(const std::vector<long>& beforeCrop);
 	void StartMeasureDistance();
 	void CacheDirections();
 	std::vector<long> SmoothDistanceCurve(const std::vector<long>& croppedDistances, int smoothKernelSize);
@@ -53,11 +50,10 @@ public:
 public:
 	std::string								m_ip_address							= "192.168.0.10";
 	int										m_port_number							= 10940;
-	DistanceCroppingMethod					m_distanceCroppingMethod				= DistanceCroppingMethod::RECT;
 
 	std::vector<long>						m_distanceConstrainList;
-	int										m_detectRectWidth						= 6000;	//Unit is MM
-	int										m_detectRectHeight						= 6000;	//Unit is MM
+	int										m_detectRectWidth						= 50;	//Unit is MM
+	int										m_detectRectHeight						= 50;	//Unit is MM
 
 	long									m_maxDetectionDist						= 7000;
 	int										m_timeSmoothBreakingDistanceChange		= 200;
@@ -69,13 +65,12 @@ public:
 	float									m_objectPositionSmoothTime				= 0.2f;
 	vector3									m_positionOffset;
 	bool									m_useOffset								= true;
-	bool									m_recalculateConstrainAreaEveryFrame	= false;
+
 
 	std::function<void(ProcessedObject)>	m_OnNewObject							= nullptr;
 	std::function<void(ProcessedObject)>	m_OnLostObject							= nullptr;
 
 private:
-	//std::unique_ptr<UrgDeviceEthernet>		m_urg;
 	UrgDeviceEthernet						m_urg;
 	int										m_sensorScanSteps						= 0;
 	bool									m_gd_loop								= false;
@@ -84,13 +79,13 @@ private:
 	std::vector<RawObject>					m_rawObjectList;
 	std::vector<ProcessedObject>			m_detectedObjects;
 	float									m_distanceThresholdForMerge				= 300;
+	bool									m_recalculateConstrainAreaEveryFrame	= false;
 	int										m_frameTime								= 0;
 
 	std::vector<long>						m_croppedDistances;
 	std::vector<long>						m_strengths;
 	std::vector<vector3>					m_directions;
 	std::mutex								m_detectobject_guard;
-	std::mutex								m_urgdistance_guard;
 };
 #endif
 

@@ -2,6 +2,7 @@
 #define HKY_VECTOR3_H_
 
 #include <iostream>
+#include <algorithm>
 #include <cmath>
 #include <numeric>
 #include <limits>
@@ -10,13 +11,7 @@
 #define M_PI 3.14159265358979323846
 #define DELTATIME 0.015
 
-
-template<class T>
-constexpr const T& clamp(const T& x, const T& upper, const T& lower) {
-	return std::min(upper, std::max(x, lower));
-}
-
-constexpr float Deg2Rad = M_PI * 2.f/360;
+constexpr float Deg2Rad = M_PI * 2.f/360.f;
 constexpr float Rag2Deg = 1.f / Deg2Rad;
 
 constexpr double kEpsilonNormalSqrt = 1e-15;

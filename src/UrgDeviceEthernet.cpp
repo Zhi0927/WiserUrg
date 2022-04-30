@@ -3,9 +3,7 @@
 
 UrgDeviceEthernet::UrgDeviceEthernet(const std::string& ip, const int& port)
     :   m_ip_address(ip),
-        m_port_number(port),
-        m_sock(m_context),
-        m_endpoints(asio::ip::address::from_string(ip), port)
+        m_port_number(port)
 {}
 
 UrgDeviceEthernet::~UrgDeviceEthernet()
@@ -15,18 +13,41 @@ UrgDeviceEthernet::~UrgDeviceEthernet()
 
 void UrgDeviceEthernet::StartTCP() {
 
-    try
+    WSAData data;
+    WORD ver = MAKEWORD(2, 2);
+    int wsResult = WSAStartup(ver, &data);
+    if (wsResult != 0)
     {
-        m_sock.open(m_endpoints.protocol());
-        m_sock.close();
-        m_sock.connect(m_endpoints);
-        std::cout << "Connect setting = IP Address : " << m_ip_address << " Port number : " << std::to_string(m_port_number) << std::endl;
-        ListenForClients();
+        std::cerr << "Can't start Winsock, Err #" << wsResult << std::endl;
+        return;
     }
-    catch (const system::system_error& e)
+
+    // Create socket
+    m_sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (m_sock == INVALID_SOCKET)
     {
-        std::cerr << "[ERROR] Error code = " << e.code() << ". Message: " << e.what() << '\n';
+        std::cerr << "Can't create socket, Err #" << WSAGetLastError() << std::endl;
+        WSACleanup();
+        return;
     }
+
+    // Fill in a hint structure
+    sockaddr_in hint;
+    hint.sin_family = AF_INET;
+    hint.sin_port = htons(m_port_number);
+    inet_pton(AF_INET, m_ip_address.c_str(), &hint.sin_addr);
+
+    // Connect to server
+    int connResult = connect(m_sock, (sockaddr*)&hint, sizeof(hint));
+    if (connResult == SOCKET_ERROR)
+    {
+        std::cerr << "Can't connect to server, Err #" << WSAGetLastError() << std::endl;
+        closesocket(m_sock);
+        WSACleanup();
+        return;
+    }
+
+    ListenForClients();
 }
 
 void UrgDeviceEthernet::Write(const std::string scip) {
@@ -37,16 +58,16 @@ void UrgDeviceEthernet::ListenForClients() {
     m_thread.reset(new std::thread([this]() { HandleClientComm(m_sock); }));
 }
 
-void UrgDeviceEthernet::HandleClientComm(asio::ip::tcp::socket& sock) {
+void UrgDeviceEthernet::HandleClientComm(SOCKET& sock) {
 
     try
     {
         while (true) {
             long time_stamp = 0;
             std::string receive_data = read_line(sock);
+            //std::cout << receive_data << std::endl;
 
             std::string cmd = GetCommand(receive_data);
-
 
             std::unique_lock<std::mutex> lock(m_guard);
 
@@ -63,14 +84,12 @@ void UrgDeviceEthernet::HandleClientComm(asio::ip::tcp::socket& sock) {
             else {
                 std::cout << ">>" << receive_data << std::endl;
             }
-            lock.unlock();
         }
     }
     catch (const std::exception& e)
     {
         std::cerr << "[ERROR] HandleClientComm:" << e.what() << std::endl;
     }
-
 }
 
 std::string UrgDeviceEthernet::GetCommand(const std::string get_command) {
@@ -83,7 +102,7 @@ bool UrgDeviceEthernet::CheckCommand(const std::string& get_command, const std::
     return startswith(split_command[0], cmd);
 }
 
-std::string UrgDeviceEthernet::read_line(asio::ip::tcp::socket& sock) {
+std::string UrgDeviceEthernet::read_line(SOCKET& sock) {
     std::stringstream ss;
     bool is_NL2 = false;
     bool is_NL = true;
@@ -91,17 +110,8 @@ std::string UrgDeviceEthernet::read_line(asio::ip::tcp::socket& sock) {
     do
     {
         char buf[1];
-        system::error_code error;
-        size_t bytesRead  = asio::read(sock, asio::buffer(buf, 1), error);
-        if (bytesRead < 1) std::cout << "empty char!" << std::endl;
-        if (error == asio::error::eof) {
-            sock.close();
-            break;
-        }
-        else if (error)
-        {
-            std::cout << "[ERROR]" << system::system_error(error).what() << std::endl;
-        }
+        int bytesReceived = recv(sock, buf, 1, 0);
+        if (bytesReceived < 1) std::cout << "empty char!" << std::endl;
 
         if (buf[0] == '\n') {
             if (is_NL)
@@ -119,34 +129,22 @@ std::string UrgDeviceEthernet::read_line(asio::ip::tcp::socket& sock) {
         }
         ss << buf[0];
     } while (!is_NL2);
-
     return ss.str();
 }
 
-bool UrgDeviceEthernet::write(asio::ip::tcp::socket& sock, const std::string& data) {
-    system::error_code error;
-    asio::write(sock, asio::buffer(data), error);
-    if (!error) {
-        std::cout << "Server sent: [" << data << "] sucessfully!" << std::endl;
+bool UrgDeviceEthernet::write(SOCKET& sock, const std::string& data) {
+    int sendResult = send(sock, data.c_str(), data.size(), 0);
+    if (sendResult != SOCKET_ERROR) {
+        //std::cout << data << std::endl;
         return true;
-    }
-    else {
-        std::cout << "[ERROR] send failed: " << error.message() << std::endl;
-        return false;
     }
 }
 
 void UrgDeviceEthernet::close() {
    
-    m_context.post([this]() {
-        system::error_code ec;
-        m_sock.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
-        if (ec) {
-            std::cout << "[ERROR] shutdown failed: " << ec.message() << std::endl;
-        }
-
-        m_sock.close();
-        //m_sock.release();
-        });
-    m_thread->join();
+    closesocket(m_sock);
+    if (m_thread->joinable()) {
+        m_thread->join();
+    }
+    WSACleanup();
 }

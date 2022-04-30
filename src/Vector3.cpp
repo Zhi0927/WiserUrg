@@ -148,12 +148,13 @@ vector3 vector3::Cross(const vector3& left, const vector3& right)
 }
 
 float vector3::Angle(const vector3& from, const vector3& to) {
-	float denominator = sqrtf(from.sqrMagnitude() * to.sqrMagnitude());
+	float denominator = (float)sqrt(from.sqrMagnitude() * to.sqrMagnitude());
+
 	if (denominator < kEpsilonNormalSqrt)
 		return 0.f;
-	float dot = clamp(Dot(from, to) / denominator, -1.f, 1.f);
+	float dot = std::clamp(Dot(from, to) / denominator, -1.f, 1.f);
 
-	return acos(dot) * Rag2Deg;
+	return (float)acos(dot) * Rag2Deg;
 }
 
 float vector3::Distance(const vector3& a, const vector3& b) {

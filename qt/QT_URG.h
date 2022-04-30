@@ -12,11 +12,6 @@ public:
     QT_URG(QWidget *parent = Q_NULLPTR);
     ~QT_URG();
 
-    void DrawMain();
-    void plot();
-    void drawRect(const Rect& rect, QColor color = Qt::red);
-    void drawLine(const vector3& from, const vector3& to, QColor color = Qt::green);
-
     QColor distanceColor        = Qt::green;
     QColor strengthColor        = Qt::yellow;
     QColor objectColor          = Qt::red;
@@ -27,9 +22,15 @@ private slots:
     void DisconnectTcp_Button();
     void setConstraintRegion_Button();
 
+    void drawRect(const Rect& rect, QColor color = Qt::red);
+    void drawLine(const vector3& from, const vector3& to, QColor color = Qt::green);
+    void DrawMain();
+    void plot();
+
 private:
     Ui::QT_URGClass* ui;
-    //std::unique_ptr <URGSensorObjectDetector> m_urgdetector;
-    URGSensorObjectDetector m_urgdetector;
+    std::unique_ptr <URGSensorObjectDetector> m_urgdetector;
+    std::unique_ptr<std::thread> m_mainthread;
+
     bool isdetect = false;
 };
