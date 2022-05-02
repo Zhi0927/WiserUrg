@@ -125,20 +125,20 @@ std::vector<RawObject> URGSensorObjectDetector::DetectObjects(const std::vector<
         float deltaA = abs(croppedDistances[i] - croppedDistances[i - 1]);
         float deltaB = abs(croppedDistances[i + 1] - croppedDistances[i]);
 
-        auto dist   = croppedDistances[i];
-        auto ubDist = distanceConstrainList[i];
+        auto& dist   = croppedDistances[i];
+        auto& ubDist = distanceConstrainList[i];
 
         if (dist < ubDist && (deltaA < parm.deltaLimit && deltaB < parm.deltaLimit)) {
             if (!isGrouping){
                 isGrouping = true;
-                RawObject newObject(m_directions);
-                newObject.idList.emplace_back(i);
+                RawObject newObject;
+                newObject.dirList.emplace_back(m_directions[i]);
                 newObject.distList.emplace_back(dist);
                 resultList.emplace_back(newObject);
             }
             else{
                 auto& newObject = resultList[resultList.size() - 1];
-                newObject.idList.emplace_back(i);
+                newObject.dirList.emplace_back(m_directions[i]);
                 newObject.distList.emplace_back(dist);
             }
         }
@@ -149,7 +149,7 @@ std::vector<RawObject> URGSensorObjectDetector::DetectObjects(const std::vector<
         }
     }
     for (int i = 0; i < resultList.size(); ++i) {
-        if (resultList[i].idList.size() < parm.noiseLimit){
+        if (resultList[i].dirList.size() < parm.noiseLimit){
             resultList.erase(resultList.begin() + i);
             --i;
         }

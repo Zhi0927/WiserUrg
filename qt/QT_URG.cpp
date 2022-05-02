@@ -54,10 +54,10 @@ void Qt_urg::DrawMain() {
             for (int i = 0; i < rawObjectList.size(); i++) {
                 auto obj = rawObjectList[i];
 
-                if (obj.idList.size() == 0 || obj.distList.size() == 0)  return;
+                if (obj.dirList.size() == 0 || obj.distList.size() == 0)  return;
 
-                vector3 dir = directions[obj.medianId()];
-                long dist = obj.medianDist();
+                //vector3 dir = directions[obj.medianId()];
+                //long dist = obj.medianDist();
 
                 auto rawpos = obj.getPosition();
                 RawObjX.append(static_cast<double>(rawpos.x));
@@ -89,6 +89,9 @@ void Qt_urg::setPlottemplate() {
     ui->plot->addGraph();
     ui->plot->graph(2)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssSquare, QPen(processedObjectColor, 2), processedObjectColor, 15));
     ui->plot->graph(2)->setLineStyle(QCPGraph::LineStyle::lsNone);
+
+    RayX.reserve(1081);
+    RayY.reserve(1081);
 }
 
 void Qt_urg::plot() {

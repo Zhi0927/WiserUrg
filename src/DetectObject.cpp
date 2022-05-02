@@ -1,48 +1,25 @@
 #include "DetectObject.hpp"
 
-RawObject::RawObject(const std::vector<vector3>& cachedDirs)
-	: m_cachedDirs(cachedDirs),
-	  m_guid(GenerateGuid())
+RawObject::RawObject()
+	: m_guid(GenerateGuid())
 {}
 
 RawObject::~RawObject() {}
-
-int RawObject::medianId() {
-	return idList[idList.size() / 2];
-}
-int RawObject::averageId() {
-	if (idList.empty()) {
-		return 0;
-	}
-	return static_cast<int>(std::accumulate(idList.begin(), idList.end(), 0) / idList.size());
-}
-
-long RawObject::medianDist() {
-	return distList[distList.size() / 2];
-}
-double RawObject::averageDist() {
-	if (distList.empty()) {
-		return 0;
-	}
-	return std::accumulate(distList.begin(), distList.end(), 0) / distList.size();
-}
-
-float RawObject::getDetectSize() {
-	vector3 pointA = CalcPosition(m_cachedDirs[idList[0]], distList[0]);
-	vector3 pointB = CalcPosition(m_cachedDirs[idList[idList.size() -1]], distList[distList.size() -1]);
-	float distance = vector3::Distance(pointA, pointB);
-
-	return distance;
-}
-
 
 void RawObject::setPosition(const vector3& value) {
 	m_position = value;
 }
 vector3 RawObject::getPosition() const {
-	if (!m_positionSet) std::cerr << "position has not bee set yet\n"; 	
-
+	if (!m_positionSet) std::cerr << "position has not bee set yet\n";
 	return m_position;
+}
+
+float RawObject::getDetectSize(){
+	vector3 pointA = CalcPosition(dirList[0], distList[0]);
+	vector3 pointB = CalcPosition(dirList[dirList.size() -1], distList[distList.size() - 1]);
+	float distance = vector3::Distance(pointA, pointB);
+
+	return distance;
 }
 
 std::string RawObject::getGuid() const {
@@ -50,15 +27,10 @@ std::string RawObject::getGuid() const {
 }
 
 void RawObject::GetCalcPosition() {
-	m_position = CalcPosition();
+	m_position = CalcPosition(dirList[dirList.size() / 2], distList[distList.size() / 2]);
 	m_positionSet = true;
 }
 
-
-vector3 RawObject::CalcPosition() {
-	long media = medianDist();
-	return CalcPosition(m_cachedDirs[medianId()], media);
-}
 vector3 RawObject::CalcPosition(const vector3& dir, const long& dist) {
 	float angle = vector3::Angle(dir, vector3(1, 0, 0));
 	float theta = angle * Deg2Rad;

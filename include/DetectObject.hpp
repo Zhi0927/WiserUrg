@@ -8,32 +8,24 @@
 class RawObject
 {
 public:
-	RawObject(const std::vector<vector3>& cachedDirs);
+	RawObject();
 	~RawObject();
 
-	int medianId();
-	int averageId();
-
-	long medianDist();
-	double averageDist();
-
 	float getDetectSize();
+
 	void setPosition(const vector3& value);
 	vector3 getPosition() const;
 	std::string getGuid() const;
 
 	void GetCalcPosition();
-
-	vector3 CalcPosition();
 	vector3 CalcPosition(const vector3& dir, const long& dist);
 
 public:
 	std::vector<long>				distList;
-	std::vector<int>				idList;
+	std::vector<vector3>			dirList;
 
 private:
 	std::string						m_guid;
-	std::vector<vector3>			m_cachedDirs;
 	vector3							m_position			= vector3(0, 0, 0);
 	bool							m_positionSet		= false;
 };
