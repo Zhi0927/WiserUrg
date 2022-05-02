@@ -20,6 +20,10 @@ private slots:
     void ConnectTcp_Button();
     void DisconnectTcp_Button();
     void setConstraintRegion_Button();
+    void setParm_Buttom();
+    void smatoggle(bool checkstate);
+    void useOffset(bool checkstate);
+
     void DrawMain();
 
 public:
@@ -35,5 +39,7 @@ private:
     QVector<double> RayX, RayY;
     QVector<double> RawObjX, RawObjY;
     QVector<double> PosObjX, PosObjY;
+
+    QPointer<QCPItemRect> xRectItem;
 };
 #endif

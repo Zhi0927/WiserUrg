@@ -5,6 +5,8 @@ Qt_urg::Qt_urg(QWidget *parent)
         ui(new Ui::Qt_urgClass)
 {
     ui->setupUi(this);
+    this->setWindowIcon(QIcon("icon_urg.jpg"));
+
     isdetect = false;
 
     setPlottemplate();
@@ -20,10 +22,14 @@ Qt_urg::Qt_urg(QWidget *parent)
     connect(ui->Connect_Button, SIGNAL(clicked()), this, SLOT(ConnectTcp_Button()));
     connect(ui->Disconnect_Button, SIGNAL(clicked()), this, SLOT(DisconnectTcp_Button()));
     connect(ui->SetCR_Button, SIGNAL(clicked()), this, SLOT(setConstraintRegion_Button()));
+    connect(ui->SetParm_Button, SIGNAL(clicked()), this, SLOT(setParm_Buttom()));
+    connect(ui->UseSMA, SIGNAL(clicked(bool)), this, SLOT(smatoggle(bool)));
+    connect(ui->UseOffset, SIGNAL(clicked(bool)), this, SLOT(useOffset(bool)));
+
 
     QTimer* dataTimer = new QTimer(this);
     connect(dataTimer, SIGNAL(timeout()), this, SLOT(DrawMain()));
-    dataTimer->start();
+    dataTimer->start(0);
 
     std::cout << "Initial QT successful!" << std::endl;
 }
@@ -36,10 +42,10 @@ Qt_urg::~Qt_urg() {
 void Qt_urg::DrawMain() {
     if (isdetect) {
         m_urgdetector->mainloop();
-        const std::vector<long>& croppedDistances           = m_urgdetector->GetcroppedDistances();
-        const std::vector<vector3>& directions              = m_urgdetector->GetDirection();
-        const std::vector<RawObject>& rawObjectList         = m_urgdetector->GetRawObjectList();
-        const std::vector<ProcessedObject>& detectedObjects = m_urgdetector->GetDetectObjects();
+        const std::vector<long>& croppedDistances            = m_urgdetector->GetcroppedDistances();
+        const std::vector<vector3>& directions               = m_urgdetector->GetDirection();
+        const std::vector<RawObject>& rawObjectList          = m_urgdetector->GetRawObjectList();
+        const std::vector<ProcessedObject>& detectedObjects  = m_urgdetector->GetDetectObjects();
 
 
         if (ui->DrawRay->isChecked() && !croppedDistances.empty()) {
@@ -55,9 +61,6 @@ void Qt_urg::DrawMain() {
                 auto obj = rawObjectList[i];
 
                 if (obj.dirList.size() == 0 || obj.distList.size() == 0)  return;
-
-                //vector3 dir = directions[obj.medianId()];
-                //long dist = obj.medianDist();
 
                 auto rawpos = obj.getPosition();
                 RawObjX.append(static_cast<double>(rawpos.x));
@@ -109,8 +112,7 @@ void Qt_urg::plot() {
 }
 
 void Qt_urg::drawRect(const Rect& rect, QColor color) {
-    QCPItemRect* xRectItem = new QCPItemRect(ui->plot);
-
+    xRectItem = new QCPItemRect(ui->plot);
     xRectItem->setVisible(true);
     xRectItem->setPen(QPen(color));
     xRectItem->setBrush(QBrush(Qt::NoBrush));
@@ -119,7 +121,7 @@ void Qt_urg::drawRect(const Rect& rect, QColor color) {
     xRectItem->topLeft->setCoords(rect.xmin, rect.ymin);
 
     xRectItem->bottomRight->setType(QCPItemPosition::ptPlotCoords);
-    xRectItem->bottomRight->setCoords(rect.xmin + rect.width, rect.ymin + rect.height);
+    xRectItem->bottomRight->setCoords(rect.xmax(), rect.ymax());
 }
 
 void Qt_urg::ConnectTcp_Button() {
@@ -127,11 +129,15 @@ void Qt_urg::ConnectTcp_Button() {
         std::cout << "start Tcp..." << std::endl;
 
         m_urgdetector.reset(new URGSensorObjectDetector(ui->IP_Input->text().toStdString(), ui->Port_number_input->value()));
-        m_urgdetector->start();
-        isdetect = true;
+        setConstraintRegion_Button();
 
-        Rect rect = m_urgdetector->detectAreaRect();
-        drawRect(rect, Qt::red);
+        isdetect = true;   
+        m_urgdetector->start();
+
+        ui->Connect_Button->setEnabled(false);
+        ui->Disconnect_Button->setEnabled(true);
+        ui->SetCR_Button->setEnabled(true);
+        ui->SetParm_Button->setEnabled(true);
     }
 }
 
@@ -139,10 +145,47 @@ void Qt_urg::DisconnectTcp_Button() {
     if (isdetect) {
         isdetect = false;
         m_urgdetector.reset(nullptr);
+
+        ui->Connect_Button->setEnabled(true);
     }
 }
 
 void Qt_urg::setConstraintRegion_Button() {
-    m_urgdetector->setConstraintWH(0, 0, ui->CR_Right_Input->value(), ui->CR_Left_Input->value());
-    //m_urgdetector->CalculateDistanceConstrainList();
+    m_urgdetector->parm.detctRect.xmin   = -(ui->Width_Input->value() / 2) + ui->OffsetX_Input->value();
+    m_urgdetector->parm.detctRect.ymin   = ui->Height_Input->value() + ui->OffsetY_Input->value();
+    m_urgdetector->parm.detctRect.width  = ui->Width_Input->value();
+    m_urgdetector->parm.detctRect.height = ui->Height_Input->value();
+
+    Rect rect = m_urgdetector->parm.detctRect;
+
+    //std::cout << rect.xmin << ", " << rect.ymin << ", " << rect.xmax() << ", " << rect.ymax() << std::endl;
+    
+    if (isdetect) {
+        xRectItem->topLeft->setType(QCPItemPosition::ptPlotCoords);
+        xRectItem->topLeft->setCoords(rect.xmin, rect.ymin);
+        xRectItem->bottomRight->setType(QCPItemPosition::ptPlotCoords);
+        xRectItem->bottomRight->setCoords(rect.xmax(), rect.ymax());
+    }
+    else {
+        drawRect(rect, Qt::red);
+    }
+}
+
+void Qt_urg::setParm_Buttom() {
+    m_urgdetector->parm.noiseLimit          = ui->noiseLimit_Input->value();
+    m_urgdetector->parm.deltaLimit          = ui->deltaLimit_Input->value();
+    m_urgdetector->parm.distanceThreshold   = ui->distanceThreshold_Input->value();
+    m_urgdetector->parm.objPosSmoothTime    = ui->objPosSmoothTime_Input->value();
+}
+
+void Qt_urg::smatoggle(bool checkstate) {
+    m_urgdetector->parm.useSMA = checkstate;
+}
+
+void Qt_urg::useOffset(bool checkstate) {
+    m_urgdetector->parm.useOffset = checkstate;
+    if (checkstate) {
+        m_urgdetector->parm.positionOffset.x = ui->cursoroffsetX_Input->value();
+        m_urgdetector->parm.positionOffset.y = ui->cursoroffsetY_Input->value();
+    }
 }

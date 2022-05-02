@@ -9,8 +9,11 @@ RawObject::~RawObject() {}
 void RawObject::setPosition(const vector3& value) {
 	m_position = value;
 }
-vector3 RawObject::getPosition() const {
-	if (!m_positionSet) std::cerr << "position has not bee set yet\n";
+vector3 RawObject::getPosition(){
+	if (!m_positionSet) {
+		m_position = CalcPosition(dirList[dirList.size() / 2], distList[distList.size() / 2]);
+		m_positionSet = true;
+	}
 	return m_position;
 }
 
@@ -24,11 +27,6 @@ float RawObject::getDetectSize(){
 
 std::string RawObject::getGuid() const {
 	return m_guid;
-}
-
-void RawObject::GetCalcPosition() {
-	m_position = CalcPosition(dirList[dirList.size() / 2], distList[distList.size() / 2]);
-	m_positionSet = true;
 }
 
 vector3 RawObject::CalcPosition(const vector3& dir, const long& dist) {
@@ -90,10 +88,23 @@ void ProcessedObject::Update(const vector3 newPos, const float newSize) {
 	if (useSmooth) {
 		m_position = vector3::SmoothDamp(m_position, newPos, m_currentVelocity, m_posSmoothTime);
 	}
-	else
-	{
+	else{
 		m_position = newPos;
 	}
 	missingFrame = 0;
 	m_deltaMovement = m_position - m_oldPosition;
+}
+
+SensedObject::SensedObject(const vector3& vp0, const vector3& vp1, const vector3& vcenter) 
+: p0(vp0), p1(vp1), center(vcenter)
+{}
+
+vector3* SensedObject::getVertices(){
+	auto width = (p1 - p0).magnitude();
+	vertices[0] = p0;
+	vertices[1] = center;
+	vertices[2] = p1;
+	vertices[3] = p1 + center.normalize() * width * 0.5f;
+	vertices[4] = p0 + center.normalize() * width * 0.5f;
+	return vertices;
 }

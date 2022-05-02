@@ -24,12 +24,12 @@ struct Detectparm {
 	std::string		ip_address					= "192.168.0.10";
 	int				port_number					= 10940;
 
-	Rect			detctRect					= Rect(0, 0, 500, 500); //Unit is MM
+	Rect			detctRect					= Rect(-500, 1000, 500, 1000); //Unit is MM
 
 	int				noiseLimit					= 7;
-	int				deltaLimit					= 200;
-	float			distanceThresholdForMerge	= 300;
-	float			objectPositionSmoothTime	= 0.2f;
+	int				deltaLimit					= 0.25; //200
+	float			distanceThreshold			= 300; //300
+	float			objPosSmoothTime			= 0.2f;
 
 	bool			useOffset					= false;
 	vector3			positionOffset				= vector3(0, 0, 0);
@@ -60,9 +60,13 @@ public:
 
 	void StartMeasureDistance();
 	void CacheDirections();
+	vector3 CalcuPosition(const vector3& dir, const long& dist);
+
 	void CalculateDistanceConstrainList(const int steps);
 	void ConstrainDetectionArea(std::vector<long>& beforeCrop);
-	std::vector<RawObject> DetectObjects(const std::vector<long>& croppedDistances, const std::vector<long>& distanceConstrainList);
+
+	std::vector<RawObject> DetectObjects(const std::vector<long>& croppedDistances, const std::vector<long>& distanceConstrainListconst);
+	std::vector<SensedObject> DetectObjectsByPosition(const std::vector<long>& distances);
 	void UpdateObjectList();
 
 	void start();

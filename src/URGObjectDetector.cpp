@@ -73,6 +73,15 @@ void URGSensorObjectDetector::CacheDirections() {
     }
 }
 
+vector3 URGSensorObjectDetector::CalcuPosition(const vector3& dir, const long& dist) {
+    float angle = vector3::Angle(dir, vector3(1, 0, 0));
+    float theta = angle * Deg2Rad;
+    float x = cos(theta) * dist;
+    float y = sin(theta) * dist;
+
+    return vector3(x, y, 0);
+}
+
 void URGSensorObjectDetector::CalculateDistanceConstrainList(const int steps) {
     float keyAngle = atan(parm.detctRect.height / (parm.detctRect.width / 2.f));
     for (size_t i = 0; i < steps; i++) {
@@ -112,11 +121,11 @@ void URGSensorObjectDetector::ConstrainDetectionArea(std::vector<long>& beforeCr
     }
 }
 
-std::vector<RawObject> URGSensorObjectDetector::DetectObjects(const std::vector<long>& croppedDistances, const std::vector<long>& distanceConstrainList) {
+std::vector<RawObject> URGSensorObjectDetector::DetectObjects(const std::vector<long>& croppedDistances, const std::vector<long>& distanceConstrainListconst) {
 
     std::vector<RawObject> resultList;
     if (m_directions.size() <= 0){
-        std::cerr << "directions vector is not setup." << std::endl;
+        std::cerr << "directions vector is not setup!" << std::endl;
         return resultList;
     }
 
@@ -125,19 +134,22 @@ std::vector<RawObject> URGSensorObjectDetector::DetectObjects(const std::vector<
         float deltaA = abs(croppedDistances[i] - croppedDistances[i - 1]);
         float deltaB = abs(croppedDistances[i + 1] - croppedDistances[i]);
 
-        auto& dist   = croppedDistances[i];
-        auto& ubDist = distanceConstrainList[i];
+        auto& dist = croppedDistances[i];
+        auto& ubDist = distanceConstrainListconst[i];
 
-        if (dist < ubDist && (deltaA < parm.deltaLimit && deltaB < parm.deltaLimit)) {
+        if (dist < ubDist &&  (deltaA < parm.deltaLimit && deltaB < parm.deltaLimit)) {
             if (!isGrouping){
                 isGrouping = true;
                 RawObject newObject;
+
                 newObject.dirList.emplace_back(m_directions[i]);
                 newObject.distList.emplace_back(dist);
+
                 resultList.emplace_back(newObject);
             }
             else{
                 auto& newObject = resultList[resultList.size() - 1];
+
                 newObject.dirList.emplace_back(m_directions[i]);
                 newObject.distList.emplace_back(dist);
             }
@@ -148,21 +160,86 @@ std::vector<RawObject> URGSensorObjectDetector::DetectObjects(const std::vector<
             }
         }
     }
+
     for (int i = 0; i < resultList.size(); ++i) {
-        if (resultList[i].dirList.size() < parm.noiseLimit){
+        if (resultList[i].dirList.size() < parm.noiseLimit) {
             resultList.erase(resultList.begin() + i);
             --i;
         }
-    }
-    for (auto& item : resultList) {
-        item.GetCalcPosition();
     }
 
     return resultList;
 }
 
+std::vector<SensedObject> URGSensorObjectDetector::DetectObjectsByPosition(const std::vector<long>& distances)
+{
+    std::vector<SensedObject> resultList;
+
+    if (distances.size() <1 || distances.empty()) {
+        std::cerr << "directions vector is not setup!" << std::endl;
+        return resultList;
+    }
+
+    vector3 prevP = vector3(0, 0, 0);
+    vector3 checkP = vector3(0, 0, 0);
+    vector3 currentP = vector3(0, 0, 0);
+
+    vector3 accum = vector3(0, 0, 0);
+    int accumCount = 0;
+    bool isObj = false;
+
+    prevP = CalcuPosition(m_directions[0], distances[0]);
+    for (int i = 0; i < distances.size(); i++)
+    {
+        auto d = distances[i] * 0.001f;
+        currentP = CalcuPosition(m_directions[i], d);
+
+        if (isObj)
+        {
+            if (parm.deltaLimit * parm.deltaLimit < (currentP - prevP).sqrMagnitude() && parm.detctRect.Contains(currentP))//new obj
+            {
+                if (0.01f * 0.01f < (prevP - checkP).sqrMagnitude()) {
+                    SensedObject sensorobject(checkP, prevP, accum / accumCount);
+                    resultList.emplace_back(sensorobject);
+                }
+                checkP = currentP;
+                accum = currentP;
+                isObj = true;
+                accumCount = 1;
+            }
+            else if (!parm.detctRect.Contains(currentP)) //lost obj
+            {
+                if (0.01f * 0.01f < (prevP - checkP).sqrMagnitude()) {
+                    SensedObject sensorobject(checkP, prevP, accum / accumCount);
+                    resultList.emplace_back(sensorobject);
+                }
+                isObj = false;
+                accumCount = 0;
+            }
+            else //continue obj
+            {
+                accum += currentP;
+                accumCount++;
+            }
+        }
+        else
+        {
+            if (parm.deltaLimit * parm.deltaLimit < (currentP - prevP).sqrMagnitude() && parm.detctRect.Contains(currentP)) //new obj
+            {
+                checkP = currentP;
+                accum = currentP;
+                isObj = true;
+                accumCount = 1;
+            }
+        }
+        prevP = currentP;
+    }
+}
+
 void URGSensorObjectDetector::UpdateObjectList() {
     std::vector<RawObject> newlyDetectedObjects = DetectObjects(m_croppedDistances, m_distanceConstrainList);
+
+    if (newlyDetectedObjects.size() < 0) return;
 
     if (parm.useOffset){
         for(auto& obj : newlyDetectedObjects){
@@ -192,7 +269,7 @@ void URGSensorObjectDetector::UpdateObjectList() {
             }
             else{                
                 auto closest = std::min_element(objectMapWithDistance.begin(), objectMapWithDistance.end(), [](const auto& l, const auto& r) {return l.second < r.second; });
-                if (closest->second <= parm.distanceThresholdForMerge){
+                if (closest->second <= parm.distanceThreshold){
                     auto temp = std::find_if(newlyDetectedObjects.begin(), newlyDetectedObjects.end(), [&closest](auto& ele) { return ele.getGuid() == closest->first;});
                     oldObj.Update(temp->getPosition(), temp->getDetectSize());
                     newlyDetectedObjects.erase(temp);
@@ -212,7 +289,7 @@ void URGSensorObjectDetector::UpdateObjectList() {
         }
 
         for(auto& leftOverNewObject : newlyDetectedObjects){
-            ProcessedObject newbie(leftOverNewObject.getPosition(), leftOverNewObject.getDetectSize(), parm.objectPositionSmoothTime);
+            ProcessedObject newbie(leftOverNewObject.getPosition(), leftOverNewObject.getDetectSize(), parm.objPosSmoothTime);
             m_detectedObjects.emplace_back(newbie);
             if (OnNewObject != nullptr) { OnNewObject(newbie); }
         }
@@ -220,7 +297,7 @@ void URGSensorObjectDetector::UpdateObjectList() {
     else 
     {
         for(auto& obj : m_rawObjectList){
-            ProcessedObject newbie(obj.getPosition(), obj.getDetectSize(), parm.objectPositionSmoothTime);
+            ProcessedObject newbie(obj.getPosition(), obj.getDetectSize(), parm.objPosSmoothTime);
             m_detectedObjects.emplace_back(newbie);
             if (OnNewObject != nullptr) { OnNewObject(newbie); }
         }

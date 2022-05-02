@@ -104,24 +104,19 @@ int vector3::size() {
 
 float vector3::magnitude() const
 {
-	return sqrtf(x*x + y*y + z*z);
+	return sqrt(x*x + y*y + z*z);
 }
 
-void vector3::normalize()
+vector3& vector3::normalize()
 {
 	float mag = magnitude();
-	//if (mag < kEpsilon) mag = 1;
-	//mag = 1 / mag;
-
-	//x *= mag;
-	//y *= mag;
-	//z *= mag;
 	if (mag > kEpsilon) {
 		*this /= mag;
 	}
 	else{
 		this->zero();
 	}
+	return *this;
 }
 
 float vector3::sqrMagnitude() const {
@@ -166,9 +161,7 @@ float vector3::Distance(const vector3& a, const vector3& b) {
 }
 
 vector3 vector3::SmoothDamp(vector3 current, vector3 target, vector3& currentVelocity, float smoothTime) {
-	float deltaTime = DELTATIME;
-	float maxSpeed = INFINITY;
-	return SmoothDamp(current, target, currentVelocity, smoothTime, maxSpeed, deltaTime);
+	return SmoothDamp(current, target, currentVelocity, smoothTime, INFINITY, DELTATIME);
 }
 
 vector3 vector3::SmoothDamp(vector3 current, vector3 target, vector3& currentVelocity, float smoothTime, float maxSpeed, float deltaTime) {
