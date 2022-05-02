@@ -8,3 +8,12 @@ Rect::Rect(const float rx, const float ry, const float rwidth, const float rheig
 
 Rect::Rect(const Rect& r) 
 	: xmin(r.xmin), ymin(r.ymin), width(r.width), height(r.height) {}
+
+Rect& Rect::operator  = (const Rect& r) {
+	xmin	= r.xmin;
+	ymin	= r.ymin;
+	width	= r.width;
+	height	= r.height;
+
+	return *this;
+}

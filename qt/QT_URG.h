@@ -1,9 +1,9 @@
-#pragma once
+#ifndef HKY_QT_URGRUN_H_
+#define HKY_QT_URGRUN_H_
 
-#include "URGSensorObjectDetector.hpp"
+#include "URGObjectDetector.hpp"
 #include <QtWidgets/QWidget>
 #include "ui_Qt_urg.h"
-
 
 class Qt_urg : public QWidget
 {
@@ -13,25 +13,27 @@ public:
     ~Qt_urg();
 
     void drawRect(const Rect& rect, QColor color = Qt::red);
-    void drawLine(const vector3& from, const vector3& to, QColor color = Qt::green);
+    void setPlottemplate();
     void plot();
 
-    QColor distanceColor = Qt::green;
-    QColor strengthColor = Qt::yellow;
-    QColor objectColor = Qt::red;
-    QColor processedObjectColor = Qt::cyan;
-
-private slots:
+private slots: 
     void ConnectTcp_Button();
     void DisconnectTcp_Button();
     void setConstraintRegion_Button();
     void DrawMain();
+
+public:
+    QColor distanceColor = Qt::blue;
+    QColor objectColor = Qt::green;
+    QColor processedObjectColor = Qt::cyan;
 
 private:
     Ui::Qt_urgClass* ui;
     std::unique_ptr <URGSensorObjectDetector> m_urgdetector;
     bool isdetect = false;
 
-    QVector<double> rayX;
-    QVector<double> rayY;
+    QVector<double> RayX, RayY;
+    QVector<double> RawObjX, RawObjY;
+    QVector<double> PosObjX, PosObjY;
 };
+#endif

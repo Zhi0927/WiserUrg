@@ -6,8 +6,7 @@ UrgDeviceEthernet::UrgDeviceEthernet(const std::string& ip, const int& port)
         m_port_number(port)
 {}
 
-UrgDeviceEthernet::~UrgDeviceEthernet()
-{
+UrgDeviceEthernet::~UrgDeviceEthernet(){
     close();
 }
 
@@ -22,7 +21,6 @@ void UrgDeviceEthernet::StartTCP() {
         return;
     }
 
-    // Create socket
     m_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (m_sock == INVALID_SOCKET)
     {
@@ -31,13 +29,11 @@ void UrgDeviceEthernet::StartTCP() {
         return;
     }
 
-    // Fill in a hint structure
     sockaddr_in hint;
     hint.sin_family = AF_INET;
     hint.sin_port = htons(m_port_number);
     inet_pton(AF_INET, m_ip_address.c_str(), &hint.sin_addr);
 
-    // Connect to server
     int connResult = connect(m_sock, (sockaddr*)&hint, sizeof(hint));
     if (connResult == SOCKET_ERROR)
     {
@@ -46,7 +42,6 @@ void UrgDeviceEthernet::StartTCP() {
         WSACleanup();
         return;
     }
-
     ListenForClients();
 }
 
@@ -59,27 +54,25 @@ void UrgDeviceEthernet::ListenForClients() {
 }
 
 void UrgDeviceEthernet::HandleClientComm(SOCKET& sock) {
-
     try
     {
         while (true) {
             long time_stamp = 0;
             std::string receive_data = read_line(sock);
-            //std::cout << receive_data << std::endl;
 
             std::string cmd = GetCommand(receive_data);
 
-            std::unique_lock<std::mutex> lock(m_guard);
+            std::unique_lock<std::mutex> lock(distance_guard);
 
             if (cmd == UrgDevice::GetCMDString(UrgDevice::CMD::MD)) {
-                m_distances.clear();
-                SCIP_Reader::MD(receive_data, time_stamp, m_distances);
+                recv_distances.clear();
+                SCIP_Reader::MD(receive_data, time_stamp, recv_distances);
             }
             else if(cmd == UrgDevice::GetCMDString(UrgDevice::CMD::ME))
             {
-                m_distances.clear();
-                m_strengths.clear();
-                SCIP_Reader::ME(receive_data, time_stamp, m_distances, m_strengths);
+                recv_distances.clear();
+                recv_strengths.clear();
+                SCIP_Reader::ME(receive_data, time_stamp, recv_distances, recv_strengths);
             }
             else {
                 std::cout << ">>" << receive_data << std::endl;
@@ -135,16 +128,15 @@ std::string UrgDeviceEthernet::read_line(SOCKET& sock) {
 bool UrgDeviceEthernet::write(SOCKET& sock, const std::string& data) {
     int sendResult = send(sock, data.c_str(), data.size(), 0);
     if (sendResult != SOCKET_ERROR) {
-        //std::cout << data << std::endl;
         return true;
     }
 }
 
 void UrgDeviceEthernet::close() {
-   
-    closesocket(m_sock);
     if (m_thread->joinable()) {
         m_thread->join();
+        m_thread.reset();
     }
+    closesocket(m_sock);
     WSACleanup();
 }

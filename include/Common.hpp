@@ -13,8 +13,6 @@
 #include <iomanip>
 
 std::vector<long> movingAverages(const std::vector<long>& data, int period);
-inline void flipy(vector3& vec);
-
 inline void map(float& value, const float& fromsource, const float& tosource, const float& fromtarget, const float& totarget);
 std::string GenerateGuid();
 std::string ToString(const int& value, const int pad);
@@ -24,12 +22,10 @@ bool startswith(const std::string& str, const std::string& start);
 bool endswith(const std::string& str, const std::string& end);
 std::string trim(const std::string& str);
 
-
 enum class ZeroPosition {
 	LEFT_TOP,
 	LEFT_BOTTOM
 };
-
 class DataTranslator
 {
 public:
@@ -46,5 +42,5 @@ public:
 	int m_sceneWidth;
 	int m_sceneHeight;
 };
-#endif // !HKY_UTILS_H_
+#endif
 

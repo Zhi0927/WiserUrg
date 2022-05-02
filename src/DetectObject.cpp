@@ -1,4 +1,4 @@
-#include "HKYObject.hpp"
+#include "DetectObject.hpp"
 
 RawObject::RawObject(const std::vector<vector3>& cachedDirs)
 	: m_cachedDirs(cachedDirs),
@@ -8,30 +8,31 @@ RawObject::RawObject(const std::vector<vector3>& cachedDirs)
 RawObject::~RawObject() {}
 
 int RawObject::medianId() {
-	return m_idList[m_idList.size() / 2];
+	return idList[idList.size() / 2];
 }
 int RawObject::averageId() {
-	if (m_idList.empty()) {
+	if (idList.empty()) {
 		return 0;
 	}
-	return static_cast<int>(std::accumulate(m_idList.begin(), m_idList.end(), 0) / m_idList.size());
+	return static_cast<int>(std::accumulate(idList.begin(), idList.end(), 0) / idList.size());
 }
 
 long RawObject::medianDist() {
-	return m_distList[m_distList.size() / 2];
+	return distList[distList.size() / 2];
 }
 double RawObject::averageDist() {
-	if (m_distList.empty()) {
+	if (distList.empty()) {
 		return 0;
 	}
-	return std::accumulate(m_distList.begin(), m_distList.end(), 0) / m_distList.size();
+	return std::accumulate(distList.begin(), distList.end(), 0) / distList.size();
 }
 
-float RawObject::size() {
-	vector3 pointA = CalcPosition(m_cachedDirs[m_idList[0]], m_distList[0]);
-	vector3 pointB = CalcPosition(m_cachedDirs[m_idList[m_idList.size() -1]], m_distList[m_distList.size() -1]);
+float RawObject::getDetectSize() {
+	vector3 pointA = CalcPosition(m_cachedDirs[idList[0]], distList[0]);
+	vector3 pointB = CalcPosition(m_cachedDirs[idList[idList.size() -1]], distList[distList.size() -1]);
+	float distance = vector3::Distance(pointA, pointB);
 
-	return vector3::Distance(pointA, pointB);
+	return distance;
 }
 
 
@@ -72,15 +73,15 @@ vector3 RawObject::CalcPosition(const vector3& dir, const long& dist) {
 ProcessedObject::ProcessedObject(const vector3& position, const float& size, const float& objectPositionSmoothTime)
 	: m_guid(GenerateGuid()),
 	  m_position(position),
-	  m_size(size),
+	  detectsize(size),
 	  m_posSmoothTime(objectPositionSmoothTime),
-	  m_birthTime(clock())
+	  birthTime(clock())
 {}
 
 ProcessedObject::~ProcessedObject() {}
 
 float ProcessedObject::size() {
-	return m_size;
+	return detectsize;
 }
 
 vector3 ProcessedObject::getPosition() const{
@@ -96,32 +97,31 @@ std::string ProcessedObject::getGuid() const {
 }
 
 float ProcessedObject::getage() {
-	return clock() - m_birthTime;
+	return clock() - birthTime;
 }
 
 bool ProcessedObject::isClear() const {
-	return m_clear;
+	return cleared;
 }
 
 void ProcessedObject::Update() {
-	m_missingFrame++;
-	if (m_missingFrame >= MISSING_FRAME_LIMIT)
-	{
-		m_clear = true;
+	missingFrame++;
+	if (missingFrame >= MISSING_FRAME_LIMIT){
+		cleared = true;
 	}
 }
 
-void ProcessedObject::Update(const vector3& newPos, const float newSize) {
-	m_size = newSize;
+void ProcessedObject::Update(const vector3 newPos, const float newSize) {
+	detectsize = newSize;
 	m_oldPosition = m_position;
 
-	if (m_useSmooth) {
+	if (useSmooth) {
 		m_position = vector3::SmoothDamp(m_position, newPos, m_currentVelocity, m_posSmoothTime);
 	}
 	else
 	{
 		m_position = newPos;
 	}
-	m_missingFrame = 0;
+	missingFrame = 0;
 	m_deltaMovement = m_position - m_oldPosition;
 }

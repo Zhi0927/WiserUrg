@@ -1,7 +1,5 @@
 #include "Common.hpp"
 
-//Screen screen = { GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN) };
-
 
 std::vector<long> movingAverages(const std::vector<long>& data, int period) {
     std::vector<long> buffer(period);
@@ -137,9 +135,7 @@ DataTranslator::DataTranslator(const int xOffset, const int yOffset, const int s
         m_sceneHeight(sceneHeight)
 {}
 
-DataTranslator::~DataTranslator(){
-
-}
+DataTranslator::~DataTranslator(){}
 
 void DataTranslator::Sensor2Screen(vector3& inputData, const ZeroPosition zeroPosition) {
     inputData.x += m_xOffset;

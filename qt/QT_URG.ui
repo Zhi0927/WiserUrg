@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1170</width>
-    <height>731</height>
+    <height>725</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,9 +18,27 @@
     <rect>
      <x>30</x>
      <y>20</y>
-     <width>781</width>
+     <width>771</width>
      <height>681</height>
     </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="mouseTracking">
+    <bool>false</bool>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
+   <property name="acceptDrops">
+    <bool>false</bool>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
    </property>
    <widget class="QLabel" name="FPS_Label">
     <property name="geometry">
@@ -48,7 +66,7 @@
    <property name="geometry">
     <rect>
      <x>850</x>
-     <y>20</y>
+     <y>40</y>
      <width>291</width>
      <height>84</height>
     </rect>
@@ -120,7 +138,7 @@
    <property name="geometry">
     <rect>
      <x>850</x>
-     <y>130</y>
+     <y>160</y>
      <width>291</width>
      <height>196</height>
     </rect>
@@ -145,7 +163,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Right</string>
+       <string>Right(mm)</string>
       </property>
       <property name="textFormat">
        <enum>Qt::PlainText</enum>
@@ -193,7 +211,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Left</string>
+       <string>Left(mm)</string>
       </property>
       <property name="textFormat">
        <enum>Qt::PlainText</enum>
@@ -226,7 +244,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Top</string>
+       <string>Top(mm)</string>
       </property>
       <property name="textFormat">
        <enum>Qt::PlainText</enum>
@@ -249,7 +267,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Bottom</string>
+       <string>Bottom(mm)</string>
       </property>
       <property name="textFormat">
        <enum>Qt::PlainText</enum>
@@ -288,20 +306,37 @@
   <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>900</x>
-     <y>350</y>
+     <x>850</x>
+     <y>380</y>
      <width>240</width>
-     <height>281</height>
+     <height>101</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QCheckBox" name="debugDrawDistance">
+     <widget class="QLabel" name="Constraint_Region_Label_3">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <italic>false</italic>
+        <bold>true</bold>
+        <underline>false</underline>
+        <strikeout>false</strikeout>
+       </font>
+      </property>
+      <property name="text">
+       <string>Draw</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="DrawRay">
       <property name="enabled">
        <bool>true</bool>
       </property>
       <property name="text">
-       <string>debugDrawDistance </string>
+       <string>DrawRay</string>
       </property>
       <property name="checkable">
        <bool>true</bool>
@@ -312,70 +347,211 @@
      </widget>
     </item>
     <item>
-     <widget class="QCheckBox" name="drawObjectRays">
+     <widget class="QCheckBox" name="DrawObject">
       <property name="text">
-       <string>drawObjectRays </string>
+       <string>DrawObject</string>
       </property>
       <property name="checked">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QCheckBox" name="drawObjectCenterRay">
+     <widget class="QCheckBox" name="DrawProObject">
       <property name="text">
-       <string>drawObjectCenterRay </string>
+       <string>DrawProObject</string>
       </property>
       <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QCheckBox" name="drawObject">
-      <property name="text">
-       <string>drawObject </string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QCheckBox" name="drawProcessedObject">
-      <property name="text">
-       <string>drawProcessedObject </string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QCheckBox" name="drawRunningLine">
-      <property name="text">
-       <string>drawRunningLine </string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QCheckBox" name="showHardwareControlButtons">
-      <property name="text">
-       <string>showHardwareControlButtons </string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QCheckBox" name="recalculateConstrainAreaEveryFrame">
-      <property name="text">
-       <string>recalculateConstrainAreaEveryFrame</string>
+       <bool>false</bool>
       </property>
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QWidget" name="formLayoutWidget_3">
+   <property name="geometry">
+    <rect>
+     <x>850</x>
+     <y>500</y>
+     <width>291</width>
+     <height>131</height>
+    </rect>
+   </property>
+   <layout class="QFormLayout" name="ConstrainrRegion_Layout_2">
+    <property name="formAlignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+    <property name="horizontalSpacing">
+     <number>15</number>
+    </property>
+    <property name="verticalSpacing">
+     <number>10</number>
+    </property>
+    <item row="3" column="0">
+     <widget class="QLabel" name="offsetX">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>offsetX (pixel)</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::PlainText</enum>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QDoubleSpinBox" name="CR_Right_Input_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="toolTipDuration">
+       <number>-1</number>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="minimum">
+       <double>10.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>10000.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>6000.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="offsetY">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>offsetY (pixel)</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::PlainText</enum>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QDoubleSpinBox" name="CR_Left_Input_2">
+      <property name="minimum">
+       <double>10.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>10000.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>6000.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="SetOffset_Label">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <italic>false</italic>
+        <bold>true</bold>
+        <underline>false</underline>
+        <strikeout>false</strikeout>
+       </font>
+      </property>
+      <property name="text">
+       <string>SetOffset</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QCheckBox" name="Useoffset">
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <italic>false</italic>
+        <bold>true</bold>
+        <underline>false</underline>
+        <strikeout>false</strikeout>
+       </font>
+      </property>
+      <property name="text">
+       <string>Use Offset</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QLabel" name="Constraint_Region_Label_4">
+   <property name="geometry">
+    <rect>
+     <x>850</x>
+     <y>650</y>
+     <width>291</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QTextBrowser" name="textlabel">
+   <property name="geometry">
+    <rect>
+     <x>850</x>
+     <y>650</y>
+     <width>291</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="html">
+    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'PMingLiU'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Press Q to use mouse tracking&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Press W to cancel&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

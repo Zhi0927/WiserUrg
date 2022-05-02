@@ -8,9 +8,7 @@
 class UrgDevice
 {
 public:
-    enum class CMD
-    {
-        // https://www.hokuyo-aut.jp/02sensor/07scanner/download/pdf/URG_SCIP20.pdf
+    enum class CMD{
         VV, PP, II, //  sensor information request command (3 types)
         BM, QT,     //  measure start/end
         MD, GD,     //  distance request command (2 types)

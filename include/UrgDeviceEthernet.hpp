@@ -1,8 +1,6 @@
 #ifndef HKY_URGETHERNET_H_
 #define HKY_URGETHERNET_H_
 
-
-
 #include <iostream>
 #include <sstream>
 #include <thread>
@@ -34,16 +32,16 @@ public:
     void close();
 
 
-    std::vector<long>               m_distances;
-    std::vector<long>               m_strengths;
-    std::mutex                      m_guard;
+public:
+    std::vector<long>               recv_distances;
+    std::vector<long>               recv_strengths;
+    std::mutex                      distance_guard;
 
 private:
-    std::string                     m_ip_address = "192.168.0.10";
-    int                             m_port_number = 10940;
+    std::string                     m_ip_address    = "192.168.0.10";
+    int                             m_port_number   = 10940;
 
     SOCKET                          m_sock;
     std::unique_ptr<std::thread>    m_thread;
-
 };
 #endif

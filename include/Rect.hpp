@@ -13,5 +13,7 @@ struct alignas(float) Rect {
 	Rect();
 	Rect(const float rx, const float ry, const float rwidth, const float rheight);
 	Rect(const Rect& r);
+
+	Rect& operator  = (const Rect& r);
 };
 #endif

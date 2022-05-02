@@ -17,7 +17,7 @@ public:
 	long medianDist();
 	double averageDist();
 
-	float size();
+	float getDetectSize();
 	void setPosition(const vector3& value);
 	vector3 getPosition() const;
 	std::string getGuid() const;
@@ -28,8 +28,8 @@ public:
 	vector3 CalcPosition(const vector3& dir, const long& dist);
 
 public:
-	std::vector<long>				m_distList;
-	std::vector<int>				m_idList;
+	std::vector<long>				distList;
+	std::vector<int>				idList;
 
 private:
 	std::string						m_guid;
@@ -53,15 +53,15 @@ public:
 	float getage();
 
 	void Update();
-	void Update(const vector3& newPos, const float newSize);
+	void Update(const vector3 newPos, const float newSize);
 
 public:
 	static constexpr int	MISSING_FRAME_LIMIT		= 5;
-	float					m_size;
-	float					m_birthTime;
-	int						m_missingFrame			= 0;
-	bool					m_clear					= false;
-	bool					m_useSmooth				= true;
+	float					detectsize;
+	float					birthTime;
+	int						missingFrame			= 0;
+	bool					cleared					= false;
+	bool					useSmooth				= true;
 
 private:
 	std::string				m_guid;
