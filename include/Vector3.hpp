@@ -17,12 +17,6 @@
 #define kEpsilonNormalSqrt 1e-15
 #define kEpsilon 1e-5
 
-//constexpr float Deg2Rad = M_PI * 2.f/360.f;
-//constexpr float Rag2Deg = 1.f / Deg2Rad;
-
-//constexpr double kEpsilonNormalSqrt = 1e-15;
-//constexpr double kEpsilon = 1e-5;
-
 struct alignas(float) vector3
 {
 	float x;

@@ -62,21 +62,6 @@ private:
 	vector3					m_oldPosition;
 	float					m_posSmoothTime			= 0.2f;
 };
-
-struct SensedObject
-{
-
-public:
-	SensedObject(const vector3& vp0, const vector3& vp1, const vector3& vcenter);
-	vector3* getVertices();
-public:
-	vector3 p0;
-	vector3 p1;
-	vector3 center;
-
-private:
-	vector3 vertices[5];
-};
 #endif
 
 

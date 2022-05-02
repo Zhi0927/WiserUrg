@@ -11,7 +11,7 @@ Rect::Rect(const Rect& r)
 
 
 bool Rect::Contains(vector3 point){
-	return (point.x >= xmin) && (point.x < xmax()) && (point.y < ymin) && (point.y > ymax());
+	return (point.x > xmin) && (point.x < xmax()) && (point.y < ymin) && (point.y > ymax());
 }
 
 float Rect::xmax() const{

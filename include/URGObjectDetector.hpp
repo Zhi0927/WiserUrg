@@ -27,8 +27,8 @@ struct Detectparm {
 	Rect			detctRect					= Rect(-500, 1000, 500, 1000); //Unit is MM
 
 	int				noiseLimit					= 7;
-	int				deltaLimit					= 0.25; //200
-	float			distanceThreshold			= 300; //300
+	int				deltaLimit					= 200;	//200
+	float			distanceThreshold			= 300;	//300
 	float			objPosSmoothTime			= 0.2f;
 
 	bool			useOffset					= false;
@@ -46,11 +46,8 @@ public:
 	URGSensorObjectDetector(const std::string& ip, const int& port);
 	~URGSensorObjectDetector();
 
-	Rect detectAreaRect() const;
-	void setConstraintWH(int x, int y, int width, int height);
-	void setDetectParm(int deltalim = 200, int noiselim = 7);
-
 	const std::vector<long>& GetcroppedDistances() const;
+	const std::vector<long>& GetOriginDistances() const;
 	const std::vector<vector3>& GetDirection() const;
 	const std::vector<RawObject>& GetRawObjectList() const;
 	const std::vector<ProcessedObject>& GetDetectObjects() const;
@@ -60,16 +57,16 @@ public:
 
 	void StartMeasureDistance();
 	void CacheDirections();
-	vector3 CalcuPosition(const vector3& dir, const long& dist);
 
 	void CalculateDistanceConstrainList(const int steps);
 	void ConstrainDetectionArea(std::vector<long>& beforeCrop);
 
 	std::vector<RawObject> DetectObjects(const std::vector<long>& croppedDistances, const std::vector<long>& distanceConstrainListconst);
-	std::vector<SensedObject> DetectObjectsByPosition(const std::vector<long>& distances);
-	void UpdateObjectList();
+	std::vector<RawObject>DetectObjectsNoCrop(const std::vector<long>& distances);
 
-	void start();
+	void UpdateObjectList(const std::vector<long>& distances);
+
+	bool start();
 	void mainloop();
 
 public:
@@ -88,6 +85,7 @@ private:
 	std::vector<long>						m_croppedDistances;
 	std::vector<vector3>					m_directions;
 	std::vector<long>						m_distanceConstrainList;
+	std::vector<long>						m_origindistance;
 
 	std::mutex								m_detectobject_guard;
 };

@@ -94,17 +94,3 @@ void ProcessedObject::Update(const vector3 newPos, const float newSize) {
 	missingFrame = 0;
 	m_deltaMovement = m_position - m_oldPosition;
 }
-
-SensedObject::SensedObject(const vector3& vp0, const vector3& vp1, const vector3& vcenter) 
-: p0(vp0), p1(vp1), center(vcenter)
-{}
-
-vector3* SensedObject::getVertices(){
-	auto width = (p1 - p0).magnitude();
-	vertices[0] = p0;
-	vertices[1] = center;
-	vertices[2] = p1;
-	vertices[3] = p1 + center.normalize() * width * 0.5f;
-	vertices[4] = p0 + center.normalize() * width * 0.5f;
-	return vertices;
-}

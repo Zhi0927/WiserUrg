@@ -10,7 +10,8 @@ UrgDeviceEthernet::~UrgDeviceEthernet(){
     close();
 }
 
-void UrgDeviceEthernet::StartTCP() {
+bool UrgDeviceEthernet::StartTCP() {
+    std::cout << "Tcp connect..." << std::endl;
 
     WSAData data;
     WORD ver = MAKEWORD(2, 2);
@@ -18,15 +19,14 @@ void UrgDeviceEthernet::StartTCP() {
     if (wsResult != 0)
     {
         std::cerr << "Can't start Winsock, Err #" << wsResult << std::endl;
-        return;
+        return false;
     }
 
     m_sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (m_sock == INVALID_SOCKET)
-    {
+    if (m_sock == INVALID_SOCKET){
         std::cerr << "Can't create socket, Err #" << WSAGetLastError() << std::endl;
         WSACleanup();
-        return;
+        return false;
     }
 
     sockaddr_in hint;
@@ -35,14 +35,16 @@ void UrgDeviceEthernet::StartTCP() {
     inet_pton(AF_INET, m_ip_address.c_str(), &hint.sin_addr);
 
     int connResult = connect(m_sock, (sockaddr*)&hint, sizeof(hint));
-    if (connResult == SOCKET_ERROR)
-    {
+    if (connResult == SOCKET_ERROR){
         std::cerr << "Can't connect to server, Err #" << WSAGetLastError() << std::endl;
         closesocket(m_sock);
         WSACleanup();
-        return;
+        return false;
     }
+    m_isconnected = true;
     ListenForClients();
+    std::cout << "Tcp connect to server successfully! " << std::endl;
+    return true;
 }
 
 void UrgDeviceEthernet::Write(const std::string scip) {
@@ -56,7 +58,7 @@ void UrgDeviceEthernet::ListenForClients() {
 void UrgDeviceEthernet::HandleClientComm(SOCKET& sock) {
     try
     {
-        while (true) {
+        while (m_isconnected) {
             long time_stamp = 0;
             std::string receive_data = read_line(sock);
 
@@ -133,10 +135,14 @@ bool UrgDeviceEthernet::write(SOCKET& sock, const std::string& data) {
 }
 
 void UrgDeviceEthernet::close() {
-    if (m_thread->joinable()) {
-        m_thread->join();
-        m_thread.reset();
+    if (m_isconnected) {
+        m_isconnected = false;
+        if (m_thread->joinable()) {
+            m_thread->join();
+        }
+        m_thread.reset(nullptr);
+        closesocket(m_sock);
+        WSACleanup();
+        std::cout << "Tcp disconnected successfully! " << std::endl;
     }
-    closesocket(m_sock);
-    WSACleanup();
 }

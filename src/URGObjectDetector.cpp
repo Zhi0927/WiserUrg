@@ -12,24 +12,12 @@ URGSensorObjectDetector::~URGSensorObjectDetector() {
     m_urg.reset(nullptr);
 }
 
-
-Rect URGSensorObjectDetector::detectAreaRect() const {
-	Rect rect(0, 0, parm.detctRect.width, parm.detctRect.height);
-	rect.xmin -= (parm.detctRect.width / 2);
-	return rect;
-}
-
-void URGSensorObjectDetector::setConstraintWH(int x, int y, int width, int height) {
-
-}
-
-void URGSensorObjectDetector::setDetectParm(int deltalim, int noiselim) {
-    parm.deltaLimit = deltalim;
-    parm.noiseLimit = noiselim;
-}
-
 const std::vector<long>& URGSensorObjectDetector::GetcroppedDistances() const {
     return m_croppedDistances;
+}
+
+const std::vector<long>& URGSensorObjectDetector::GetOriginDistances() const {
+    return m_origindistance;
 }
 
 const std::vector<vector3>& URGSensorObjectDetector::GetDirection() const {
@@ -71,15 +59,6 @@ void URGSensorObjectDetector::CacheDirections() {
         float a = M_DELTA_ANGLE * i + offset;
         m_directions[i] = vector3(-cos(a), -sin(a), 0);
     }
-}
-
-vector3 URGSensorObjectDetector::CalcuPosition(const vector3& dir, const long& dist) {
-    float angle = vector3::Angle(dir, vector3(1, 0, 0));
-    float theta = angle * Deg2Rad;
-    float x = cos(theta) * dist;
-    float y = sin(theta) * dist;
-
-    return vector3(x, y, 0);
 }
 
 void URGSensorObjectDetector::CalculateDistanceConstrainList(const int steps) {
@@ -171,73 +150,54 @@ std::vector<RawObject> URGSensorObjectDetector::DetectObjects(const std::vector<
     return resultList;
 }
 
-std::vector<SensedObject> URGSensorObjectDetector::DetectObjectsByPosition(const std::vector<long>& distances)
-{
-    std::vector<SensedObject> resultList;
-
-    if (distances.size() <1 || distances.empty()) {
+std::vector<RawObject>URGSensorObjectDetector::DetectObjectsNoCrop(const std::vector<long>& distances) {
+    std::vector<RawObject> resultList;
+    if (m_directions.size() <= 0) {
         std::cerr << "directions vector is not setup!" << std::endl;
         return resultList;
     }
 
-    vector3 prevP = vector3(0, 0, 0);
-    vector3 checkP = vector3(0, 0, 0);
-    vector3 currentP = vector3(0, 0, 0);
+    bool isGrouping = false;
+    for (int i = 1; i < distances.size() - 1; i++) {
+        float deltaA = abs(distances[i] - distances[i - 1]);
+        float deltaB = abs(distances[i + 1] - distances[i]);
 
-    vector3 accum = vector3(0, 0, 0);
-    int accumCount = 0;
-    bool isObj = false;
+        if ((deltaA < parm.deltaLimit && deltaB < parm.deltaLimit)) {
+            if (!isGrouping) {
+                isGrouping = true;
+                RawObject newObject;
 
-    prevP = CalcuPosition(m_directions[0], distances[0]);
-    for (int i = 0; i < distances.size(); i++)
-    {
-        auto d = distances[i] * 0.001f;
-        currentP = CalcuPosition(m_directions[i], d);
+                newObject.dirList.emplace_back(m_directions[i]);
+                newObject.distList.emplace_back(distances[i]);
 
-        if (isObj)
-        {
-            if (parm.deltaLimit * parm.deltaLimit < (currentP - prevP).sqrMagnitude() && parm.detctRect.Contains(currentP))//new obj
-            {
-                if (0.01f * 0.01f < (prevP - checkP).sqrMagnitude()) {
-                    SensedObject sensorobject(checkP, prevP, accum / accumCount);
-                    resultList.emplace_back(sensorobject);
-                }
-                checkP = currentP;
-                accum = currentP;
-                isObj = true;
-                accumCount = 1;
+                resultList.emplace_back(newObject);
             }
-            else if (!parm.detctRect.Contains(currentP)) //lost obj
-            {
-                if (0.01f * 0.01f < (prevP - checkP).sqrMagnitude()) {
-                    SensedObject sensorobject(checkP, prevP, accum / accumCount);
-                    resultList.emplace_back(sensorobject);
-                }
-                isObj = false;
-                accumCount = 0;
-            }
-            else //continue obj
-            {
-                accum += currentP;
-                accumCount++;
+            else {
+                auto& newObject = resultList[resultList.size() - 1];
+
+                newObject.dirList.emplace_back(m_directions[i]);
+                newObject.distList.emplace_back(distances[i]);
             }
         }
-        else
-        {
-            if (parm.deltaLimit * parm.deltaLimit < (currentP - prevP).sqrMagnitude() && parm.detctRect.Contains(currentP)) //new obj
-            {
-                checkP = currentP;
-                accum = currentP;
-                isObj = true;
-                accumCount = 1;
+        else {
+            if (isGrouping) {
+                isGrouping = false;
             }
         }
-        prevP = currentP;
     }
+
+    for (int i = 0; i < resultList.size(); ++i) {
+        if (resultList[i].dirList.size() < parm.noiseLimit || !parm.detctRect.Contains(resultList[i].getPosition())) {
+            resultList.erase(resultList.begin() + i);
+            --i;
+        }
+    }
+    return resultList;
 }
 
-void URGSensorObjectDetector::UpdateObjectList() {
-    std::vector<RawObject> newlyDetectedObjects = DetectObjects(m_croppedDistances, m_distanceConstrainList);
+void URGSensorObjectDetector::UpdateObjectList(const std::vector<long>& distances) {
+    //std::vector<RawObject> newlyDetectedObjects = DetectObjects(m_croppedDistances, m_distanceConstrainList);
+    std::vector<RawObject> newlyDetectedObjects = DetectObjectsNoCrop(distances);
 
     if (newlyDetectedObjects.size() < 0) return;
 
@@ -304,38 +264,42 @@ void URGSensorObjectDetector::UpdateObjectList() {
     } 
 }
 
-
-
-void URGSensorObjectDetector::start() {
-    m_urg->StartTCP();
-    StartMeasureDistance();
-    std::cout << "Start Tcp" << std::endl;
+bool URGSensorObjectDetector::start() {
+    if (m_urg->StartTCP()) {
+        StartMeasureDistance();
+        return true;
+    }
+    return false;
 }
 
 void URGSensorObjectDetector::mainloop() {
 
     std::unique_lock<std::mutex> lockurg(m_urg->distance_guard);
+
     if (m_urg->recv_distances.size() <= 0) return;
     std::vector<long> originalDistances(m_urg->recv_distances);
+    //m_origindistance.assign(m_urg->recv_distances.begin(), m_urg->recv_distances.end());
+    m_origindistance = m_urg->recv_distances;
     lockurg.unlock();
+
     if (originalDistances.size() <= 0) return;
 
     if (m_sensorScanSteps <= 0) {
         m_sensorScanSteps = m_urg->recv_distances.size();
         m_distanceConstrainList.resize(m_sensorScanSteps);
         CacheDirections();
-        CalculateDistanceConstrainList(m_sensorScanSteps);
+        //CalculateDistanceConstrainList(m_sensorScanSteps);
     }
 
-    ConstrainDetectionArea(originalDistances);
-    m_croppedDistances.assign(originalDistances.begin(), originalDistances.end());
+    //ConstrainDetectionArea(originalDistances);
+    //m_croppedDistances.assign(originalDistances.begin(), originalDistances.end());
 
-    if (parm.useSMA) {
-        if (parm.smoothKernelSize % 2 == 0) {
-            parm.smoothKernelSize += 1;
-        }
-        m_croppedDistances = SmoothDistanceCurve(m_croppedDistances, parm.smoothKernelSize);
-    }
+    //if (parm.useSMA) {
+    //    if (parm.smoothKernelSize % 2 == 0) {
+    //        parm.smoothKernelSize += 1;
+    //    }
+    //    m_croppedDistances = SmoothDistanceCurve(m_croppedDistances, parm.smoothKernelSize);
+    //}
 
-    UpdateObjectList();
+    UpdateObjectList(originalDistances);
 }

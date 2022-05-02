@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1252</width>
-    <height>774</height>
+    <width>1251</width>
+    <height>767</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -137,213 +137,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="formLayoutWidget_2">
-   <property name="geometry">
-    <rect>
-     <x>850</x>
-     <y>100</y>
-     <width>371</width>
-     <height>206</height>
-    </rect>
-   </property>
-   <layout class="QFormLayout" name="ConstrainrRegion_Layout">
-    <property name="formAlignment">
-     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-    </property>
-    <property name="horizontalSpacing">
-     <number>15</number>
-    </property>
-    <property name="verticalSpacing">
-     <number>10</number>
-    </property>
-    <item row="2" column="0">
-     <widget class="QLabel" name="OffsetX_label">
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>OffsetX(mm)</string>
-      </property>
-      <property name="textFormat">
-       <enum>Qt::PlainText</enum>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QDoubleSpinBox" name="OffsetX_Input">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="toolTipDuration">
-       <number>-1</number>
-      </property>
-      <property name="layoutDirection">
-       <enum>Qt::LeftToRight</enum>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="decimals">
-       <number>0</number>
-      </property>
-      <property name="minimum">
-       <double>0.000000000000000</double>
-      </property>
-      <property name="maximum">
-       <double>50000.000000000000000</double>
-      </property>
-      <property name="value">
-       <double>0.000000000000000</double>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="OffsetY_label">
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>OffsetY(mm)</string>
-      </property>
-      <property name="textFormat">
-       <enum>Qt::PlainText</enum>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="1">
-     <widget class="QDoubleSpinBox" name="OffsetY_Input">
-      <property name="decimals">
-       <number>0</number>
-      </property>
-      <property name="minimum">
-       <double>0.000000000000000</double>
-      </property>
-      <property name="maximum">
-       <double>50000.000000000000000</double>
-      </property>
-      <property name="value">
-       <double>0.000000000000000</double>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="Width_Label">
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Width(mm)</string>
-      </property>
-      <property name="textFormat">
-       <enum>Qt::PlainText</enum>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="1">
-     <widget class="QDoubleSpinBox" name="Width_Input">
-      <property name="decimals">
-       <number>0</number>
-      </property>
-      <property name="minimum">
-       <double>10.000000000000000</double>
-      </property>
-      <property name="maximum">
-       <double>50000.000000000000000</double>
-      </property>
-      <property name="value">
-       <double>1000.000000000000000</double>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="0">
-     <widget class="QLabel" name="Height_Label">
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Height(mm)</string>
-      </property>
-      <property name="textFormat">
-       <enum>Qt::PlainText</enum>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="1">
-     <widget class="QDoubleSpinBox" name="Height_Input">
-      <property name="decimals">
-       <number>0</number>
-      </property>
-      <property name="minimum">
-       <double>10.000000000000000</double>
-      </property>
-      <property name="maximum">
-       <double>50000.000000000000000</double>
-      </property>
-      <property name="value">
-       <double>1000.000000000000000</double>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="1">
-     <widget class="QPushButton" name="SetCR_Button">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="text">
-       <string>Set</string>
-      </property>
-      <property name="checkable">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="Constraint_Region_Label">
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Constraint Region</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
   <widget class="QTextBrowser" name="textlabel">
    <property name="geometry">
     <rect>
@@ -375,9 +168,9 @@ p, li { white-space: pre-wrap; }
    <property name="geometry">
     <rect>
      <x>850</x>
-     <y>380</y>
+     <y>410</y>
      <width>371</width>
-     <height>293</height>
+     <height>261</height>
     </rect>
    </property>
    <layout class="QFormLayout" name="ConstrainrRegion_Layout_3">
@@ -487,7 +280,7 @@ p, li { white-space: pre-wrap; }
        <double>200.000000000000000</double>
       </property>
       <property name="value">
-       <double>0.250000000000000</double>
+       <double>200.000000000000000</double>
       </property>
      </widget>
     </item>
@@ -572,7 +365,7 @@ p, li { white-space: pre-wrap; }
        <string>UseSMA</string>
       </property>
       <property name="checkable">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="checked">
        <bool>false</bool>
@@ -607,7 +400,7 @@ p, li { white-space: pre-wrap; }
        <string>UseOffset</string>
       </property>
       <property name="checkable">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="checked">
        <bool>false</bool>
@@ -655,7 +448,7 @@ p, li { white-space: pre-wrap; }
        <double>0.000000000000000</double>
       </property>
       <property name="maximum">
-       <double>100.000000000000000</double>
+       <double>5000.000000000000000</double>
       </property>
       <property name="value">
        <double>0.000000000000000</double>
@@ -688,7 +481,7 @@ p, li { white-space: pre-wrap; }
        <double>0.000000000000000</double>
       </property>
       <property name="maximum">
-       <double>100.000000000000000</double>
+       <double>5000.000000000000000</double>
       </property>
       <property name="value">
        <double>0.000000000000000</double>
@@ -701,41 +494,12 @@ p, li { white-space: pre-wrap; }
    <property name="geometry">
     <rect>
      <x>850</x>
-     <y>300</y>
+     <y>340</y>
      <width>371</width>
      <height>61</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="3" column="1">
-     <widget class="QCheckBox" name="DrawObject">
-      <property name="text">
-       <string>DrawObject</string>
-      </property>
-      <property name="checkable">
-       <bool>true</bool>
-      </property>
-      <property name="checked">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QCheckBox" name="DrawRay">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="text">
-       <string>DrawRay</string>
-      </property>
-      <property name="checkable">
-       <bool>true</bool>
-      </property>
-      <property name="checked">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="0">
      <widget class="QLabel" name="Draw_Label">
       <property name="font">
@@ -753,16 +517,289 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="3" column="2">
-     <widget class="QCheckBox" name="DrawProObject">
+    <item row="3" column="1">
+     <widget class="QCheckBox" name="DrawObject">
       <property name="text">
-       <string>DrawProObject</string>
+       <string>DrawObject</string>
       </property>
       <property name="checkable">
        <bool>true</bool>
       </property>
       <property name="checked">
        <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2">
+     <widget class="QCheckBox" name="DrawProObject">
+      <property name="text">
+       <string>DrawSmoothObject</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QCheckBox" name="DrawPoint">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>DrawPoint</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="gridLayoutWidget_3">
+   <property name="geometry">
+    <rect>
+     <x>850</x>
+     <y>120</y>
+     <width>371</width>
+     <height>211</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="2" column="0">
+     <widget class="QLabel" name="OffsetX_label">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>OffsetX(mm)</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::PlainText</enum>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="Constraint_Region_Label">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Constraint Region</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="Height_Label">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Height(mm)</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::PlainText</enum>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QDoubleSpinBox" name="Height_Input">
+      <property name="decimals">
+       <number>0</number>
+      </property>
+      <property name="minimum">
+       <double>10.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>50000.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>1000.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="1">
+     <widget class="QDoubleSpinBox" name="ResolutionHeight_Input">
+      <property name="decimals">
+       <number>0</number>
+      </property>
+      <property name="minimum">
+       <double>10.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>50000.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>1080.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="OffsetY_label">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>OffsetY(mm)</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::PlainText</enum>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QDoubleSpinBox" name="OffsetY_Input">
+      <property name="decimals">
+       <number>0</number>
+      </property>
+      <property name="minimum">
+       <double>0.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>50000.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>0.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="Width_Label">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Width(mm)</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::PlainText</enum>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
+     <widget class="QPushButton" name="SetCR_Button">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QDoubleSpinBox" name="OffsetX_Input">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="toolTipDuration">
+       <number>-1</number>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="decimals">
+       <number>0</number>
+      </property>
+      <property name="minimum">
+       <double>0.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>50000.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>0.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QDoubleSpinBox" name="ResolutionWidth_Input">
+      <property name="decimals">
+       <number>0</number>
+      </property>
+      <property name="minimum">
+       <double>10.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>50000.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>1920.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QDoubleSpinBox" name="Width_Input">
+      <property name="decimals">
+       <number>0</number>
+      </property>
+      <property name="minimum">
+       <double>14.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>50000.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>1000.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0">
+     <widget class="QLabel" name="Resolution_Label">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Resolution</string>
       </property>
      </widget>
     </item>

@@ -19,7 +19,7 @@ public:
 	UrgDeviceEthernet(const std::string& ip = "192.168.0.10", const int& port = 10940);
 	~UrgDeviceEthernet();
 
-    void StartTCP();
+    bool StartTCP();
     void Write(const std::string scip);
     void ListenForClients();
     void HandleClientComm(SOCKET& sock);
@@ -43,5 +43,6 @@ private:
 
     SOCKET                          m_sock;
     std::unique_ptr<std::thread>    m_thread;
+    bool                            m_isconnected   = false;
 };
 #endif

@@ -3,20 +3,20 @@
 
 #include "URGObjectDetector.hpp"
 #include <QtWidgets/QWidget>
-#include "ui_Qt_urg.h"
+#include "ui_QT_URG.h"
 
-class Qt_urg : public QWidget
+class QT_URG : public QWidget
 {
     Q_OBJECT
 public:
-    Qt_urg(QWidget* parent = Q_NULLPTR);
-    ~Qt_urg();
+    QT_URG(QWidget *parent = Q_NULLPTR);
+    ~QT_URG();
 
     void drawRect(const Rect& rect, QColor color = Qt::red);
     void setPlottemplate();
     void plot();
 
-private slots: 
+private slots:
     void ConnectTcp_Button();
     void DisconnectTcp_Button();
     void setConstraintRegion_Button();
@@ -36,9 +36,10 @@ private:
     std::unique_ptr <URGSensorObjectDetector> m_urgdetector;
     bool isdetect = false;
 
-    QVector<double> RayX, RayY;
+    QVector<double> PointX, PointY;
     QVector<double> RawObjX, RawObjY;
     QVector<double> PosObjX, PosObjY;
+    //QVector<double> LineX, LineY;
 
     QPointer<QCPItemRect> xRectItem;
 };
