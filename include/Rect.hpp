@@ -1,8 +1,11 @@
-#ifndef HKY_RECT_H_
-#define HKY_RECT_H_
+#ifndef ZHI_RECT_H_
+#define ZHI_RECT_H_
 
 #include <iostream>
 #include <cmath>
+
+//#include "Includes.h"
+
 #include "Vector3.hpp"
 
 struct alignas(float) Rect {

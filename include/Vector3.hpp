@@ -1,5 +1,5 @@
-#ifndef HKY_VECTOR3_H_
-#define HKY_VECTOR3_H_
+#ifndef ZHI_VECTOR3_H_
+#define ZHI_VECTOR3_H_
 
 #include <iostream>
 #include <algorithm>
@@ -8,8 +8,9 @@
 #include <limits>
 #include <sstream>
 
+
 #define M_PI 3.14159265358979323846
-#define DELTATIME 0.015
+#define DELTATIME 0.005
 
 #define Deg2Rad (M_PI * 2.f/360.f)
 #define Rag2Deg (1.f / Deg2Rad)
@@ -26,7 +27,8 @@ struct alignas(float) vector3
 	vector3();
 	vector3(const float vx, const float vy, const float vz);
 	vector3(const vector3& v);
-	void zero();
+	void setzero();
+	static vector3 zero();
 
 	vector3 operator + (const vector3& v) const;
 	vector3 operator - (const vector3& v) const;
@@ -47,6 +49,8 @@ struct alignas(float) vector3
 	vector3& operator  = (const vector3& v);
 	bool operator == (const vector3& v)const;
 	bool operator != (const vector3& v)const;
+
+	float& operator [](int idx);
 
 	int size();
 	float magnitude() const;

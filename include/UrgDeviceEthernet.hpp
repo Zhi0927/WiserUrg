@@ -1,23 +1,25 @@
-#ifndef HKY_URGETHERNET_H_
-#define HKY_URGETHERNET_H_
+#ifndef ZHI_URGETHERNET_H_
+#define ZHI_URGETHERNET_H_
 
 #include <iostream>
 #include <sstream>
 #include <thread>
 #include <mutex>
-
 #include <WS2tcpip.h>
 #pragma comment(lib, "ws2_32.lib")
-
+ 
 #include "SCIP_library.hpp"
-#include "UrgDevice.hpp"
 #include "Common.hpp"
+
 
 class UrgDeviceEthernet
 {
 public:
 	UrgDeviceEthernet(const std::string& ip = "192.168.0.10", const int& port = 10940);
 	~UrgDeviceEthernet();
+    void StartMeasureDistance();
+
+    const bool GetConnectState() const;
 
     bool StartTCP();
     void Write(const std::string scip);
@@ -26,7 +28,7 @@ public:
     std::string GetCommand(const std::string get_command);
     bool CheckCommand(const std::string& get_command, const std::string& cmd);
 
-    static std::string read_line(SOCKET& sock);
+    static std::string read_line(SOCKET& sock, int& error);
     static bool write(SOCKET& sock, const std::string& data);
 
     void close();

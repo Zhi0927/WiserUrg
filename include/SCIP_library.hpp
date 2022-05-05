@@ -1,16 +1,15 @@
-#ifndef HKY_SCIP_H_
-#define HKY_SCIP_H_
+#ifndef ZHI_SCIP_H_
+#define ZHI_SCIP_H_
 
 #include <iostream>
 #include <string>
 #include <vector>
-#include "UrgDevice.hpp"
+
 #include "Common.hpp"
 
 class SCIP_Writer
 {
 public:
-	static std::string END();
 	static std::string MD(int start, int end, int grouping = 1, int skips = 0, int scans = 0);
 	static std::string ME(int start, int end, int grouping = 1, int skips = 0, int scans = 0);
 	static std::string BM();
@@ -20,7 +19,6 @@ public:
 	static std::string PP();
 	static std::string SCIP2();
 	static std::string QT();
-	//static std::string ToString(const int& value, const int pad);
 };
 
 class SCIP_Reader
@@ -34,6 +32,11 @@ public:
 	static bool ME(const std::string& get_command, long& time_stamp, std::vector<long>& distances, std::vector<long>& strengths);
 	static bool distance_strength_data(const std::vector<std::string>& lines, int start_line, std::vector<long>& distances, std::vector<long>& strengths);
 	static bool decode_array(const std::string& data, int size, std::vector<long>& decoded_data, std::vector<long>& stdecoded_data);
-	//static std::vector<std::string> SplitString(const std::string& str);
 };
+
+
+// VV, PP, II,  sensor information request command (3 types)
+// BM, QT,      measure start/end
+// MD, GD,      distance request command (2 types)
+// ME           distance and intensity request commands
 #endif

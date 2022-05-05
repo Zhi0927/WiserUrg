@@ -7,8 +7,12 @@ vector3::vector3(const float vx, const float vy, const float vz) : x(vx), y(vy),
 
 vector3::vector3(const vector3& v) : x(v.x), y(v.y), z(v.z)  { }
 
-void vector3::zero() {
+void vector3::setzero() {
 	x = y = z = 0;
+}
+
+vector3 vector3::zero() {
+	return vector3(0, 0, 0);
 }
 
 vector3 vector3::operator + (const vector3& v) const {
@@ -97,6 +101,20 @@ bool vector3::operator != (const vector3& v) const
 	return x != v.x || y != v.y || z != v.z;
 }
 
+float& vector3::operator [](int idx) {
+	switch (idx)
+	{
+	case 1:
+		return x;
+	case 2:
+		return y;
+	case 3:
+		return z;
+	default:
+		std::cerr << "vector index out of range!";
+		break;
+	}
+}
 
 int vector3::size() {
 	return 3;
@@ -157,7 +175,7 @@ float vector3::Distance(const vector3& a, const vector3& b) {
 	float diff_y = a.y - b.y;
 	float diff_z = a.z - b.z;
 
-	return std::sqrt(diff_x * diff_x + diff_y * diff_y + diff_z * diff_z);
+	return sqrt(diff_x * diff_x + diff_y * diff_y + diff_z * diff_z);
 }
 
 vector3 vector3::SmoothDamp(vector3 current, vector3 target, vector3& currentVelocity, float smoothTime) {

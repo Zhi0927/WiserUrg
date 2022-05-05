@@ -1,20 +1,39 @@
-#include "Common.hpp"
+﻿#include "Common.hpp"
 
 
 std::vector<long> movingAverages(const std::vector<long>& data, int period) {
-    std::vector<long> buffer(period);
-    std::vector<long> output(data.size());
-
-    int currrent_index = 0;
-    for (size_t i = 0; i < data.size(); i++) {
-        long ma = 0;
-        for (size_t j = 0; j < period; i++) {
-            ma += buffer[j];
-        }
-        output[i] = ma;
-        currrent_index = (currrent_index + 1) % period;
+    std::vector<long> result(data.size());
+    double sum = 0;
+    for (int i = 0; i < result.size(); i++){
+        sum += data[i];
+        if (i >= period) sum -= data[i - period];
+        result[i] = sum / (std::min)(i + 1, period);
     }
-    return output;
+    return result;
+}
+
+std::vector<long> SmoothRealtime(const std::vector<long>& newList, std::vector<long>& previousList, float smoothFactor, int limit) {
+    if (previousList.size() <= 0) {
+        previousList = newList;
+        return newList;
+    }
+    else {
+        std::vector<long> result(newList.size());
+        for (int i = 0; i < result.size(); i++) {
+
+            float diff = newList[i] - previousList[i];
+            if (diff > limit) {
+                result[i] = newList[i];
+                previousList[i] = result[i];
+            }
+            else {
+                float final = previousList[i] + diff * smoothFactor;
+                result[i] = (long)final;
+                previousList[i] = result[i];
+            }
+        }
+        return result;
+    }
 }
 
 void map(float& value, const float& fromsource, const float& tosource, const float& fromtarget, const float& totarget) {
@@ -65,16 +84,13 @@ std::vector<std::string> split(const std::string& srcstr, const std::string& del
 
     std::string::size_type dlm_pos;
     std::string temp;              
-    while (pos_begin != std::string::npos)
-    {
+    while (pos_begin != std::string::npos){
         dlm_pos = srcstr.find(delimeter, pos_begin);
-        if (dlm_pos != std::string::npos)
-        {
+        if (dlm_pos != std::string::npos){
             temp = srcstr.substr(pos_begin, dlm_pos - pos_begin);
             pos_begin = dlm_pos + delimeter.length();
         }
-        else
-        {
+        else{
             temp = srcstr.substr(pos_begin);
             pos_begin = dlm_pos;
         }
@@ -87,8 +103,7 @@ std::vector<std::string> split(const std::string& srcstr, const std::string& del
 bool startswith(const std::string& str, const std::string& start) {
     int srclen = str.size();
     int startlen = start.size();
-    if (srclen >= startlen)
-    {
+    if (srclen >= startlen){
         std::string temp = str.substr(0, startlen);
         if (temp == start)
             return true;
@@ -99,8 +114,7 @@ bool startswith(const std::string& str, const std::string& start) {
 bool endswith(const std::string& str, const std::string& end) {
     int srclen = str.size();
     int endlen = end.size();
-    if (srclen >= endlen)
-    {
+    if (srclen >= endlen){
         std::string temp = str.substr(srclen - endlen, endlen);
         if (temp == end)
             return true;
@@ -123,40 +137,5 @@ std::string trim(const std::string& str)
     ret = str.substr(pos_begin, pos_end - pos_begin);
 
     return ret;
-}
-
-
-DataTranslator::DataTranslator(const int xOffset, const int yOffset, const int sensorDetectWidth, const int sensorDetectHeight, const int sceneWidth, const int sceneHeight)
-    :   m_xOffset(xOffset), 
-        m_yOffest(yOffset),
-        m_sensorDetectWidth(sensorDetectWidth),
-        m_sensorDetectHeight(sensorDetectHeight),
-        m_sceneWidth(sceneWidth),
-        m_sceneHeight(sceneHeight)
-{}
-
-DataTranslator::~DataTranslator(){}
-
-void DataTranslator::Sensor2Screen(vector3& inputData, const ZeroPosition zeroPosition) {
-    inputData.x += m_xOffset;
-    inputData.y += m_yOffest;
-
-    inputData.x += (m_sensorDetectWidth / 2.f);
-
-    inputData.x = m_sensorDetectWidth - inputData.x;
-
-    inputData.x /= m_sensorDetectWidth;
-    inputData.y /= m_sensorDetectHeight;
-
-    inputData.x *= m_sceneWidth;
-    inputData.y *= m_sceneHeight;
-
-    if (zeroPosition == ZeroPosition::LEFT_BOTTOM) {
-        flipy(inputData);
-    }
-}
-
-vector3 DataTranslator::flipy(const vector3& vec) {
-    return vector3(vec.x, m_sceneWidth - vec.y, 0);
 }
 

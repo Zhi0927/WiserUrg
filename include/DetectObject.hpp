@@ -1,9 +1,10 @@
-﻿#ifndef HKY_OBJECT_H_
-#define HKY_OBJECT_H_
+﻿#ifndef ZHI_OBJECT_H_
+#define ZHI_OBJECT_H_
+
+#include <vector>
 
 #include "Vector3.hpp"
 #include "Common.hpp"
-#include <vector>
 
 class RawObject
 {
@@ -47,15 +48,16 @@ public:
 	void Update(const vector3 newPos, const float newSize);
 
 public:
-	static constexpr int	MISSING_FRAME_LIMIT		= 5;
+	static constexpr int	MISSING_FRAME_LIMIT		= 10;
 	float					detectsize;
-	float					birthTime;
 	int						missingFrame			= 0;
 	bool					cleared					= false;
 	bool					useSmooth				= true;
+	Kalman<vector3>			kalmanV;
 
 private:
 	std::string				m_guid;
+	float					m_birthTime;
 	vector3					m_position;
 	vector3					m_deltaMovement;
 	vector3					m_currentVelocity		= vector3(0.f, 0.f, 0.f);

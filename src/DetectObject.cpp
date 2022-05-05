@@ -9,17 +9,18 @@ RawObject::~RawObject() {}
 void RawObject::setPosition(const vector3& value) {
 	m_position = value;
 }
+
 vector3 RawObject::getPosition(){
 	if (!m_positionSet) {
-		m_position = CalcPosition(dirList[dirList.size() / 2], distList[distList.size() / 2]);
+		m_position = dirList[dirList.size() / 2] * distList[distList.size() / 2];
 		m_positionSet = true;
 	}
 	return m_position;
 }
 
 float RawObject::getDetectSize(){
-	vector3 pointA = CalcPosition(dirList[0], distList[0]);
-	vector3 pointB = CalcPosition(dirList[dirList.size() -1], distList[distList.size() - 1]);
+	vector3 pointA = dirList[0] * distList[0];
+	vector3 pointB = dirList[dirList.size() - 1] * distList[distList.size() - 1];
 	float distance = vector3::Distance(pointA, pointB);
 
 	return distance;
@@ -45,8 +46,10 @@ ProcessedObject::ProcessedObject(const vector3& position, const float& size, con
 	  m_position(position),
 	  detectsize(size),
 	  m_posSmoothTime(objectPositionSmoothTime),
-	  birthTime(clock())
-{}
+	  m_birthTime(clock())
+{
+	kalmanV.setfilterValue(position);
+}
 
 ProcessedObject::~ProcessedObject() {}
 
@@ -67,7 +70,7 @@ std::string ProcessedObject::getGuid() const {
 }
 
 float ProcessedObject::getage() {
-	return clock() - birthTime;
+	return clock() - m_birthTime;
 }
 
 bool ProcessedObject::isClear() const {
@@ -87,6 +90,7 @@ void ProcessedObject::Update(const vector3 newPos, const float newSize) {
 
 	if (useSmooth) {
 		m_position = vector3::SmoothDamp(m_position, newPos, m_currentVelocity, m_posSmoothTime);
+		m_position = kalmanV.kalmanFilterFun(m_position);
 	}
 	else{
 		m_position = newPos;

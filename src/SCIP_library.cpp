@@ -1,34 +1,31 @@
 #include "SCIP_library.hpp"
 
-std::string SCIP_Writer::END() {
-	return "\n";
-}
 std::string SCIP_Writer::MD(int start, int end, int grouping, int skips, int scans){
-	return UrgDevice::GetCMDString(UrgDevice::CMD::MD) + ToString(start, 4) + ToString(end, 4) + ToString(grouping, 2) + ToString(skips, 1) + ToString(scans, 2) + END();
+	return "MD" + ToString(start, 4) + ToString(end, 4) + ToString(grouping, 2) + ToString(skips, 1) + ToString(scans, 2) + "\n";
 }
 std::string SCIP_Writer::ME(int start, int end, int grouping, int skips, int scans){
-	return UrgDevice::GetCMDString(UrgDevice::CMD::ME) + ToString(start, 4) + ToString(end, 4) + ToString(grouping, 2) + ToString(skips, 1) + ToString(scans, 2) + END();
+	return "ME" + ToString(start, 4) + ToString(end, 4) + ToString(grouping, 2) + ToString(skips, 1) + ToString(scans, 2) + "\n";
 }
 std::string SCIP_Writer::BM(){
-	return UrgDevice::GetCMDString(UrgDevice::CMD::BM) + END();
+	return "BM\n";
 }
 std::string SCIP_Writer::GD(int start, int end, int grouping){
-	return UrgDevice::GetCMDString(UrgDevice::CMD::GD) + ToString(start, 4) + ToString(end, 4) + ToString(grouping, 2) + END();
+	return "GD" + ToString(start, 4) + ToString(end, 4) + ToString(grouping, 2) + "\n";
 }
 std::string SCIP_Writer::VV(){
-	return UrgDevice::GetCMDString(UrgDevice::CMD::VV) + END();
+	return "VV\n";
 }
 std::string SCIP_Writer::II(){
-	return UrgDevice::GetCMDString(UrgDevice::CMD::II) + END();
+	return "II\n";
 }
 std::string SCIP_Writer::PP(){
-	return UrgDevice::GetCMDString(UrgDevice::CMD::PP) + END();
+	return "PP\n";
 }
 std::string SCIP_Writer::SCIP2(){
-	return "SCIP2.0" + END();
+	return "SCIP2.0\n";
 }
 std::string SCIP_Writer::QT(){
-	return UrgDevice::GetCMDString(UrgDevice::CMD::QT) + END();
+	return "QT\n";
 }
 
 

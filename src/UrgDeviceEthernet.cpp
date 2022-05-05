@@ -3,11 +3,18 @@
 
 UrgDeviceEthernet::UrgDeviceEthernet(const std::string& ip, const int& port)
     :   m_ip_address(ip),
-        m_port_number(port)
-{}
+        m_port_number(port) {}
 
 UrgDeviceEthernet::~UrgDeviceEthernet(){
     close();
+}
+
+void UrgDeviceEthernet::StartMeasureDistance() {    
+    Write(SCIP_Writer::MD(0, 1080, 1, 0, 0));
+}
+
+const bool UrgDeviceEthernet::GetConnectState() const {
+    return m_isconnected;
 }
 
 bool UrgDeviceEthernet::StartTCP() {
@@ -16,8 +23,7 @@ bool UrgDeviceEthernet::StartTCP() {
     WSAData data;
     WORD ver = MAKEWORD(2, 2);
     int wsResult = WSAStartup(ver, &data);
-    if (wsResult != 0)
-    {
+    if (wsResult != 0){
         std::cerr << "Can't start Winsock, Err #" << wsResult << std::endl;
         return false;
     }
@@ -41,9 +47,11 @@ bool UrgDeviceEthernet::StartTCP() {
         WSACleanup();
         return false;
     }
-    m_isconnected = true;
+
     ListenForClients();
     std::cout << "Tcp connect to server successfully! " << std::endl;
+
+    m_isconnected = true;
     return true;
 }
 
@@ -56,22 +64,25 @@ void UrgDeviceEthernet::ListenForClients() {
 }
 
 void UrgDeviceEthernet::HandleClientComm(SOCKET& sock) {
-    try
-    {
+    try{
         while (m_isconnected) {
             long time_stamp = 0;
-            std::string receive_data = read_line(sock);
+            int error_code = 1;
+            std::string receive_data = read_line(sock, error_code);
+            if (error_code == -1) {
+                close();
+                break;
+            }
 
             std::string cmd = GetCommand(receive_data);
 
             std::unique_lock<std::mutex> lock(distance_guard);
 
-            if (cmd == UrgDevice::GetCMDString(UrgDevice::CMD::MD)) {
+            if (cmd == "MD") {
                 recv_distances.clear();
                 SCIP_Reader::MD(receive_data, time_stamp, recv_distances);
             }
-            else if(cmd == UrgDevice::GetCMDString(UrgDevice::CMD::ME))
-            {
+            else if(cmd == "ME"){
                 recv_distances.clear();
                 recv_strengths.clear();
                 SCIP_Reader::ME(receive_data, time_stamp, recv_distances, recv_strengths);
@@ -81,8 +92,7 @@ void UrgDeviceEthernet::HandleClientComm(SOCKET& sock) {
             }
         }
     }
-    catch (const std::exception& e)
-    {
+    catch (const std::exception& e){
         std::cerr << "[ERROR] HandleClientComm:" << e.what() << std::endl;
     }
 }
@@ -97,33 +107,36 @@ bool UrgDeviceEthernet::CheckCommand(const std::string& get_command, const std::
     return startswith(split_command[0], cmd);
 }
 
-std::string UrgDeviceEthernet::read_line(SOCKET& sock) {
+std::string UrgDeviceEthernet::read_line(SOCKET& sock, int& error) {
     std::stringstream ss;
     bool is_NL2 = false;
     bool is_NL = true;
+    int bytesReceived;
 
-    do
-    {
+    do{
         char buf[1];
-        int bytesReceived = recv(sock, buf, 1, 0);
-        if (bytesReceived < 1) std::cout << "empty char!" << std::endl;
+        bytesReceived = recv(sock, buf, 1, 0);
+
+        if (bytesReceived < 0 || WSAGetLastError() == WSAECONNABORTED) {
+            error = -1;
+            std::cerr << "Disconnected!" << std::endl;
+            break;
+        }
 
         if (buf[0] == '\n') {
-            if (is_NL)
-            {
+            if (is_NL){
                 is_NL2 = true;
             }
-            else
-            {
+            else{
                 is_NL = true;
             }
         }
-        else
-        {
+        else{
             is_NL = false;
         }
         ss << buf[0];
     } while (!is_NL2);
+
     return ss.str();
 }
 
