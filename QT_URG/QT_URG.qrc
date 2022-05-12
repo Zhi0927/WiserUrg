@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/QT_URG">
+        <file>QT_URG.ui</file>
+        <file>icon.png</file>
+    </qresource>
+</RCC>
