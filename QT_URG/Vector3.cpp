@@ -120,10 +120,6 @@ int vector3::size() {
 	return 3;
 }
 
-float vector3::magnitude() const
-{
-	return sqrt(x*x + y*y + z*z);
-}
 
 vector3& vector3::normalize()
 {
@@ -135,6 +131,11 @@ vector3& vector3::normalize()
 		this->zero();
 	}
 	return *this;
+}
+
+float vector3::magnitude() const
+{
+	return sqrt(x * x + y * y + z * z);
 }
 
 float vector3::sqrMagnitude() const {

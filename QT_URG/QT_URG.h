@@ -40,13 +40,15 @@ private slots:
     void DrawMain();
 
 public:
-    QColor distanceColor         = Qt::blue;
-    QColor objectColor           = Qt::green;
-    QColor processedObjectColor  = Qt::cyan;
-    QColor objectPointColor      = Qt::red;
-                                 
-    QColor RectColor             = Qt::red;
-    QColor LabelColor            = Qt::black;
+    QColor distanceColor01          = Qt::blue;
+    QColor distanceColor02          = Qt::magenta;
+
+    QColor objectColor              = Qt::green;
+    QColor processedObjectColor     = Qt::cyan;
+    QColor objectPointColor         = Qt::red;
+                                    
+    QColor RectColor                = Qt::red;
+    QColor LabelColor               = Qt::black;
 
 private:
     Ui::Qt_urgClass* ui;
@@ -57,11 +59,13 @@ private:
     std::unique_ptr<EthernetConnector>	UrgNet02;
     std::mutex                          distance_guard;
 
-    std::vector<long>					Origindistance;
+    std::vector<long>					Origindistance01;
+    std::vector<long>					Origindistance02;
     std::vector<long>					Previewdistance;
     int                                 Scanstep = 0;
 
-    QVector<double> PointX,    PointY;
+    QVector<double> PointX01,  PointY01;
+    QVector<double> PointX02,  PointY02;
     QVector<double> RawObjX,   RawObjY;
     QVector<double> PosObjX,   PosObjY;
     QVector<double> ObjPointX, ObjPointY;

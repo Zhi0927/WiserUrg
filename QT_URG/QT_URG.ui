@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>Qt_urgClass</class>
  <widget class="QWidget" name="Qt_urgClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1127</width>
+    <height>740</height>
+   </rect>
+  </property>
   <property name="sizePolicy">
    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
     <horstretch>0</horstretch>
@@ -136,7 +144,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>192.168.0.10</string>
+            <string>192.168.0.11</string>
            </property>
           </widget>
          </item>
@@ -191,7 +199,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>192.168.0.11</string>
+            <string>192.168.0.10</string>
            </property>
           </widget>
          </item>
@@ -252,13 +260,13 @@
             <number>1</number>
            </property>
            <property name="minimum">
-            <double>10.000000000000000</double>
+            <double>-20000.000000000000000</double>
            </property>
            <property name="maximum">
             <double>20000.000000000000000</double>
            </property>
            <property name="value">
-            <double>100.000000000000000</double>
+            <double>-1500.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -304,7 +312,7 @@
         <double>50000.000000000000000</double>
        </property>
        <property name="value">
-        <double>150.000000000000000</double>
+        <double>240.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -391,7 +399,7 @@
         <double>50000.000000000000000</double>
        </property>
        <property name="value">
-        <double>840.000000000000000</double>
+        <double>880.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -474,7 +482,7 @@
         <double>50000.000000000000000</double>
        </property>
        <property name="value">
-        <double>50.000000000000000</double>
+        <double>-750.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -522,7 +530,7 @@
         <double>50000.000000000000000</double>
        </property>
        <property name="value">
-        <double>1400.000000000000000</double>
+        <double>1540.000000000000000</double>
        </property>
       </widget>
      </item>

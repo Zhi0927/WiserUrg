@@ -32,10 +32,14 @@ struct alignas(float) Detectparm {
 
 	float			delatime					= 0.015f;
 	bool			sensor02_activate			= false;
-	vector3			sensor02_originPos			= vector3(0, 0, 0);
+	vector3			sensor02_originPos			= vector3(1500, 0, 0);
 	float			mergerdistance				= 100;
 
 	float			objPosSmoothTime			= 0.05f;
+
+
+	float			objThreshold				= 500;
+	float			minWidth					= 1000;
 };
 
 
@@ -47,14 +51,21 @@ public:
 
 	const std::vector<vector3>& GetDirection() const;
 	const std::vector<RawObject>& GetRawObjectList() const;
+	//const std::vector<SensedObject>& GetSensedObjects() const;
 	const std::vector<ProcessedObject>& GetProcessObjects() const;
 
 	void Sensor2Screen(vector3& input);
 
 	void CacheDirections(int ScanSteps);
-	std::vector<RawObject> DetectRawObjects(const std::vector<long>& partdistances, const std::vector<vector3>& partdirction);
+	void GetPointFromDistance(int step, float distance, vector3& pos, bool multi = false);
+
+	std::vector<RawObject> DetectRawObjects(const std::vector<long>& partdistances, bool multi = false);
 	std::vector<RawObject> postprocessRawObject(const std::vector<long>& distances);
 	void ProcessingObjects(const std::vector<long>& distances);
+
+	//std::vector<SensedObject> DetectRawObjectsByPoint(const std::vector<long>& partdistances, bool multi = false);
+	//std::vector<SensedObject> postprocessRawObjectByPoint(const std::vector<long>& distances);
+	//void ProcessingObjectsByPoint(const std::vector<long>& distances);
 
 public:
 	Detectparm								parm;	 
@@ -64,6 +75,7 @@ public:
 
 private:
 	std::vector<RawObject>					m_rawObjects;
+	//std::vector<SensedObject>				m_sensorObjects;
 	std::vector<ProcessedObject>			m_processObject;
 	std::vector<vector3>					m_directions;
 

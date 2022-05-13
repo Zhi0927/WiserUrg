@@ -12,7 +12,15 @@ QT_URG::QT_URG(QWidget *parent)
     UrgDetector.reset(new ObjectDetector());
     UrgMouse.reset(new MouseSimulator(UrgDetector->parm.screenWidth, UrgDetector->parm.screenHeight));
 
+    InitFunc();
+
+    UrgDetector->CacheDirections(1081);
+
     //======================================= * Start * ===========================================//
+    QTimer* dataTimer = new QTimer(this);
+    connect(dataTimer, SIGNAL(timeout()), this, SLOT(DrawMain()));
+    dataTimer->start(0);
+
     connect(ui->Connect_Button, SIGNAL(clicked()), this, SLOT(ConnectTcp_Button()));
     connect(ui->Disconnect_Button, SIGNAL(clicked()), this, SLOT(DisconnectTcp_Button()));
     connect(ui->Connect_Button_02, SIGNAL(clicked()), this, SLOT(ConnectTcp02_Button()));
@@ -23,16 +31,10 @@ QT_URG::QT_URG(QWidget *parent)
     connect(ui->UseOffset, SIGNAL(clicked(bool)), this, SLOT(useOffset(bool)));
     connect(ui->TouchEvent, SIGNAL(clicked(bool)), this, SLOT(useTouchEvent(bool)));
 
-    QTimer* dataTimer = new QTimer(this);
-    connect(dataTimer, SIGNAL(timeout()), this, SLOT(DrawMain()));
-    dataTimer->start(0);
-
     ui->Connect_Button->setEnabled(true);
     ui->Disconnect_Button->setEnabled(false);
     ui->SetCR_Button->setEnabled(false);
     ui->SetParm_Button->setEnabled(false);
-
-    InitFunc();
 
     std::cout << "Initial QT successful!" << std::endl;
 }
@@ -48,28 +50,36 @@ void QT_URG::DrawMain() {
     if (UrgNet01 != nullptr) {
         if (UrgNet01->GetConnectState()) {
             Mainloop();
-            const std::vector<vector3>& directions = UrgDetector->GetDirection();
-            const std::vector<RawObject>& rawObjectList = UrgDetector->GetRawObjectList();
+            const std::vector<vector3>& directions              = UrgDetector->GetDirection();
+            const std::vector<RawObject>& rawObjectList         = UrgDetector->GetRawObjectList();
             const std::vector<ProcessedObject>& detectedObjects = UrgDetector->GetProcessObjects();
 
-            if (ui->DrawPoint->isChecked() && !Origindistance.empty()) {
-                for (int i = 0; i < Origindistance.size(); i++) {
-                    vector3 result = directions[i] * Origindistance[i];
-                    PointX.append(static_cast<double>(result.x));
-                    PointY.append(static_cast<double>(result.y));
+            if (ui->DrawPoint->isChecked()) {
+                if (!Origindistance01.empty()) {
+                    for (int i = 0; i < Origindistance01.size(); i++) {
+                        vector3 result = directions[i] * Origindistance01[i];
+                        PointX01.append(static_cast<double>(result.x));
+                        PointY01.append(static_cast<double>(result.y));
+                    }
+                }
+                if (!Origindistance02.empty()) {
+                    for (int i = 0; i < Origindistance02.size(); i++) {
+                        vector3 result = directions[i] * Origindistance02[i] + UrgDetector->parm.sensor02_originPos;
+                        PointX02.append(static_cast<double>(result.x));
+                        PointY02.append(static_cast<double>(result.y));
+                    }
                 }
             }
 
             if (ui->DrawObject->isChecked() && !rawObjectList.empty()) {
                 for (int i = 0; i < rawObjectList.size(); i++) {
                     auto obj = rawObjectList[i];
-                    if (obj.dirList.size() == 0 || obj.distList.size() == 0) return;
                     auto rawpos = obj.getPosition();
                     RawObjX.append(static_cast<double>(rawpos.x));
                     RawObjY.append(static_cast<double>(rawpos.y));
 
                     for (size_t i = 0; i < obj.distList.size(); i++) {
-                        auto detectpos = obj.dirList[i] * obj.distList[i];
+                        auto detectpos = obj.posList[i];
                         ObjPointX.append(static_cast<double>(detectpos.x));
                         ObjPointY.append(static_cast<double>(detectpos.y));
                     }
@@ -111,30 +121,41 @@ void QT_URG::Mainloop() {
     std::unique_lock<std::mutex> lockurg(distance_guard);
 
     if (UrgNet01->recv_distances.size() <= 0) return;
-    Origindistance = UrgNet01->recv_distances;
+    Origindistance01 = UrgNet01->recv_distances;
 
     if (UrgNet02 != nullptr) {
         if (UrgNet02->recv_distances.size() > 0) {
-            Origindistance.insert(Origindistance.end(), UrgNet02->recv_distances.begin(), UrgNet02->recv_distances.end());
+            Origindistance02 = UrgNet02->recv_distances;
         }
     }
     lockurg.unlock();
 
-    if (Scanstep <= 0) {
-        Scanstep = Origindistance.size();
-        UrgDetector->CacheDirections(Scanstep);
-    }
+    //if (Scanstep != combineDistance.size()) {
+    //    Scanstep = combineDistance.size();
+    //    UrgDetector->CacheDirections(Scanstep);
+    //}
 
     if (ui->Usefilter->isChecked()) {
-        SmoothRealtime(Origindistance, Previewdistance, 0.1);
+        SmoothRealtime(Origindistance01, Previewdistance, 0.1);
     }
-    UrgDetector->ProcessingObjects(Origindistance);
+
+    if (UrgDetector->parm.sensor02_activate) {
+        std::vector<long> combineDistance;
+        combineDistance.insert(combineDistance.end(), Origindistance01.begin(), Origindistance01.end());
+        combineDistance.insert(combineDistance.end(), Origindistance02.begin(), Origindistance02.end());
+        UrgDetector->ProcessingObjects(combineDistance);
+    }
+    else
+    {
+        UrgDetector->ProcessingObjects(Origindistance01);
+    }   
 }
 //============================================================================================//
 
 
 QT_URG::~QT_URG() {
     delete ui;
+    Scanstep = 0;
     UrgDetector.reset(nullptr);
     UrgMouse.reset(nullptr);
     UrgNet01.reset(nullptr);
@@ -150,7 +171,7 @@ void QT_URG::ConnectTcp_Button() {
         if (UrgNet01->StartTCP()) {
             UrgNet01->StartMeasureDistance();
 
-            drawLabel(LabelItem01, 0, 0, "LiDAR 01", 16, Qt::black);
+            drawLabel(LabelItem01, 0, 0, "LiDAR 01", 12, Qt::black);
             setConstraintRegion_Button();
             setParm_Buttom();
 
@@ -188,11 +209,11 @@ void QT_URG::ConnectTcp02_Button() {
 
         if (UrgNet02->StartTCP()) {
             UrgDetector->parm.sensor02_activate = true;
-            UrgDetector->parm.sensor02_originPos.x += ui->OriginX->value();
+            UrgDetector->parm.sensor02_originPos.x = ui->OriginX->value();
 
             UrgNet02->StartMeasureDistance();
 
-            drawLabel(LabelItem02, UrgDetector->parm.sensor02_originPos.x, UrgDetector->parm.sensor02_originPos.y, "LiDAR 02", 16, LabelColor);
+            drawLabel(LabelItem02, UrgDetector->parm.sensor02_originPos.x, UrgDetector->parm.sensor02_originPos.y, "LiDAR 02", 12, LabelColor);
 
             ui->Connect_Button_02->setEnabled(false);
             ui->Disconnect_Button_02->setEnabled(true);
@@ -247,14 +268,18 @@ void QT_URG::InitFunc() {
     ui->plot->setInteraction(QCP::iRangeDrag, true);
     ui->plot->setInteraction(QCP::iRangeZoom, true);
     ui->plot->setPlottingHint(QCP::phFastPolylines);
-    ui->plot->xAxis->setRange(-1000, 1000);
-    ui->plot->yAxis->setRange(-200, 1200);
+
+    ui->plot->xAxis->setRange(-2000, 2000);
+    ui->plot->yAxis->setRange(-2000, 2000);
     ui->plot->xAxis->setLabel("x");
     ui->plot->yAxis->setLabel("y");
 
-    PointX.reserve(2162);
-    PointX.reserve(2162);
-    Origindistance.reserve(2162);
+    PointX01.reserve(2162);
+    PointX01.reserve(2162);
+    PointX02.reserve(2162);
+    PointX02.reserve(2162);
+    Origindistance01.reserve(2162);
+    Origindistance02.reserve(2162);
     Previewdistance.reserve(2162);
 
     ui->plot->addGraph();
@@ -266,19 +291,25 @@ void QT_URG::InitFunc() {
     ui->plot->graph(1)->setLineStyle(QCPGraph::LineStyle::lsNone);
 
     ui->plot->addGraph();
-    ui->plot->graph(2)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssPlus, QPen(distanceColor, 1), distanceColor, 2));
+    ui->plot->graph(2)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssPlus, QPen(objectPointColor, 1), objectPointColor, 4));
     ui->plot->graph(2)->setLineStyle(QCPGraph::LineStyle::lsNone);
 
     ui->plot->addGraph();
-    ui->plot->graph(3)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssPlus, QPen(objectPointColor, 1), objectPointColor, 4));
+    ui->plot->graph(3)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssPlus, QPen(distanceColor01, 1), distanceColor01, 2));
     ui->plot->graph(3)->setLineStyle(QCPGraph::LineStyle::lsNone);
+
+    ui->plot->addGraph();
+    ui->plot->graph(4)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssPlus, QPen(distanceColor02, 1), distanceColor02, 2));
+    ui->plot->graph(4)->setLineStyle(QCPGraph::LineStyle::lsNone);
+
 }
 
 void QT_URG::setData() {
     ui->plot->graph(0)->setData(RawObjX, RawObjY, true);
     ui->plot->graph(1)->setData(PosObjX, PosObjY, true);
-    ui->plot->graph(2)->setData(PointX, PointY, true);
-    ui->plot->graph(3)->setData(ObjPointX, ObjPointY, true);
+    ui->plot->graph(2)->setData(ObjPointX, ObjPointY, true);
+    ui->plot->graph(3)->setData(PointX01, PointY01, true);
+    ui->plot->graph(4)->setData(PointX02, PointY02, true);
 
     ui->plot->replot();
 }
@@ -288,8 +319,10 @@ void QT_URG::clearData() {
     RawObjY.clear();
     PosObjX.clear();
     PosObjY.clear();
-    PointX.clear();
-    PointY.clear();
+    PointX01.clear();
+    PointY01.clear();
+    PointX02.clear();
+    PointY02.clear();
     ObjPointX.clear();
     ObjPointY.clear();
 }

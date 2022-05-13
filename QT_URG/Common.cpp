@@ -1,17 +1,6 @@
 ﻿#include "Common.hpp"
 
 
-std::vector<long> movingAverages(const std::vector<long>& data, int period) {
-    std::vector<long> result(data.size());
-    double sum = 0;
-    for (int i = 0; i < result.size(); i++){
-        sum += data[i];
-        if (i >= period) sum -= data[i - period];
-        result[i] = sum / (std::min)(i + 1, period);
-    }
-    return result;
-}
-
 void SmoothRealtime(std::vector<long>& newList, std::vector<long>& previousList, const float smoothFactor, const int limit) {
     if (previousList.size() <= 0) {
         previousList = newList;

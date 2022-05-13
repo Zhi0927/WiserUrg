@@ -12,15 +12,15 @@ public:
 	~RawObject();
 
 	float getDetectSize();
-
 	void setPosition(const vector3& value);
 	std::string getGuid() const;
 
 	vector3 getPosition();
 
 public:
+	//std::vector<vector3>			dirList;
 	std::vector<long>				distList;
-	std::vector<vector3>			dirList;
+	std::vector<vector3>			posList;
 
 private:
 	std::string						m_guid;
@@ -28,20 +28,19 @@ private:
 	bool							m_positionSet		= false;
 };
 
-
 class ProcessedObject
 {
 public:
-	ProcessedObject(const vector3& position, const float& size, const float& objectPositionSmoothTime = 0.2f, const float& deltatime = 0.015f);
+	ProcessedObject(const vector3& position, const float& objectPositionSmoothTime = 0.2f, const float& deltatime = 0.015f);
 	~ProcessedObject();
 
-	float size();
+	//float size();
 	vector3 getPosition() const;
 	bool isClear() const;
 	//std::string getGuid() const;
 
 	void Update();
-	void Update(const vector3 newPos, const float newSize);
+	void Update(const vector3 newPos);
 
 public:
 	static constexpr int	MISSING_FRAME_LIMIT		= 10;
@@ -53,7 +52,7 @@ public:
 
 private:
 	//std::string				m_guid;
-	float					m_detectsize;
+	//float					m_detectsize;
 	vector3					m_position;
 	vector3					m_oldPosition;
 	vector3					m_deltaMovement;
@@ -61,6 +60,21 @@ private:
 	float					m_SmoothTime			= 0.2f;
 	float					m_deltaTime				= 0.015f;
 };
+
+class SensedObject
+{
+public:
+	SensedObject(const vector3& vp0, const vector3& vp1, const vector3& vcenter);
+	std::string getGuid() const;
+	std::vector<vector3> getVertices();
+	
+public:
+	vector3 p0;
+	vector3 p1;
+	vector3 center;
+
+private:
+	std::vector<vector3>	m_vertices;
+	std::string				m_guid;
+};
 #endif
-
-
