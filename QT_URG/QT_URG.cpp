@@ -130,24 +130,23 @@ void QT_URG::Mainloop() {
     }
     lockurg.unlock();
 
-    //if (Scanstep != combineDistance.size()) {
-    //    Scanstep = combineDistance.size();
-    //    UrgDetector->CacheDirections(Scanstep);
-    //}
-
     if (ui->Usefilter->isChecked()) {
-        SmoothRealtime(Origindistance01, Previewdistance, 0.1);
+        SmoothRealtime(Origindistance01, Previewdistance01, 0.1);
+        if (UrgNet02 != nullptr) {
+            SmoothRealtime(Origindistance02, Previewdistance02, 0.1);
+        }
     }
 
-    if (UrgDetector->parm.sensor02_activate) {
-        std::vector<long> combineDistance;
-        combineDistance.insert(combineDistance.end(), Origindistance01.begin(), Origindistance01.end());
-        combineDistance.insert(combineDistance.end(), Origindistance02.begin(), Origindistance02.end());
-        UrgDetector->ProcessingObjects(combineDistance);
+    if (UrgNet02 != nullptr) {
+        auto regions = UrgDetector->parm.detctRect.slice(RegionInverse);
+        auto resultRawObjs_part1 = UrgDetector->DetectRawObjects(Origindistance01, regions[0]);
+        auto resultRawObjs_part2 = UrgDetector->DetectRawObjects(Origindistance02, regions[1], true);
+        resultRawObjs_part1.insert(resultRawObjs_part1.end(), resultRawObjs_part2.begin(), resultRawObjs_part2.end());
+        UrgDetector->ProcessingObjects(resultRawObjs_part1);
     }
-    else
-    {
-        UrgDetector->ProcessingObjects(Origindistance01);
+    else{
+        auto resultRawObjs = UrgDetector->DetectRawObjects(Origindistance01, UrgDetector->parm.detctRect);
+        UrgDetector->ProcessingObjects(resultRawObjs);
     }   
 }
 //============================================================================================//
@@ -210,6 +209,9 @@ void QT_URG::ConnectTcp02_Button() {
         if (UrgNet02->StartTCP()) {
             UrgDetector->parm.sensor02_activate = true;
             UrgDetector->parm.sensor02_originPos.x = ui->OriginX->value();
+            if (ui->OriginX->value() < 0) {
+                RegionInverse = true;
+            }
 
             UrgNet02->StartMeasureDistance();
 
@@ -280,7 +282,8 @@ void QT_URG::InitFunc() {
     PointX02.reserve(2162);
     Origindistance01.reserve(2162);
     Origindistance02.reserve(2162);
-    Previewdistance.reserve(2162);
+    Previewdistance01.reserve(2162);
+    Previewdistance02.reserve(2162);
 
     ui->plot->addGraph();
     ui->plot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssSquare, QPen(objectColor, 2), objectColor, 15));

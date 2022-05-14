@@ -41,25 +41,16 @@ ProcessedObject::ProcessedObject(const vector3& position, const float& objectPos
 	:	m_position(position),
 		m_SmoothTime(objectPositionSmoothTime),
 		m_deltaTime(deltatime)
-		//m_detectsize(size),
-		//m_guid(GenerateGuid())
 {
 	kalmanV.setfilterValue(position);
 }
 
 ProcessedObject::~ProcessedObject() {}
 
-//float ProcessedObject::size() {
-//	return m_detectsize;
-//}
 
 vector3 ProcessedObject::getPosition() const{
 	return m_position;
 }
-
-//std::string ProcessedObject::getGuid() const {
-//	return m_guid;
-//}
 
 bool ProcessedObject::isClear() const {
 	return cleared;
@@ -73,7 +64,6 @@ void ProcessedObject::Update() {
 }
 
 void ProcessedObject::Update(const vector3 newPos) {
-	//m_detectsize = newSize;
 	m_oldPosition = m_position;
 
 	if (useSmooth) {

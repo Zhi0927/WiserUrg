@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <vector>
 #include "Vector3.hpp"
 
 struct alignas(float) Rect {
@@ -21,8 +22,8 @@ public:
 	float xmax() const;
 	float ymax() const;
 
-	bool Contains(vector3 point);
-
 	Rect& operator  = (const Rect& r);
+	bool Contains(const vector3& point) const;
+	std::vector<Rect> slice(bool inverse = false) const;
 };
 #endif

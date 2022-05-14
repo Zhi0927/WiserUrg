@@ -44,8 +44,9 @@ public:
     QColor distanceColor02          = Qt::magenta;
 
     QColor objectColor              = Qt::green;
-    QColor processedObjectColor     = Qt::cyan;
     QColor objectPointColor         = Qt::red;
+
+    QColor processedObjectColor     = Qt::cyan;
                                     
     QColor RectColor                = Qt::red;
     QColor LabelColor               = Qt::black;
@@ -61,8 +62,10 @@ private:
 
     std::vector<long>					Origindistance01;
     std::vector<long>					Origindistance02;
-    std::vector<long>					Previewdistance;
+    std::vector<long>					Previewdistance01;
+    std::vector<long>					Previewdistance02;
     int                                 Scanstep = 0;
+    bool                                RegionInverse = false; //part1 left, part2 right
 
     QVector<double> PointX01,  PointY01;
     QVector<double> PointX02,  PointY02;

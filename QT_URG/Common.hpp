@@ -38,7 +38,7 @@ private:
 };
 
 template<typename T>
-std::vector<T> slice(const std::vector<T>& v, int m, int n) {
+std::vector<T> sliceVectors(const std::vector<T>& v, int m, int n) {
     auto first = v.cbegin() + m;
     auto last = v.cbegin() + n;
 
@@ -46,18 +46,7 @@ std::vector<T> slice(const std::vector<T>& v, int m, int n) {
     return vec;
 };
 
-//template<typename T>
-//std::vector<T> movingAverages(const std::vector<T>& data, int period) {
-//    std::vector<T> result(data.size());
-//    T sum = {};
-//    for (int i = 0; i < result.size(); i++) {
-//        sum += data[i];
-//        if (i >= period) sum -= data[i - period];
-//        result[i] = sum / (std::min)(i + 1, period);
-//    }
-//    return result;
-//};
-
+std::vector<vector3> movingAverages(const std::vector<vector3>& data, int period);
 void SmoothRealtime(std::vector<long>& newList, std::vector<long>& previousList, const float smoothFactor = 0.5f, const int limit = 200);
 inline void map(float& value, const float& fromsource, const float& tosource, const float& fromtarget, const float& totarget);
 std::string GenerateGuid();

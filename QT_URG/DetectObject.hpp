@@ -34,10 +34,8 @@ public:
 	ProcessedObject(const vector3& position, const float& objectPositionSmoothTime = 0.2f, const float& deltatime = 0.015f);
 	~ProcessedObject();
 
-	//float size();
 	vector3 getPosition() const;
 	bool isClear() const;
-	//std::string getGuid() const;
 
 	void Update();
 	void Update(const vector3 newPos);
@@ -51,8 +49,6 @@ public:
 	Kalman<vector3>			kalmanV;
 
 private:
-	//std::string				m_guid;
-	//float					m_detectsize;
 	vector3					m_position;
 	vector3					m_oldPosition;
 	vector3					m_deltaMovement;
