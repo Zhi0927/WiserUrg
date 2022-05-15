@@ -124,9 +124,8 @@ void QT_URG::Mainloop() {
     Origindistance01 = UrgNet01->recv_distances;
 
     if (UrgNet02 != nullptr) {
-        if (UrgNet02->recv_distances.size() > 0) {
-            Origindistance02 = UrgNet02->recv_distances;
-        }
+        if (UrgNet02->recv_distances.size() <= 0) return;
+        Origindistance02 = UrgNet02->recv_distances;
     }
     lockurg.unlock();
 
@@ -141,6 +140,8 @@ void QT_URG::Mainloop() {
         auto regions = UrgDetector->parm.detctRect.slice(RegionInverse);
         auto resultRawObjs_part1 = UrgDetector->DetectRawObjects(Origindistance01, regions[0]);
         auto resultRawObjs_part2 = UrgDetector->DetectRawObjects(Origindistance02, regions[1], true);
+
+       /* std::cout << "--------------------------------------------" << std::endl;*/
         resultRawObjs_part1.insert(resultRawObjs_part1.end(), resultRawObjs_part2.begin(), resultRawObjs_part2.end());
         UrgDetector->ProcessingObjects(resultRawObjs_part1);
     }
