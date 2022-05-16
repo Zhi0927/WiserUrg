@@ -10,11 +10,12 @@ QT_URG::QT_URG(QWidget *parent)
     this->setWindowIcon(QIcon("icon.png"));
 
     UrgDetector.reset(new ObjectDetector());
-    UrgMouse.reset(new MouseSimulator(UrgDetector->parm.screenWidth, UrgDetector->parm.screenHeight));
+    UrgMouse.reset(new MouseSimulator());
 
     InitFunc();
 
     UrgDetector->CacheDirections(1081);
+    Directions = UrgDetector->GetDirection();
 
     //======================================= * Start * ===========================================//
     QTimer* dataTimer = new QTimer(this);
@@ -47,26 +48,19 @@ void QT_URG::DrawMain() {
     static int frameCount;
     ++frameCount;
 
+
     if (UrgNet01 != nullptr) {
         if (UrgNet01->GetConnectState()) {
             Mainloop();
-            const std::vector<vector3>& directions              = UrgDetector->GetDirection();
             const std::vector<RawObject>& rawObjectList         = UrgDetector->GetRawObjectList();
             const std::vector<ProcessedObject>& detectedObjects = UrgDetector->GetProcessObjects();
 
             if (ui->DrawPoint->isChecked()) {
                 if (!Origindistance01.empty()) {
                     for (int i = 0; i < Origindistance01.size(); i++) {
-                        vector3 result = directions[i] * Origindistance01[i];
+                        vector3 result = Directions[i] * Origindistance01[i];
                         PointX01.append(static_cast<double>(result.x));
                         PointY01.append(static_cast<double>(result.y));
-                    }
-                }
-                if (!Origindistance02.empty()) {
-                    for (int i = 0; i < Origindistance02.size(); i++) {
-                        vector3 result = directions[i] * Origindistance02[i] + UrgDetector->parm.sensor02_originPos;
-                        PointX02.append(static_cast<double>(result.x));
-                        PointY02.append(static_cast<double>(result.y));
                     }
                 }
             }
@@ -93,9 +87,6 @@ void QT_URG::DrawMain() {
                     PosObjY.append(static_cast<double>(propos.y));
                 }
             }
-            setData();
-            ui->plot->replot();
-            clearData();  
         }
         else {
             DisconnectTcp_Button();
@@ -103,9 +94,24 @@ void QT_URG::DrawMain() {
     }
 
     if (UrgNet02 != nullptr) {
-        if (!UrgNet02->GetConnectState()) {
+        if (UrgNet02->GetConnectState()) {
+            if (!Origindistance02.empty()) {
+                for (int i = 0; i < Origindistance02.size(); i++) {
+                    vector3 result = Directions[i] * Origindistance02[i] + UrgDetector->parm.sensor02_originPos;
+                    PointX02.append(static_cast<double>(result.x));
+                    PointY02.append(static_cast<double>(result.y));
+                }
+            }  
+        }
+        else {
             DisconnectTcp02_Button();
         }
+    }
+
+    if (UrgNet01 != nullptr || UrgNet02 != nullptr) {
+        setData();
+        ui->plot->replot();
+        clearData();
     }
 
     float FPS = frameCount / (key - lastFpsKey);
@@ -141,7 +147,6 @@ void QT_URG::Mainloop() {
         auto resultRawObjs_part1 = UrgDetector->DetectRawObjects(Origindistance01, regions[0]);
         auto resultRawObjs_part2 = UrgDetector->DetectRawObjects(Origindistance02, regions[1], true);
 
-       /* std::cout << "--------------------------------------------" << std::endl;*/
         resultRawObjs_part1.insert(resultRawObjs_part1.end(), resultRawObjs_part2.begin(), resultRawObjs_part2.end());
         UrgDetector->ProcessingObjects(resultRawObjs_part1);
     }
@@ -262,6 +267,9 @@ void QT_URG::setParm_Buttom() {
 
     UrgDetector->parm.screenWidth       = ui->ResolutionWidth_Input->value();
     UrgDetector->parm.screenHeight      = ui->ResolutionHeight_Input->value();
+
+    UrgMouse->SetRatio(UrgDetector->parm.screenWidth, UrgDetector->parm.screenHeight);
+
 }
 
 
@@ -315,7 +323,6 @@ void QT_URG::setData() {
     ui->plot->graph(3)->setData(PointX01, PointY01, true);
     ui->plot->graph(4)->setData(PointX02, PointY02, true);
 
-    ui->plot->replot();
 }
 
 void QT_URG::clearData() {

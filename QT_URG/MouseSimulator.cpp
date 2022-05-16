@@ -1,6 +1,10 @@
 ﻿#include "MouseSimulator.hpp"
 
-MouseSimulator::MouseSimulator(int screenWidth, int screenHeight) : m_screenWidth(screenWidth), m_screenHeight(screenHeight) {}
+
+void MouseSimulator::SetRatio(int screenWidth, int screenHeight) {
+	m_screenWidth = screenWidth;
+	m_screenHeight = screenHeight;
+}
 
 void MouseSimulator::move(float dx, float dy)
 {

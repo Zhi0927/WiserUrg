@@ -64,6 +64,7 @@ private:
     std::vector<long>					Origindistance02;
     std::vector<long>					Previewdistance01;
     std::vector<long>					Previewdistance02;
+    std::vector<vector3>                Directions;
     int                                 Scanstep = 0;
     bool                                RegionInverse = false; //part1 left, part2 right
 

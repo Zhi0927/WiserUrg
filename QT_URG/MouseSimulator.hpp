@@ -7,7 +7,7 @@
 class MouseSimulator
 {
 public:
-	MouseSimulator(int screenWidth, int screenHeight);
+	void SetRatio(int screenWidth, int screenHeight);
 
 	void move(float dx, float dy);
 	void rightDown();
