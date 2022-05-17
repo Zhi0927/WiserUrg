@@ -1,0 +1,79 @@
+﻿#include "ConfigManager.hpp"
+
+
+ConfigManager::ConfigManager()
+{
+	mIniPath = QCoreApplication::applicationDirPath() + "/config.ini";
+}
+
+void ConfigManager::SaveWindowSize(QWidget* pWnd)
+{
+	QString className = pWnd->metaObject()->className();
+
+	QSettings configIniWrite(mIniPath, QSettings::IniFormat);
+	configIniWrite.setValue(QString("/%1/width").arg(className), pWnd->width());
+	configIniWrite.setValue(QString("/%1/height").arg(className), pWnd->height());
+}
+
+void ConfigManager::LoadWindowSize(QWidget* pWnd)
+{
+	QString className = pWnd->metaObject()->className();
+
+	QSettings configIniRead(mIniPath, QSettings::IniFormat);
+	int w = configIniRead.value(QString("/%1/width").arg(className), 900).toInt();
+	int h = configIniRead.value(QString("/%1/height").arg(className), 625).toInt();
+
+	if (w > 0 && h > 0){
+		pWnd->setGeometry(0, 0, w, h);
+	}
+}
+
+void ConfigManager::SaveParameter(Ui::Qt_urgClass* ui) {
+
+	QSettings configIniWrite(mIniPath, QSettings::IniFormat);
+
+	configIniWrite.setValue("/Paramater/Ip01", ui->IP_Input_01->text());
+	configIniWrite.setValue("/Paramater/Port01", ui->Port_number_input_01->value());
+	configIniWrite.setValue("/Paramater/Ip02", ui->IP_Input_02->text());
+	configIniWrite.setValue("/Paramater/Port02", ui->Port_number_input_02->value());
+			
+	configIniWrite.setValue("/Paramater/OffsetX", ui->OffsetX_Input->value());
+	configIniWrite.setValue("/Paramater/OffsetY", ui->OffsetY_Input->value());
+	configIniWrite.setValue("/Paramater/Width", ui->Width_Input->value());
+	configIniWrite.setValue("/Paramater/Heigh", ui->Height_Input->value());
+
+	configIniWrite.setValue("/Paramater/noiseLimit", ui->noiseLimit_Input->value());
+	configIniWrite.setValue("/Paramater/deltaLimit", ui->deltaLimit_Input->value());
+	configIniWrite.setValue("/Paramater/distanceThreshold", ui->distanceThreshold_Input->value());
+	configIniWrite.setValue("/Paramater/DetectSize", ui->DetectSize_Input->value());
+	configIniWrite.setValue("/Paramater/ResolutionWidth", ui->ResolutionWidth_Input->value());
+	configIniWrite.setValue("/Paramater/ResolutionHeight", ui->ResolutionHeight_Input->value());
+
+	configIniWrite.setValue("/Paramater/cursoroffsetX", ui->cursoroffsetX_Input->value());
+	configIniWrite.setValue("/Paramater/cursoroffsetY", ui->cursoroffsetY_Input->value());	
+}
+
+void ConfigManager::LoadParameter(Ui::Qt_urgClass* ui) {
+	QSettings configIniWrite(mIniPath, QSettings::IniFormat);
+
+	ui->IP_Input_01->setText(configIniWrite.value("/Paramater/Ip01", QString("192.168.0.11")).toString());
+	ui->Port_number_input_01->setValue(configIniWrite.value("/Paramater/Port01", 10940).toDouble());
+	ui->IP_Input_02->setText(configIniWrite.value("/Paramater/Ip02", QString("192.168.0.10")).toString());
+	ui->Port_number_input_02->setValue(configIniWrite.value("/Paramater/Port02", 10940).toDouble());
+
+
+	ui->OffsetX_Input->setValue(configIniWrite.value("/Paramater/OffsetX", -750).toDouble());
+	ui->OffsetY_Input->setValue(configIniWrite.value("/Paramater/OffsetY", 180).toDouble());
+	ui->Width_Input->setValue(configIniWrite.value("/Paramater/Width", 1520).toDouble());
+	ui->Height_Input->setValue(configIniWrite.value("/Paramater/Heigh", 800).toDouble());
+
+	ui->noiseLimit_Input->setValue(configIniWrite.value("/Paramater/noiseLimit", 7).toDouble());
+	ui->deltaLimit_Input->setValue(configIniWrite.value("/Paramater/deltaLimit", 200).toDouble());
+	ui->distanceThreshold_Input->setValue(configIniWrite.value("/Paramater/distanceThreshold", 300).toDouble());
+	ui->DetectSize_Input->setValue(configIniWrite.value("/Paramater/DetectSize", 300).toDouble());
+	ui->ResolutionWidth_Input->setValue(configIniWrite.value("/Paramater/ResolutionWidth", 1920).toDouble());
+	ui->ResolutionHeight_Input->setValue(configIniWrite.value("/Paramater/ResolutionHeight", 1080).toDouble());
+
+	ui->cursoroffsetX_Input->setValue(configIniWrite.value("/Paramater/cursoroffsetX", 10).toDouble());
+	ui->cursoroffsetY_Input->setValue(configIniWrite.value("/Paramater/cursoroffsetY", 10).toDouble());
+}

@@ -105,7 +105,7 @@
         </font>
        </property>
        <property name="text">
-        <string>DataSource</string>
+        <string>DataSource (HOKUYO Ust series )</string>
        </property>
       </widget>
      </item>
@@ -120,7 +120,7 @@
         </attribute>
         <layout class="QGridLayout" name="gridLayout_6">
          <item row="2" column="2">
-          <widget class="QPushButton" name="Disconnect_Button">
+          <widget class="QPushButton" name="Disconnect_Button_01">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -136,7 +136,7 @@
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QLineEdit" name="IP_Input">
+          <widget class="QLineEdit" name="IP_Input_01">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -149,7 +149,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QDoubleSpinBox" name="Port_number_input">
+          <widget class="QDoubleSpinBox" name="Port_number_input_01">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -171,7 +171,7 @@
           </widget>
          </item>
          <item row="1" column="2">
-          <widget class="QPushButton" name="Connect_Button">
+          <widget class="QPushButton" name="Connect_Button_01">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -785,7 +785,7 @@
         </font>
        </property>
        <property name="text">
-        <string>DistanceThres</string>
+        <string>DistanceThreshold</string>
        </property>
        <property name="textFormat">
         <enum>Qt::PlainText</enum>
@@ -811,7 +811,7 @@
         </font>
        </property>
        <property name="text">
-        <string>PointNum</string>
+        <string>ObjectPointNumLimit</string>
        </property>
        <property name="textFormat">
         <enum>Qt::PlainText</enum>
@@ -1129,7 +1129,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Usefilter</string>
+        <string>Usefilter (Not recommended)</string>
        </property>
       </widget>
      </item>

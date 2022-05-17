@@ -30,13 +30,6 @@ void ObjectDetector::CacheDirections(int ScanSteps) {
     std::cout << "Direction has been calculated!" << std::endl;
 }
 
-void ObjectDetector::GetPointFromDistance(int step, float distance, vector3& pos, bool multi){
-    pos = m_directions[step] * distance;
-    if (multi) {
-        pos += parm.sensor02_originPos;
-    }
-}
-
 std::vector<RawObject> ObjectDetector::DetectRawObjects(const std::vector<long>& distances, const Rect& region, bool subsensor) {
     std::vector<RawObject> rawobjects;
 
@@ -105,8 +98,6 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
 
     m_rawObjects = newlyDetectedObjects;
 
-    //std::unique_lock<std::mutex> lockdata(m_detectobject_guard);
-
     if (m_processObject.size() != 0){
         for(size_t i =0; i < m_processObject.size(); ++i)
         {
@@ -153,7 +144,7 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
             }
         }
         for(auto& leftOverNewObject : newlyDetectedObjects){
-            ProcessedObject newbie(leftOverNewObject.getPosition(), parm.objPosSmoothTime, parm.delatime);
+            ProcessedObject newbie(leftOverNewObject.getPosition(), parm.proObjSmoothTime, parm.delatime);
             m_processObject.emplace_back(newbie);
 
             if (OnNewObjectCallback != nullptr && OnUpdataObjCallback != nullptr) {
@@ -167,7 +158,7 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
     }
     else {
         for(auto& obj : m_rawObjects){
-            ProcessedObject newbie(obj.getPosition(), parm.objPosSmoothTime, parm.delatime);
+            ProcessedObject newbie(obj.getPosition(), parm.proObjSmoothTime, parm.delatime);
             m_processObject.emplace_back(newbie);
 
             if (OnNewObjectCallback != nullptr && OnUpdataObjCallback != nullptr) {

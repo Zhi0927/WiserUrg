@@ -12,7 +12,7 @@ std::vector<vector3> movingAverages(const std::vector<vector3>& data, int period
     return result;
 }
 
-void SmoothRealtime(std::vector<long>& newList, std::vector<long>& previousList, const float smoothFactor, const int limit) {
+void SmoothRealtime(std::vector<long>& newList, std::vector<long>& previousList, const float smoothFactor, const int thres) {
     if (previousList.size() <= 0) {
         previousList = newList;
         return;
@@ -21,7 +21,7 @@ void SmoothRealtime(std::vector<long>& newList, std::vector<long>& previousList,
         for (int i = 0; i < newList.size(); i++) {
 
             float diff = newList[i] - previousList[i];
-            if (diff > limit) {
+            if (diff > thres) {
                 previousList[i] = newList[i];
             }
             else {

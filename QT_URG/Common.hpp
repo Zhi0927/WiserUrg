@@ -47,7 +47,7 @@ std::vector<T> sliceVectors(const std::vector<T>& v, int m, int n) {
 };
 
 std::vector<vector3> movingAverages(const std::vector<vector3>& data, int period);
-void SmoothRealtime(std::vector<long>& newList, std::vector<long>& previousList, const float smoothFactor = 0.5f, const int limit = 200);
+void SmoothRealtime(std::vector<long>& newList, std::vector<long>& previousList, const float smoothFactor = 0.5f, const int thres = 200);
 inline void map(float& value, const float& fromsource, const float& tosource, const float& fromtarget, const float& totarget);
 std::string GenerateGuid();
 std::string ToString(const int& value, const int pad);

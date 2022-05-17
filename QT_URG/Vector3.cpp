@@ -183,10 +183,6 @@ vector3 vector3::SmoothDamp(vector3 current, vector3 target, vector3& currentVel
 	return SmoothDamp(current, target, currentVelocity, smoothTime, INFINITY, deltaTime);
 }
 
-//vector3 vector3::SmoothDamp(vector3 current, vector3 target, vector3& currentVelocity, float smoothTime) {
-//	return SmoothDamp(current, target, currentVelocity, smoothTime, INFINITY, DELTATIME);
-//}
-
 vector3 vector3::SmoothDamp(vector3 current, vector3 target, vector3& currentVelocity, float smoothTime, float maxSpeed, float deltaTime) {
 	float output_x = 0.f;
 	float output_y = 0.f;

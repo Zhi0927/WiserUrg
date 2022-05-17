@@ -107,6 +107,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Common.cpp" />
+    <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="DetectObject.cpp" />
     <ClCompile Include="MouseSimulator.cpp" />
     <ClCompile Include="qcustomplot.cpp" />
@@ -123,6 +124,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.hpp" />
+    <ClInclude Include="ConfigManager.hpp" />
     <ClInclude Include="DetectObject.hpp" />
     <QtMoc Include="qcustomplot.h" />
     <ClInclude Include="Includes.h" />

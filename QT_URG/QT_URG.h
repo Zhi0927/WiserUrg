@@ -5,9 +5,11 @@
 #include "SCIP_library.hpp"
 #include "ObjectDetector.hpp"
 #include "MouseSimulator.hpp"
+#include "ConfigManager.hpp"
 
 #include <QtWidgets/QWidget>
 #include "ui_QT_URG.h"
+
 
 class QT_URG : public QWidget
 {
@@ -20,15 +22,18 @@ public:
 private:
     void drawRect(const Rect& rect, QColor color = Qt::red);
     void drawLabel(QPointer<QCPItemText>& item, const float x, const float y, const QString& text, int fontsize = 16,  QColor color = Qt::black);
-    void InitFunc();
-    void setData();
-    void clearData();
+    void InitPlot();
+    void setAllPlotData();
+    void clearAllPlotData();
 
-    void Mainloop();
+    void UrgMain();
+
+protected:
+    void closeEvent(QCloseEvent* event);
 
 private slots:
-    void ConnectTcp_Button();
-    void DisconnectTcp_Button();
+    void ConnectTcp01_Button();
+    void DisconnectTcp01_Button();
     void ConnectTcp02_Button();
     void DisconnectTcp02_Button();
 
@@ -37,7 +42,7 @@ private slots:
     void useOffset(bool checkstate);
     void useTouchEvent(bool checkstate);
 
-    void DrawMain();
+    void Update();
 
 public:
     QColor distanceColor01          = Qt::blue;
@@ -65,17 +70,17 @@ private:
     std::vector<long>					Previewdistance01;
     std::vector<long>					Previewdistance02;
     std::vector<vector3>                Directions;
-    int                                 Scanstep = 0;
-    bool                                RegionInverse = false; //part1 left, part2 right
 
-    QVector<double> PointX01,  PointY01;
-    QVector<double> PointX02,  PointY02;
-    QVector<double> RawObjX,   RawObjY;
-    QVector<double> PosObjX,   PosObjY;
-    QVector<double> ObjPointX, ObjPointY;
+    bool                                RegionInverse           = false;  //part1 left, part2 right
 
-    QPointer<QCPItemRect> RectItem      = nullptr;
-    QPointer<QCPItemText> LabelItem01   = nullptr;
-    QPointer<QCPItemText> LabelItem02   = nullptr;
+    QVector<double>                     PointX01,  PointY01;
+    QVector<double>                     PointX02,  PointY02;
+    QVector<double>                     RawObjX,   RawObjY;
+    QVector<double>                     PosObjX,   PosObjY;
+    QVector<double>                     ObjPointX, ObjPointY;
+
+    QPointer<QCPItemRect>               RectItem                = nullptr;
+    QPointer<QCPItemText>               LabelItem01             = nullptr;
+    QPointer<QCPItemText>               LabelItem02             = nullptr;
 };
 #endif

@@ -58,14 +58,9 @@ struct alignas(float) vector3
 	std::string ToString() const;
 
 	static float Dot(const vector3& a, const vector3& b);
-
 	static vector3 Cross(const vector3& left, const vector3& right);
-
 	static float Angle(const vector3& from, const vector3& to);
-
 	static float Distance(const vector3& a, const vector3& b);
-
-	//static vector3 SmoothDamp(vector3 current, vector3 target, vector3& currentVelocity, float smoothTime);
 	static vector3 SmoothDamp(vector3 current, vector3 target, vector3& currentVelocity, float smoothTime, float deltaTime);
 	static vector3 SmoothDamp(vector3 current, vector3 target, vector3& currentVelocity, float smoothTime, float maxSpeed, float deltaTime);
 

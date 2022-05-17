@@ -18,8 +18,8 @@
 
 #define M_DELTA_ANGLE (M_PI * 2 / 1440) 
 
-struct alignas(float) Detectparm {
-	Rect			detctRect					= Rect(-500, 1000, 500, 1000); //Unit is MM, LeftTop
+struct Detectparm {
+	Rect			detctRect					= Rect(-500, 1000, 500, 1000);	//Unit is MM, LeftTop
 	int				noiseLimit					= 7;
 	int				deltaLimit					= 100;	
 	float			distanceThreshold			= 300;	
@@ -28,13 +28,14 @@ struct alignas(float) Detectparm {
 	int				screenHeight				= 1080;
 	bool			useOffset					= false;
 	vector3			positionOffset				= vector3(0, 0, 0);
+	vector3			sensor02_originPos			= vector3(1500, 0, 0);
 
 
 	float			delatime					= 0.015f;
-	bool			sensor02_activate			= false;
-	vector3			sensor02_originPos			= vector3(1500, 0, 0);
-
-	float			objPosSmoothTime			= 0.05f;
+	float			proObjSmoothTime			= 0.05f;
+	float			alldistanceSmoothfactor		= 0.1f;
+	int				alldistanceSmoothThreshold	= 200;
+	int				ScaneStep					= 1081;
 };
 
 
@@ -50,8 +51,7 @@ public:
 
 	void Sensor2Screen(vector3& input);
 
-	void CacheDirections(int ScanSteps);
-	void GetPointFromDistance(int step, float distance, vector3& pos, bool multi = false);
+	void CacheDirections(int ScanSteps = 1081);
 
 	std::vector<RawObject> DetectRawObjects(const std::vector<long>& distances, const Rect& region, bool subsensor = false);
 	void ProcessingObjects(std::vector<RawObject>& newlyDetectedObjects);
@@ -66,8 +66,6 @@ private:
 	std::vector<RawObject>					m_rawObjects;
 	std::vector<ProcessedObject>			m_processObject;
 	std::vector<vector3>					m_directions;
-
-	std::mutex								m_detectobject_guard;
 };
 #endif
 
