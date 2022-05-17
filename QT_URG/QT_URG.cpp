@@ -57,6 +57,7 @@ void QT_URG::Update() {
 
     //================ * Draw * ================//
     clearAllPlotData(); //clear all draw data
+    setAllPlotData();
 
     //Draw Origindistance01
     if (ui->DrawPoint->isChecked() && !Origindistance01.empty()) {
@@ -153,18 +154,18 @@ void QT_URG::UrgMain() {
 
     if (UrgNet01 != nullptr && UrgNet02 != nullptr) {
         auto regions = UrgDetector->parm.detctRect.slice(RegionInverse);
-        auto resultRawObjs_part1 = UrgDetector->DetectRawObjects(Origindistance01, regions[0]);
-        auto resultRawObjs_part2 = UrgDetector->DetectRawObjects(Origindistance02, regions[1], true);
+        auto resultRawObjs_part1 = std::move(UrgDetector->DetectRawObjects(Origindistance01, regions[0]));
+        auto resultRawObjs_part2 = std::move(UrgDetector->DetectRawObjects(Origindistance02, regions[1], true));
         resultRawObjs_part1.insert(resultRawObjs_part1.end(), resultRawObjs_part2.begin(), resultRawObjs_part2.end());
         UrgDetector->ProcessingObjects(resultRawObjs_part1);
     }
     else{
         if (UrgNet01 != nullptr) {
-            auto resultRawObjs = UrgDetector->DetectRawObjects(Origindistance01, UrgDetector->parm.detctRect);
+            auto resultRawObjs = std::move(UrgDetector->DetectRawObjects(Origindistance01, UrgDetector->parm.detctRect));
             UrgDetector->ProcessingObjects(resultRawObjs);
         }
         else if (UrgNet02 != nullptr) {
-            auto resultRawObjs = UrgDetector->DetectRawObjects(Origindistance02, UrgDetector->parm.detctRect);
+            auto resultRawObjs = std::move(UrgDetector->DetectRawObjects(Origindistance02, UrgDetector->parm.detctRect, true));
             UrgDetector->ProcessingObjects(resultRawObjs);
         }
     }   
@@ -242,7 +243,6 @@ void QT_URG::ConnectTcp02_Button() {
 void QT_URG::DisconnectTcp02_Button() {
     if (UrgNet02 != nullptr) {
         UrgNet02.reset(nullptr);
-        //UrgDetector->parm.sensor02_activate = false;
 
         ui->Connect_Button_02->setEnabled(true);
         ui->Disconnect_Button_02->setEnabled(false);

@@ -31,10 +31,11 @@ struct Detectparm {
 	vector3			sensor02_originPos			= vector3(1500, 0, 0);
 
 
-	float			delatime					= 0.015f;
 	float			proObjSmoothTime			= 0.05f;
-	float			alldistanceSmoothfactor		= 0.1f;
+	float			alldistanceSmoothfactor		= 0.5f;
 	int				alldistanceSmoothThreshold	= 200;
+
+	float			delatime					= 0.015f;
 	int				ScaneStep					= 1081;
 };
 
