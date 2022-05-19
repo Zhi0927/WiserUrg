@@ -55,7 +55,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <TargetName>WiserURG</TargetName>
+    <TargetName>Wiser URG</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <IncludePath>D:\Software\armadillo-11.0.1\include;$(IncludePath)</IncludePath>
@@ -109,7 +109,7 @@
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="DetectObject.cpp" />
-    <ClCompile Include="MouseSimulator.cpp" />
+    <ClCompile Include="WinHIDController.cpp" />
     <ClCompile Include="qcustomplot.cpp" />
     <ClCompile Include="Rect.cpp" />
     <ClCompile Include="SCIP_library.cpp" />
@@ -128,7 +128,7 @@
     <ClInclude Include="DetectObject.hpp" />
     <QtMoc Include="qcustomplot.h" />
     <ClInclude Include="Includes.h" />
-    <ClInclude Include="MouseSimulator.hpp" />
+    <ClInclude Include="WinHIDController.hpp" />
     <ClInclude Include="Rect.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SCIP_library.hpp" />

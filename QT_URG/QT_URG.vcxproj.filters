@@ -64,7 +64,7 @@
     <ClCompile Include="qcustomplot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MouseSimulator.cpp">
+    <ClCompile Include="WinHIDController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ConfigManager.cpp">
@@ -96,7 +96,7 @@
     <ClInclude Include="Includes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MouseSimulator.hpp">
+    <ClInclude Include="WinHIDController.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">

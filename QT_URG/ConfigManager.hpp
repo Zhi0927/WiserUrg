@@ -12,8 +12,8 @@ class ConfigManager
 {
 public:
     static ConfigManager* Instance() {
-        static ConfigManager m;
-        return &m;
+        static ConfigManager singleton;
+        return &singleton;
     }
 
     void SaveWindowSize(QWidget* pWnd);
@@ -26,7 +26,6 @@ private:
 
 public:
     QString mIniPath;
-
 };
 
 #endif
