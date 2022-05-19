@@ -9,7 +9,7 @@ QT_URG::QT_URG(QWidget *parent)
     //======================================= * Awake * ===========================================//
     ui->setupUi(this);
     this->setWindowIcon(QIcon("icon.png"));
-    this->setWindowTitle("Wiser URG");
+    this->setWindowTitle("WiserURG");
     ConfigManager::Instance()->LoadWindowSize(this);
     ConfigManager::Instance()->LoadParameter(ui);
 
