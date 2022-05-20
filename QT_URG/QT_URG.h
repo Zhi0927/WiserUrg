@@ -4,7 +4,7 @@
 #include "EthernetConnector.hpp"
 #include "SCIP_library.hpp"
 #include "ObjectDetector.hpp"
-#include "MouseSimulator.hpp"
+#include "WinHIDController.hpp"
 #include "ConfigManager.hpp"
 
 #include <QtWidgets/QWidget>
@@ -47,12 +47,9 @@ private slots:
 public:
     QColor distanceColor01          = Qt::blue;
     QColor distanceColor02          = Qt::magenta;
-
     QColor objectColor              = Qt::green;
     QColor objectPointColor         = Qt::red;
-
-    QColor processedObjectColor     = Qt::cyan;
-                                    
+    QColor processedObjectColor     = Qt::cyan;                                   
     QColor RectColor                = Qt::red;
     QColor LabelColor               = Qt::black;
 
@@ -61,6 +58,7 @@ private:
 
     std::unique_ptr<ObjectDetector>     UrgDetector;
     std::unique_ptr<MouseSimulator>		UrgMouse;
+    std::unique_ptr<HotkeyManager>		UrgKeyBoard;
     std::unique_ptr<EthernetConnector>	UrgNet01;
     std::unique_ptr<EthernetConnector>	UrgNet02;
     std::mutex                          distance_guard;
@@ -82,5 +80,8 @@ private:
     QPointer<QCPItemRect>               RectItem                = nullptr;
     QPointer<QCPItemText>               LabelItem01             = nullptr;
     QPointer<QCPItemText>               LabelItem02             = nullptr;
+
+    QPointer<QCPCurve>                  Curveitem01             = nullptr;
+    QPointer<QCPCurve>                  Curveitem02             = nullptr;
 };
 #endif

@@ -544,6 +544,25 @@
    </item>
    <item row="2" column="1">
     <layout class="QGridLayout" name="gridLayout">
+     <item row="3" column="2">
+      <widget class="QCheckBox" name="DrawObject">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>DrawObject</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QLabel" name="Draw_Label">
        <property name="sizePolicy">
@@ -567,8 +586,11 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
-      <widget class="QCheckBox" name="DrawObject">
+     <item row="3" column="0">
+      <widget class="QCheckBox" name="DrawPoint01">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -576,7 +598,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>DrawObject</string>
+        <string>DrawPoint01</string>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -586,7 +608,7 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="2">
+     <item row="3" column="3">
       <widget class="QCheckBox" name="DrawProObject">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -605,11 +627,8 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
-      <widget class="QCheckBox" name="DrawPoint">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+     <item row="3" column="1">
+      <widget class="QCheckBox" name="DrawPoint02">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -617,13 +636,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>DrawPoint</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
+        <string>DrawPoint02</string>
        </property>
       </widget>
      </item>
@@ -1116,7 +1129,7 @@
         </font>
        </property>
        <property name="text">
-        <string>* Mouse Tracking</string>
+        <string>* Mouse Tracking (Ctrl + Alt + A)</string>
        </property>
        <property name="checkable">
         <bool>true</bool>

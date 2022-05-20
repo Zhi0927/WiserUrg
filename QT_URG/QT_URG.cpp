@@ -9,14 +9,23 @@ QT_URG::QT_URG(QWidget *parent)
     //======================================= * Awake * ===========================================//
     ui->setupUi(this);
     this->setWindowIcon(QIcon("icon.png"));
-    this->setWindowTitle("WiserZhi URG");
+    this->setWindowTitle("WiserURG - version1.1");
     ConfigManager::Instance()->LoadWindowSize(this);
     ConfigManager::Instance()->LoadParameter(ui);
 
     UrgDetector.reset(new ObjectDetector());
     UrgMouse.reset(new MouseSimulator());
+    UrgKeyBoard.reset(new HotkeyManager());
+
     UrgDetector->CacheDirections(UrgDetector->parm.ScaneStep);
     Directions = UrgDetector->GetDirection();
+    UrgKeyBoard->Init([&](uint32_t process_id, uint32_t key_id, bool ctrl_pressed, bool shift_pressed) {
+        if ((char)key_id == 'A' && ctrl_pressed && shift_pressed) {
+            bool touchchecked = ui->TouchEvent->isChecked();
+            ui->TouchEvent->setChecked(!touchchecked);
+            useTouchEvent(!touchchecked);
+        }
+    });
 
     InitPlot();
     setConstraintRegion_Button();
@@ -28,16 +37,16 @@ QT_URG::QT_URG(QWidget *parent)
     ui->Connect_Button_02->setEnabled(true);
     ui->Disconnect_Button_02->setEnabled(false);
 
-    connect(ui->Connect_Button_01, SIGNAL(clicked()), this, SLOT(ConnectTcp01_Button()));
-    connect(ui->Disconnect_Button_01, SIGNAL(clicked()), this, SLOT(DisconnectTcp01_Button()));
-    connect(ui->Connect_Button_02, SIGNAL(clicked()), this, SLOT(ConnectTcp02_Button()));
-    connect(ui->Disconnect_Button_02, SIGNAL(clicked()), this, SLOT(DisconnectTcp02_Button()));
-    connect(ui->SetCR_Button, SIGNAL(clicked()), this, SLOT(setConstraintRegion_Button()));
-    connect(ui->SetParm_Button, SIGNAL(clicked()), this, SLOT(setParm_Buttom()));
-    connect(ui->UseOffset, SIGNAL(clicked(bool)), this, SLOT(useOffset(bool)));
-    connect(ui->TouchEvent, SIGNAL(clicked(bool)), this, SLOT(useTouchEvent(bool)));
     QTimer* dataTimer = new QTimer(this);
-    connect(dataTimer, SIGNAL(timeout()), this, SLOT(Update()));
+    connect(ui->Connect_Button_01,    SIGNAL(clicked()),     this, SLOT(ConnectTcp01_Button()));
+    connect(ui->Disconnect_Button_01, SIGNAL(clicked()),     this, SLOT(DisconnectTcp01_Button()));
+    connect(ui->Connect_Button_02,    SIGNAL(clicked()),     this, SLOT(ConnectTcp02_Button()));
+    connect(ui->Disconnect_Button_02, SIGNAL(clicked()),     this, SLOT(DisconnectTcp02_Button()));
+    connect(ui->SetCR_Button,         SIGNAL(clicked()),     this, SLOT(setConstraintRegion_Button()));
+    connect(ui->SetParm_Button,       SIGNAL(clicked()),     this, SLOT(setParm_Buttom()));
+    connect(ui->UseOffset,            SIGNAL(clicked(bool)), this, SLOT(useOffset(bool)));
+    connect(ui->TouchEvent,           SIGNAL(clicked(bool)), this, SLOT(useTouchEvent(bool)));
+    connect(dataTimer,                SIGNAL(timeout()),     this, SLOT(Update()));
     dataTimer->start(0);
 
     std::cout << "Initial QT successful!" << std::endl;
@@ -60,23 +69,31 @@ void QT_URG::Update() {
     setAllPlotData();
 
     //Draw Origindistance01
-    if (ui->DrawPoint->isChecked() && !Origindistance01.empty()) {
+    if (ui->DrawPoint01->isChecked() && !Origindistance01.empty()) {
+        PointX01.append(0);
+        PointY01.append(0);
         for (int i = 0; i < Origindistance01.size(); i++) {
             vector3 result = Directions[i] * Origindistance01[i];
             PointX01.append(static_cast<double>(result.x));
             PointY01.append(static_cast<double>(result.y));
         }
-        ui->plot->graph(3)->setData(PointX01, PointY01, true);
+        PointX01.append(0);
+        PointY01.append(0);
+        Curveitem01->setData(PointX01, PointY01);
     }
 
     //Draw Origindistance02
-    if (ui->DrawPoint->isChecked() && !Origindistance02.empty()) {
+    if (ui->DrawPoint02->isChecked() && !Origindistance02.empty()) {
+        PointX02.append(static_cast<double>(UrgDetector->parm.sensor02_originPos.x));
+        PointY02.append(0);
         for (int i = 0; i < Origindistance02.size(); i++) {
             vector3 result = Directions[i] * Origindistance02[i] + UrgDetector->parm.sensor02_originPos;
             PointX02.append(static_cast<double>(result.x));
             PointY02.append(static_cast<double>(result.y));
         }
-        ui->plot->graph(4)->setData(PointX02, PointY02, true);
+        PointX02.append(static_cast<double>(UrgDetector->parm.sensor02_originPos.x));
+        PointY02.append(0);
+        Curveitem02->setData(PointX02, PointY02);
     }
 
     //Draw RawObject
@@ -106,13 +123,13 @@ void QT_URG::Update() {
         ui->plot->graph(1)->setData(PosObjX, PosObjY, true);
     }
 
-    ui->plot->replot(); // draw it!
+    ui->plot->replot(); // draw it
     //==========================================//
 
 
     if (UrgNet01 != nullptr) {
         if (!UrgNet01->GetConnectState()) {
-            DisconnectTcp01_Button();         
+            DisconnectTcp01_Button();
         }
     }
     if (UrgNet02 != nullptr) {
@@ -124,7 +141,6 @@ void QT_URG::Update() {
     float FPS = frameCount / (key - lastFpsKey);
     ui->FPS_Label->setText(QString("FPS: %1").arg(FPS, 0, 'f', 0));
     UrgDetector->parm.delatime = 1 / FPS;
-
     lastFpsKey = key;
     frameCount = 0;
 }
@@ -159,7 +175,7 @@ void QT_URG::UrgMain() {
         resultRawObjs_part1.insert(resultRawObjs_part1.end(), resultRawObjs_part2.begin(), resultRawObjs_part2.end());
         UrgDetector->ProcessingObjects(resultRawObjs_part1);
     }
-    else{
+    else {
         if (UrgNet01 != nullptr) {
             auto resultRawObjs = std::move(UrgDetector->DetectRawObjects(Origindistance01, UrgDetector->parm.detctRect));
             UrgDetector->ProcessingObjects(resultRawObjs);
@@ -168,16 +184,17 @@ void QT_URG::UrgMain() {
             auto resultRawObjs = std::move(UrgDetector->DetectRawObjects(Origindistance02, UrgDetector->parm.detctRect, true));
             UrgDetector->ProcessingObjects(resultRawObjs);
         }
-    }   
+    }
 }
 
 //======================================== * Quit * =============================================//
 QT_URG::~QT_URG() {
     delete ui;
     UrgDetector.reset(nullptr);
-    UrgMouse.reset(nullptr);
     UrgNet01.reset(nullptr);
     UrgNet02.reset(nullptr);
+    UrgMouse.reset(nullptr);
+    UrgKeyBoard.reset(nullptr);
 }
 
 void QT_URG::closeEvent(QCloseEvent* event) {
@@ -243,7 +260,6 @@ void QT_URG::ConnectTcp02_Button() {
 void QT_URG::DisconnectTcp02_Button() {
     if (UrgNet02 != nullptr) {
         UrgNet02.reset(nullptr);
-
         ui->Connect_Button_02->setEnabled(true);
         ui->Disconnect_Button_02->setEnabled(false);
 
@@ -261,7 +277,6 @@ void QT_URG::setConstraintRegion_Button() {
     UrgDetector->parm.detctRect.height  = ui->Height_Input->value();
 
     Rect rect = UrgDetector->parm.detctRect;
-
     drawRect(rect, Qt::red);
 }
 
@@ -299,35 +314,34 @@ void QT_URG::InitPlot() {
     Previewdistance01.reserve(2162);
     Previewdistance02.reserve(2162);
 
+    Curveitem01 = new QCPCurve(ui->plot->xAxis, ui->plot->yAxis);
+    Curveitem01->setPen(QPen(distanceColor02));
+    Curveitem01->setBrush(distanceColor01);
+
+    Curveitem02 = new QCPCurve(ui->plot->xAxis, ui->plot->yAxis);
+    Curveitem02->setPen(QPen(distanceColor01));
+    Curveitem02->setBrush(distanceColor02);
+
     ui->plot->addGraph();
-    ui->plot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssSquare, QPen(objectColor, 2), objectColor, 15));
+    ui->plot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssSquare, QPen(objectColor, 10), objectColor, 20));
     ui->plot->graph(0)->setLineStyle(QCPGraph::LineStyle::lsNone);
 
     ui->plot->addGraph();
-    ui->plot->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssSquare, QPen(processedObjectColor, 2), processedObjectColor, 15));
+    ui->plot->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssSquare, QPen(processedObjectColor, 10), processedObjectColor, 20));
     ui->plot->graph(1)->setLineStyle(QCPGraph::LineStyle::lsNone);
 
     ui->plot->addGraph();
-    ui->plot->graph(2)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssPlus, QPen(objectPointColor, 1), objectPointColor, 4));
+    ui->plot->graph(2)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssPlus, QPen(objectPointColor, 5), objectPointColor, 7));
     ui->plot->graph(2)->setLineStyle(QCPGraph::LineStyle::lsNone);
-
-    ui->plot->addGraph();
-    ui->plot->graph(3)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssPlus, QPen(distanceColor01, 1), distanceColor01, 2));
-    ui->plot->graph(3)->setLineStyle(QCPGraph::LineStyle::lsNone);
-
-    ui->plot->addGraph();
-    ui->plot->graph(4)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssPlus, QPen(distanceColor02, 1), distanceColor02, 2));
-    ui->plot->graph(4)->setLineStyle(QCPGraph::LineStyle::lsNone);
-
 }
 
 void QT_URG::setAllPlotData() {
-    ui->plot->graph(0)->setData(RawObjX, RawObjY, true);
-    ui->plot->graph(1)->setData(PosObjX, PosObjY, true);
-    ui->plot->graph(2)->setData(ObjPointX, ObjPointY, true);
-    ui->plot->graph(3)->setData(PointX01, PointY01, true);
-    ui->plot->graph(4)->setData(PointX02, PointY02, true);
+    ui->plot->graph(0)->setData(RawObjX,    RawObjY,    true);
+    ui->plot->graph(1)->setData(PosObjX,    PosObjY,    true);
+    ui->plot->graph(2)->setData(ObjPointX,  ObjPointY,  true);
 
+    Curveitem01->setData(PointX01, PointY01);
+    Curveitem02->setData(PointX02, PointY02);
 }
 
 void QT_URG::clearAllPlotData() {
@@ -380,24 +394,15 @@ void QT_URG::useOffset(bool checkstate) {
 }
 
 void QT_URG::useTouchEvent(bool checkstate) {
-    if (checkstate) {
-        std::cout << "Mouse event start" << std::endl;
-
-        if (UrgDetector != nullptr) {
-            UrgDetector->OnNewObjectCallback = [&]() {
-                UrgMouse->leftDown();
-            };
-            UrgDetector->OnLostObjectCallback = [&]() {
-                UrgMouse->leftUp();
-            };
-            UrgDetector->OnUpdataObjCallback = [&](const vector3& pos) {
-                UrgMouse->move(pos.x, pos.y);
-            };
+    if (UrgDetector != nullptr) {
+        if (checkstate) {
+            std::cout << "Start Mouse event" << std::endl;
+            UrgDetector->OnNewObjectCallback    = [&]() {UrgMouse->leftDown();};
+            UrgDetector->OnLostObjectCallback   = [&]() {UrgMouse->leftUp();};
+            UrgDetector->OnUpdataObjCallback    = [&](const vector3& pos) {UrgMouse->move(pos.x, pos.y);};
         }
-    }
-    else {
-        std::cout << "Mouse event stop" << std::endl;
-        if (UrgDetector != nullptr) {
+        else {
+            std::cout << "Cancel Mouse event" << std::endl;
             UrgDetector->OnNewObjectCallback    = nullptr;
             UrgDetector->OnLostObjectCallback   = nullptr;
             UrgDetector->OnUpdataObjCallback    = nullptr;
