@@ -2,14 +2,13 @@
 #include <QMessageBox>
 
 
-QT_URG::QT_URG(QWidget *parent)
-    :   QWidget(parent),
-        ui(new Ui::Qt_urgClass)
-{
+QT_URG::QT_URG(QWidget *parent) : QWidget(parent), ui(new Ui::Qt_urgClass){
+
     //======================================= * Awake * ===========================================//
     ui->setupUi(this);
     this->setWindowIcon(QIcon("icon.png"));
     this->setWindowTitle("WiserURG - version1.1");
+
     ConfigManager::Instance()->LoadWindowSize(this);
     ConfigManager::Instance()->LoadParameter(ui);
 
@@ -38,15 +37,15 @@ QT_URG::QT_URG(QWidget *parent)
     ui->Disconnect_Button_02->setEnabled(false);
 
     QTimer* dataTimer = new QTimer(this);
-    connect(ui->Connect_Button_01,    SIGNAL(clicked()),     this, SLOT(ConnectTcp01_Button()));
-    connect(ui->Disconnect_Button_01, SIGNAL(clicked()),     this, SLOT(DisconnectTcp01_Button()));
-    connect(ui->Connect_Button_02,    SIGNAL(clicked()),     this, SLOT(ConnectTcp02_Button()));
-    connect(ui->Disconnect_Button_02, SIGNAL(clicked()),     this, SLOT(DisconnectTcp02_Button()));
-    connect(ui->SetCR_Button,         SIGNAL(clicked()),     this, SLOT(setConstraintRegion_Button()));
-    connect(ui->SetParm_Button,       SIGNAL(clicked()),     this, SLOT(setParm_Buttom()));
-    connect(ui->UseOffset,            SIGNAL(clicked(bool)), this, SLOT(useOffset(bool)));
-    connect(ui->TouchEvent,           SIGNAL(clicked(bool)), this, SLOT(useTouchEvent(bool)));
-    connect(dataTimer,                SIGNAL(timeout()),     this, SLOT(Update()));
+    connect(ui->Connect_Button_01,    SIGNAL(clicked()),     this,  SLOT(ConnectTcp01_Button()));
+    connect(ui->Disconnect_Button_01, SIGNAL(clicked()),     this,  SLOT(DisconnectTcp01_Button()));
+    connect(ui->Connect_Button_02,    SIGNAL(clicked()),     this,  SLOT(ConnectTcp02_Button()));
+    connect(ui->Disconnect_Button_02, SIGNAL(clicked()),     this,  SLOT(DisconnectTcp02_Button()));
+    connect(ui->SetCR_Button,         SIGNAL(clicked()),     this,  SLOT(setConstraintRegion_Button()));
+    connect(ui->SetParm_Button,       SIGNAL(clicked()),     this,  SLOT(setParm_Buttom()));
+    connect(ui->UseOffset,            SIGNAL(clicked(bool)), this,  SLOT(useOffset(bool)));
+    connect(ui->TouchEvent,           SIGNAL(clicked(bool)), this,  SLOT(useTouchEvent(bool)));
+    connect(dataTimer,                SIGNAL(timeout()),     this,  SLOT(Update()));
     dataTimer->start(0);
 
     std::cout << "Initial QT successful!" << std::endl;
@@ -64,78 +63,82 @@ void QT_URG::Update() {
     const std::vector<RawObject>& rawObjectList         = UrgDetector->GetRawObjectList();
     const std::vector<ProcessedObject>& detectedObjects = UrgDetector->GetProcessObjects();
 
-    //================ * Draw * ================//
-    clearAllPlotData(); 
-    setAllPlotData();
-
-    //Draw Origindistance01
-    if (ui->DrawPoint01->isChecked() && !Origindistance01.empty()) {
-        PointX01.append(0);
-        PointY01.append(0);
-        for (int i = 0; i < Origindistance01.size(); i++) {
-            vector3 result = Directions[i] * Origindistance01[i];
-            PointX01.append(static_cast<double>(result.x));
-            PointY01.append(static_cast<double>(result.y));
-        }
-        PointX01.append(0);
-        PointY01.append(0);
-        Curveitem01->setData(PointX01, PointY01);
-    }
-
-    //Draw Origindistance02
-    if (ui->DrawPoint02->isChecked() && !Origindistance02.empty()) {
-        PointX02.append(static_cast<double>(UrgDetector->parm.sensor02_originPos.x));
-        PointY02.append(0);
-        for (int i = 0; i < Origindistance02.size(); i++) {
-            vector3 result = Directions[i] * Origindistance02[i] + UrgDetector->parm.sensor02_originPos;
-            PointX02.append(static_cast<double>(result.x));
-            PointY02.append(static_cast<double>(result.y));
-        }
-        PointX02.append(static_cast<double>(UrgDetector->parm.sensor02_originPos.x));
-        PointY02.append(0);
-        Curveitem02->setData(PointX02, PointY02);
-    }
-
-    //Draw RawObject
-    if (ui->DrawObject->isChecked() && !rawObjectList.empty()) {
-        for (auto rObj : rawObjectList) {
-            auto rawpos = rObj.getPosition();
-            RawObjX.append(static_cast<double>(rawpos.x));
-            RawObjY.append(static_cast<double>(rawpos.y));
-
-            for (size_t i = 0; i < rObj.distList.size(); i++) {
-                auto detectpos = rObj.posList[i];
-                ObjPointX.append(static_cast<double>(detectpos.x));
-                ObjPointY.append(static_cast<double>(detectpos.y));
-            }
-        }
-        ui->plot->graph(0)->setData(RawObjX, RawObjY, true);
-        ui->plot->graph(2)->setData(ObjPointX, ObjPointY, true);
-    }
-
-    //Draw ProcessedObject
+    //================================ * Draw * ====================================//
     if (UrgNet01 != nullptr || UrgNet02 != nullptr) {
-        if (ui->DrawProObject->isChecked() && !detectedObjects.empty()) {
-            for (auto& pObj : detectedObjects) {
-                auto propos = pObj.getPosition();
-                PosObjX.append(static_cast<double>(propos.x));
-                PosObjY.append(static_cast<double>(propos.y));
-            }
-            ui->plot->graph(1)->setData(PosObjX, PosObjY, true);
-        }
-    }
+        clearAllPlotData();
+        setAllPlotData();
 
-    ui->plot->replot();
-    //==========================================//
+        //Draw Origindistance01
+        if (ui->DrawPoint01->isChecked() && !Origindistance01.empty()) {
+            PointX01.append(0);
+            PointY01.append(0);
+            for (int i = 0; i < Origindistance01.size(); i++) {
+                vector3 result = Directions[i] * Origindistance01[i];
+                PointX01.append(static_cast<double>(result.x));
+                PointY01.append(static_cast<double>(result.y));
+            }
+            PointX01.append(0);
+            PointY01.append(0);
+            Curveitem01->setData(PointX01, PointY01);
+        }
+
+        //Draw Origindistance02
+        if (ui->DrawPoint02->isChecked() && !Origindistance02.empty()) {
+            PointX02.append(static_cast<double>(UrgDetector->parm.sensor02_originPos.x));
+            PointY02.append(0);
+            for (int i = 0; i < Origindistance02.size(); i++) {
+                vector3 result = Directions[i] * Origindistance02[i] + UrgDetector->parm.sensor02_originPos;
+                PointX02.append(static_cast<double>(result.x));
+                PointY02.append(static_cast<double>(result.y));
+            }
+            PointX02.append(static_cast<double>(UrgDetector->parm.sensor02_originPos.x));
+            PointY02.append(0);
+            Curveitem02->setData(PointX02, PointY02);
+        }
+
+        //Draw RawObject
+        if (ui->DrawObject->isChecked() && !rawObjectList.empty()) {
+            for (auto rObj : rawObjectList) {
+                auto rawpos = rObj.getPosition();
+                RawObjX.append(static_cast<double>(rawpos.x));
+                RawObjY.append(static_cast<double>(rawpos.y));
+
+                for (size_t i = 0; i < rObj.distList.size(); i++) {
+                    auto detectpos = rObj.posList[i];
+                    ObjPointX.append(static_cast<double>(detectpos.x));
+                    ObjPointY.append(static_cast<double>(detectpos.y));
+                }
+            }
+            ui->plot->graph(0)->setData(RawObjX, RawObjY, true);
+            ui->plot->graph(2)->setData(ObjPointX, ObjPointY, true);
+        }
+
+        //Draw ProcessedObject
+        if (UrgNet01 != nullptr || UrgNet02 != nullptr) {
+            if (ui->DrawProObject->isChecked() && !detectedObjects.empty()) {
+                for (auto& pObj : detectedObjects) {
+                    auto propos = pObj.getPosition();
+                    PosObjX.append(static_cast<double>(propos.x));
+                    PosObjY.append(static_cast<double>(propos.y));
+                }
+                ui->plot->graph(1)->setData(PosObjX, PosObjY, true);
+            }
+        }
+        ui->plot->replot();
+    } 
+    //==============================================================================//
 
     if (UrgNet01 != nullptr) {
         if (!UrgNet01->GetConnectState()) {
+            std::cout << "1x" << std::endl;
             DisconnectTcp01_Button();
+            QMessageBox::information(this, tr("[Sensor01] Connection failed"), tr("Socket failed.\nPlease check if the IP you entered is correct!"));
         }
     }
     if (UrgNet02 != nullptr) {
         if (!UrgNet02->GetConnectState()) {
             DisconnectTcp02_Button();
+            QMessageBox::information(this, tr("[Sensor02] Connection failed."), tr("Socket failed.\nPlease check if the IP you entered is correct!"));
         }
     }
 
@@ -218,7 +221,7 @@ void QT_URG::ConnectTcp01_Button() {
             ui->Disconnect_Button_01->setEnabled(true);
         }
         else {
-            QMessageBox::information(this, tr("[Sensor01] Connection failed"), tr("Socket failed.\n Please check if the IP you entered is correct!"));
+            QMessageBox::information(this, tr("[Sensor01] Connection failed"), tr("Socket failed.\nPlease check if the IP you entered is correct!"));
             UrgNet01.reset(nullptr);
         }
     }
@@ -252,7 +255,7 @@ void QT_URG::ConnectTcp02_Button() {
             ui->Disconnect_Button_02->setEnabled(true);
         }
         else {
-            QMessageBox::information(this, tr("[Sensor02] Connection failed."), tr("Socket failed.\n Please check if the IP you entered is correct!"));
+            QMessageBox::information(this, tr("[Sensor02] Connection failed."), tr("Socket failed.\nPlease check if the IP you entered is correct!"));
             UrgNet02.reset(nullptr);
         }
     }
@@ -313,26 +316,7 @@ void QT_URG::InitPlot() {
     Previewdistance01.reserve(2162);
     Previewdistance02.reserve(2162);
 
-    Curveitem01 = new QCPCurve(ui->plot->xAxis, ui->plot->yAxis);
-    Curveitem01->setPen(QPen(distanceColor02));
-    Curveitem01->setBrush(distanceColor01);
-
-    Curveitem02 = new QCPCurve(ui->plot->xAxis, ui->plot->yAxis);
-    Curveitem02->setPen(QPen(distanceColor01));
-    Curveitem02->setBrush(distanceColor02);
-
-    ui->plot->addGraph();
-    ui->plot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssSquare, QPen(objectColor, 10), objectColor, 20));
-    ui->plot->graph(0)->setLineStyle(QCPGraph::LineStyle::lsNone);
-
-    ui->plot->addGraph();
-    ui->plot->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssSquare, QPen(processedObjectColor, 10), processedObjectColor, 20));
-    ui->plot->graph(1)->setLineStyle(QCPGraph::LineStyle::lsNone);
-
-    ui->plot->addGraph();
-    ui->plot->graph(2)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssPlus, QPen(objectPointColor, 5), objectPointColor, 7));
-    ui->plot->graph(2)->setLineStyle(QCPGraph::LineStyle::lsNone);
-
+    //FPS Label
     FPSItem = new QCPItemText(ui->plot);
     FPSItem->setPositionAlignment(Qt::AlignLeft | Qt::AlignCenter);
     FPSItem->position->setType(QCPItemPosition::ptAxisRectRatio);
@@ -340,6 +324,26 @@ void QT_URG::InitPlot() {
     FPSItem->setText(" ");
     FPSItem->setFont(QFont(font().family(), 12));
     FPSItem->setPen(QPen(Qt::transparent));
+
+    Curveitem02 = new QCPCurve(ui->plot->xAxis, ui->plot->yAxis);
+    Curveitem02->setPen(QPen(disboarderColor, 2));
+    Curveitem02->setBrush(distanceColor02);
+
+    Curveitem01 = new QCPCurve(ui->plot->xAxis, ui->plot->yAxis);
+    Curveitem01->setPen(QPen(disboarderColor, 2));
+    Curveitem01->setBrush(distanceColor01);
+
+    ui->plot->addGraph();
+    ui->plot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssSquare, QPen(objectColor, 15), objectColor, 25));
+    ui->plot->graph(0)->setLineStyle(QCPGraph::LineStyle::lsNone);
+
+    ui->plot->addGraph();
+    ui->plot->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssSquare, QPen(processedObjectColor, 15), processedObjectColor, 25));
+    ui->plot->graph(1)->setLineStyle(QCPGraph::LineStyle::lsNone);
+
+    ui->plot->addGraph();
+    ui->plot->graph(2)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssPlus, QPen(objectPointColor, 2), objectPointColor, 7));
+    ui->plot->graph(2)->setLineStyle(QCPGraph::LineStyle::lsNone);
 }
 
 void QT_URG::setAllPlotData() {
@@ -368,7 +372,7 @@ void QT_URG::drawRect(const Rect& rect, QColor color) {
     if (RectItem == nullptr) {
         RectItem = new QCPItemRect(ui->plot);
         RectItem->setVisible(true);
-        RectItem->setPen(QPen(color));
+        RectItem->setPen(QPen(color, 3));
         RectItem->setBrush(QBrush(Qt::NoBrush));
         RectItem->topLeft->setType(QCPItemPosition::ptPlotCoords);
         RectItem->bottomRight->setType(QCPItemPosition::ptPlotCoords);
@@ -384,8 +388,8 @@ void QT_URG::drawLabel(QPointer<QCPItemText>& item, const float x, const float y
         item->position->setType(QCPItemPosition::ptPlotCoords);
     }
 
-    item->setFont(QFont(font().family(), fontsize));
-    item->setPen(QPen(color));
+    item->setFont(QFont(font().family(), fontsize, 5));
+    item->setPen(QPen(color, 2));
     item->position->setCoords(x, y);
     item->setText(text);
 }

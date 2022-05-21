@@ -89,7 +89,7 @@ void HotkeyManager::runner_thread() {
 
 			m_callback(getProcessId(), key_id, isCtrlPressed(), isShiftPressed());
 		}
-		Sleep(120);
+		Sleep(200);
 	}
 }
 

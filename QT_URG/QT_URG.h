@@ -45,10 +45,11 @@ private slots:
     void Update();
 
 public:
-    QColor distanceColor01          = Qt::blue;
-    QColor distanceColor02          = Qt::magenta;
-    QColor objectColor              = Qt::green;
-    QColor objectPointColor         = Qt::red;
+    QColor distanceColor01          = Qt::green;
+    QColor distanceColor02          = Qt::yellow;
+    QColor disboarderColor          = Qt::magenta;
+    QColor objectColor              = Qt::gray;
+    QColor objectPointColor         = Qt::blue;
     QColor processedObjectColor     = Qt::cyan;                                   
     QColor RectColor                = Qt::red;
     QColor LabelColor               = Qt::black;

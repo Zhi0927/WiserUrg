@@ -95,7 +95,6 @@ void EthernetConnector::ListenForClients() {
 }
 
 void EthernetConnector::HandleClientComm(SOCKET& sock) {
-    bool exception_caught = false;
     try{
         while (m_isconnected) {
             int error_code = 1;
@@ -125,6 +124,7 @@ void EthernetConnector::HandleClientComm(SOCKET& sock) {
         }
     }
     catch (const std::exception& e){
+        m_isconnected = false;
         std::cerr << "[ERROR] HandleClientComm:" << e.what() << std::endl;
     }  
 }
@@ -149,7 +149,7 @@ std::string EthernetConnector::read_line(SOCKET& sock, int& error) {
         char buf[1];
         bytesReceived = recv(sock, buf, 1, 0);
 
-        if (bytesReceived < 0 || WSAGetLastError() == WSAECONNABORTED) {
+        if (bytesReceived == SOCKET_ERROR || WSAGetLastError() == WSAECONNABORTED) {
             error = -1;
             std::cerr << "Tcp Disconnected!" << std::endl;
             break;
