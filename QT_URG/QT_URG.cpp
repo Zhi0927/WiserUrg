@@ -65,7 +65,7 @@ void QT_URG::Update() {
     const std::vector<ProcessedObject>& detectedObjects = UrgDetector->GetProcessObjects();
 
     //================ * Draw * ================//
-    clearAllPlotData(); //clear all draw data
+    clearAllPlotData(); 
     setAllPlotData();
 
     //Draw Origindistance01
@@ -114,18 +114,19 @@ void QT_URG::Update() {
     }
 
     //Draw ProcessedObject
-    if (ui->DrawProObject->isChecked() && !detectedObjects.empty()) {
-        for (auto& pObj : detectedObjects) {
-            auto propos = pObj.getPosition();
-            PosObjX.append(static_cast<double>(propos.x));
-            PosObjY.append(static_cast<double>(propos.y));
+    if (UrgNet01 != nullptr || UrgNet02 != nullptr) {
+        if (ui->DrawProObject->isChecked() && !detectedObjects.empty()) {
+            for (auto& pObj : detectedObjects) {
+                auto propos = pObj.getPosition();
+                PosObjX.append(static_cast<double>(propos.x));
+                PosObjY.append(static_cast<double>(propos.y));
+            }
+            ui->plot->graph(1)->setData(PosObjX, PosObjY, true);
         }
-        ui->plot->graph(1)->setData(PosObjX, PosObjY, true);
     }
 
-    ui->plot->replot(); // draw it
+    ui->plot->replot();
     //==========================================//
-
 
     if (UrgNet01 != nullptr) {
         if (!UrgNet01->GetConnectState()) {
@@ -139,7 +140,7 @@ void QT_URG::Update() {
     }
 
     float FPS = frameCount / (key - lastFpsKey);
-    ui->FPS_Label->setText(QString("FPS: %1").arg(FPS, 0, 'f', 0));
+    FPSItem->setText(QString("FPS: %1").arg(FPS, 0, 'f', 0));
     UrgDetector->parm.delatime = 1 / FPS;
     lastFpsKey = key;
     frameCount = 0;
@@ -281,29 +282,27 @@ void QT_URG::setConstraintRegion_Button() {
 }
 
 void QT_URG::setParm_Buttom() {
-    UrgDetector->parm.noiseLimit        = ui->noiseLimit_Input->value();
-    UrgDetector->parm.deltaLimit        = ui->deltaLimit_Input->value();
-    UrgDetector->parm.distanceThreshold = ui->distanceThreshold_Input->value();
-    UrgDetector->parm.detectsize        = ui->DetectSize_Input->value();
-
-    UrgDetector->parm.screenWidth       = ui->ResolutionWidth_Input->value();
-    UrgDetector->parm.screenHeight      = ui->ResolutionHeight_Input->value();
+    UrgDetector->parm.noiseLimit            = ui->noiseLimit_Input->value();
+    UrgDetector->parm.deltaLimit            = ui->deltaLimit_Input->value();
+    UrgDetector->parm.distanceThreshold     = ui->distanceThreshold_Input->value();
+    UrgDetector->parm.detectsize            = ui->DetectSize_Input->value();
+    UrgDetector->parm.proObjSmoothTime      = ui->SmoothFactor_Input->value();
+    UrgDetector->parm.screenWidth           = ui->ResolutionWidth_Input->value();
+    UrgDetector->parm.screenHeight          = ui->ResolutionHeight_Input->value();
 
     UrgMouse->SetRatio(UrgDetector->parm.screenWidth, UrgDetector->parm.screenHeight);
-
 }
 
 //===================================== * Plot Methods * ========================================//
 void QT_URG::InitPlot() {
-
     ui->plot->setInteraction(QCP::iRangeDrag, true);
     ui->plot->setInteraction(QCP::iRangeZoom, true);
     ui->plot->setPlottingHint(QCP::phFastPolylines);
 
     ui->plot->xAxis->setRange(-2000, 2000);
     ui->plot->yAxis->setRange(-2000, 2000);
-    ui->plot->xAxis->setLabel("x");
-    ui->plot->yAxis->setLabel("y");
+    ui->plot->xAxis->setLabel("X-Axes");
+    ui->plot->yAxis->setLabel("Y-Axes");
 
     PointX01.reserve(2162);
     PointX01.reserve(2162);
@@ -333,6 +332,14 @@ void QT_URG::InitPlot() {
     ui->plot->addGraph();
     ui->plot->graph(2)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssPlus, QPen(objectPointColor, 5), objectPointColor, 7));
     ui->plot->graph(2)->setLineStyle(QCPGraph::LineStyle::lsNone);
+
+    FPSItem = new QCPItemText(ui->plot);
+    FPSItem->setPositionAlignment(Qt::AlignLeft | Qt::AlignCenter);
+    FPSItem->position->setType(QCPItemPosition::ptAxisRectRatio);
+    FPSItem->position->setCoords(0.05, 0.02);
+    FPSItem->setText(" ");
+    FPSItem->setFont(QFont(font().family(), 12));
+    FPSItem->setPen(QPen(Qt::transparent));
 }
 
 void QT_URG::setAllPlotData() {
@@ -366,7 +373,6 @@ void QT_URG::drawRect(const Rect& rect, QColor color) {
         RectItem->topLeft->setType(QCPItemPosition::ptPlotCoords);
         RectItem->bottomRight->setType(QCPItemPosition::ptPlotCoords);
     }
-
     RectItem->topLeft->setCoords(rect.xmin, rect.ymin);
     RectItem->bottomRight->setCoords(rect.xmax(), rect.ymax());
 }

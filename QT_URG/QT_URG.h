@@ -78,9 +78,9 @@ private:
     QVector<double>                     ObjPointX, ObjPointY;
 
     QPointer<QCPItemRect>               RectItem                = nullptr;
+    QPointer<QCPItemText>               FPSItem                 = nullptr;
     QPointer<QCPItemText>               LabelItem01             = nullptr;
     QPointer<QCPItemText>               LabelItem02             = nullptr;
-
     QPointer<QCPCurve>                  Curveitem01             = nullptr;
     QPointer<QCPCurve>                  Curveitem02             = nullptr;
 };

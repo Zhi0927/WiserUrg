@@ -29,9 +29,8 @@ struct Detectparm {
 	bool			useOffset					= false;
 	vector3			positionOffset				= vector3(0, 0, 0);
 	vector3			sensor02_originPos			= vector3(1500, 0, 0);
-
-
 	float			proObjSmoothTime			= 0.05f;
+
 	float			alldistanceSmoothfactor		= 0.5f;
 	int				alldistanceSmoothThreshold	= 200;
 

@@ -47,6 +47,7 @@ void ConfigManager::SaveParameter(Ui::Qt_urgClass* ui) {
 	configIniWrite.setValue("/Paramater/deltaLimit"			, ui->deltaLimit_Input->value());
 	configIniWrite.setValue("/Paramater/distanceThreshold"	, ui->distanceThreshold_Input->value());
 	configIniWrite.setValue("/Paramater/DetectSize"			, ui->DetectSize_Input->value());
+	configIniWrite.setValue("/Paramater/SmoothFactor"		, ui->SmoothFactor_Input->value());
 	configIniWrite.setValue("/Paramater/ResolutionWidth"	, ui->ResolutionWidth_Input->value());
 	configIniWrite.setValue("/Paramater/ResolutionHeight"	, ui->ResolutionHeight_Input->value());
 
@@ -72,6 +73,7 @@ void ConfigManager::LoadParameter(Ui::Qt_urgClass* ui) {
 	ui->deltaLimit_Input->setValue(configIniRead.value("/Paramater/deltaLimit", 200).toDouble());
 	ui->distanceThreshold_Input->setValue(configIniRead.value("/Paramater/distanceThreshold", 300).toDouble());
 	ui->DetectSize_Input->setValue(configIniRead.value("/Paramater/DetectSize", 300).toDouble());
+	ui->SmoothFactor_Input->setValue(configIniRead.value("/Paramater/SmoothFactor", 0.05).toDouble());
 	ui->ResolutionWidth_Input->setValue(configIniRead.value("/Paramater/ResolutionWidth", 1920).toDouble());
 	ui->ResolutionHeight_Input->setValue(configIniRead.value("/Paramater/ResolutionHeight", 1080).toDouble());
 

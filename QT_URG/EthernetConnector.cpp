@@ -1,4 +1,4 @@
-#include "EthernetConnector.hpp"
+﻿#include "EthernetConnector.hpp"
 
 
 EthernetConnector::EthernetConnector(const std::string& ip, const int& port, std::mutex& lock_guard)
@@ -42,18 +42,51 @@ bool EthernetConnector::StartTCP() {
     hint.sin_port = htons(m_port_number);
     inet_pton(AF_INET, m_ip_address.c_str(), &hint.sin_addr);
 
+    int error = -1;
+    int len = sizeof(int);
+    timeval timeout;
+    fd_set set;
+    unsigned long ul = 1;
+    ioctlsocket(m_sock, FIONBIO, &ul);
+    bool ret = false;
+
     int connResult = connect(m_sock, (sockaddr*)&hint, sizeof(hint));
     if (connResult == SOCKET_ERROR){
-        std::cerr << "Can't connect to server, Err #" << WSAGetLastError() << std::endl;
+        timeout.tv_sec = 1;
+        timeout.tv_usec = 0;
+        FD_ZERO(&set);
+        FD_SET(m_sock, &set);
+        
+        if (select(m_sock + 1, NULL, &set, NULL, &timeout) > 0) {
+            getsockopt(m_sock, SOL_SOCKET, SO_ERROR, (char*)&error, &len);
+            if (error == 0) {
+                ret = true;
+            }
+            else {
+                ret = false;
+            }
+        }
+        else {
+            ret = false;
+        }
+    }
+    else{
+        ret = true;
+    }
+    
+    ul = 0;
+    ioctlsocket(m_sock, FIONBIO, &ul); //set as blocking
+    if (!ret){
         closesocket(m_sock);
         WSACleanup();
+        std::cerr << "Can't connect to server, Err #" << WSAGetLastError() << std::endl;
         return false;
     }
 
-    ListenForClients();
-    std::cout << "Tcp connect to server successfully! " << std::endl;
 
+    ListenForClients();
     m_isconnected = true;
+    std::cout << "Tcp connect to server successfully! " << std::endl;
     return true;
 }
 
@@ -118,7 +151,7 @@ std::string EthernetConnector::read_line(SOCKET& sock, int& error) {
 
         if (bytesReceived < 0 || WSAGetLastError() == WSAECONNABORTED) {
             error = -1;
-            std::cerr << "Disconnected!" << std::endl;
+            std::cerr << "Tcp Disconnected!" << std::endl;
             break;
         }
 
@@ -157,5 +190,5 @@ void EthernetConnector::close() {
     }
     closesocket(m_sock);
     WSACleanup();
-    std::cout << "Tcp disconnected successfully! " << std::endl;
+    std::cout << "Tcp close! " << std::endl;
 }
