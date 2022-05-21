@@ -290,10 +290,6 @@ void QT_URG::setParm_Buttom() {
     UrgDetector->parm.distanceThreshold     = ui->distanceThreshold_Input->value();
     UrgDetector->parm.detectsize            = ui->DetectSize_Input->value();
     UrgDetector->parm.proObjSmoothTime      = ui->SmoothFactor_Input->value();
-    UrgDetector->parm.screenWidth           = ui->ResolutionWidth_Input->value();
-    UrgDetector->parm.screenHeight          = ui->ResolutionHeight_Input->value();
-
-    UrgMouse->SetRatio(UrgDetector->parm.screenWidth, UrgDetector->parm.screenHeight);
 }
 
 //===================================== * Plot Methods * ========================================//
@@ -334,11 +330,11 @@ void QT_URG::InitPlot() {
     Curveitem01->setBrush(distanceColor01);
 
     ui->plot->addGraph();
-    ui->plot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssSquare, QPen(objectColor, 15), objectColor, 25));
+    ui->plot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssSquare, QPen(objectboarderColor, 3), objectColor, 30));
     ui->plot->graph(0)->setLineStyle(QCPGraph::LineStyle::lsNone);
 
     ui->plot->addGraph();
-    ui->plot->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssSquare, QPen(processedObjectColor, 15), processedObjectColor, 25));
+    ui->plot->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ScatterShape::ssSquare, QPen(processedObjectboarderColor, 3), processedObjectColor, 30));
     ui->plot->graph(1)->setLineStyle(QCPGraph::LineStyle::lsNone);
 
     ui->plot->addGraph();
@@ -379,6 +375,8 @@ void QT_URG::drawRect(const Rect& rect, QColor color) {
     }
     RectItem->topLeft->setCoords(rect.xmin, rect.ymin);
     RectItem->bottomRight->setCoords(rect.xmax(), rect.ymax());
+
+    ui->plot->replot();
 }
 
 void QT_URG::drawLabel(QPointer<QCPItemText>& item, const float x, const float y, const QString& text, int fontsize, QColor color) {
@@ -392,6 +390,8 @@ void QT_URG::drawLabel(QPointer<QCPItemText>& item, const float x, const float y
     item->setPen(QPen(color, 2));
     item->position->setCoords(x, y);
     item->setText(text);
+
+    ui->plot->replot();
 }
 
 //======================================= * Check * =============================================//

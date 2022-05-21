@@ -14,7 +14,6 @@ public:
 		return &singleton;
 	}
 
-	void SetRatio(int screenWidth, int screenHeight);
 	void move(float dx, float dy);
 	void rightDown();
 	void rightUp();
@@ -24,10 +23,6 @@ public:
 
 private:
 	void input(DWORD dwFlags, LONG dx = 0, LONG dy = 0, DWORD mouseData = 0, DWORD time = 0, ULONG_PTR dwExtraInfo = 0);
-
-private:
-	int m_screenWidth	= 1920;
-	int m_screenHeight	= 1080;
 };
 
 

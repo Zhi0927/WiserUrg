@@ -1,14 +1,8 @@
 ﻿#include "WinHIDController.hpp"
 
-
-void MouseSimulator::SetRatio(int screenWidth, int screenHeight) {
-	m_screenWidth = screenWidth;
-	m_screenHeight = screenHeight;
-}
-
 void MouseSimulator::move(float dx, float dy)
 {
-	input(MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE, dx * 65535.0f / m_screenWidth, dy * 65535.0f / m_screenHeight);
+	input(MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE, dx * 65536.0f, dy * 65536.0f);
 }
 
 void MouseSimulator::rightDown()

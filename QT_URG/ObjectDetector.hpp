@@ -24,8 +24,6 @@ struct Detectparm {
 	int				deltaLimit					= 100;	
 	float			distanceThreshold			= 300;	
 	float			detectsize					= 500;
-	int				screenWidth					= 1920;
-	int				screenHeight				= 1080;
 	bool			useOffset					= false;
 	vector3			positionOffset				= vector3(0, 0, 0);
 	vector3			sensor02_originPos			= vector3(1500, 0, 0);
@@ -49,7 +47,7 @@ public:
 	const std::vector<RawObject>& GetRawObjectList() const;
 	const std::vector<ProcessedObject>& GetProcessObjects() const;
 
-	void Sensor2Screen(vector3& input);
+	void SensorPositionNormalize(vector3& input);
 
 	void CacheDirections(int ScanSteps = 1081);
 

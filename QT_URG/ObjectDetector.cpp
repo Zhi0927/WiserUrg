@@ -122,7 +122,7 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
 
                     if (OnUpdataObjCallback != nullptr) {
                         vector3 pos = oldObj.getPosition();
-                        Sensor2Screen(pos);
+                        SensorPositionNormalize(pos);
                         OnUpdataObjCallback(pos);
                     }
                 }
@@ -149,7 +149,7 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
 
             if (OnNewObjectCallback != nullptr && OnUpdataObjCallback != nullptr) {
                 vector3 pos = newbie.getPosition();
-                Sensor2Screen(pos);
+                SensorPositionNormalize(pos);
                 OnUpdataObjCallback(pos);
                 OnNewObjectCallback();
             }
@@ -163,7 +163,7 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
 
             if (OnNewObjectCallback != nullptr && OnUpdataObjCallback != nullptr) {
                 vector3 pos = newbie.getPosition();
-                Sensor2Screen(pos);
+                SensorPositionNormalize(pos);
                 OnUpdataObjCallback(pos);
                 OnNewObjectCallback();
             }
@@ -171,10 +171,9 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
     }
 }
 
-void ObjectDetector::Sensor2Screen(vector3& input) {
-
-    input.x = (1- ((input.x - parm.detctRect.xmin) / parm.detctRect.width)) * parm.screenWidth;
-    input.y = (1+ ((input.y - parm.detctRect.ymin) / parm.detctRect.height)) * parm.screenHeight;
+void ObjectDetector::SensorPositionNormalize(vector3& input) {
+    input.x = (1 - ((input.x - parm.detctRect.xmin) / parm.detctRect.width));
+    input.y = (1 + ((input.y - parm.detctRect.ymin) / parm.detctRect.height));
 }
 
 

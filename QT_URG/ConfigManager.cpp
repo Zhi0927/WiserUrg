@@ -11,8 +11,10 @@ void ConfigManager::SaveWindowSize(QWidget* pWnd)
 	QString className = pWnd->metaObject()->className();
 
 	QSettings configIniWrite(mIniPath, QSettings::IniFormat);
-	configIniWrite.setValue(QString("/%1/width").arg(className), pWnd->width());
-	configIniWrite.setValue(QString("/%1/height").arg(className), pWnd->height());
+	configIniWrite.setValue(QString("/%1/x").arg(className), pWnd->geometry().x());
+	configIniWrite.setValue(QString("/%1/y").arg(className), pWnd->geometry().y());
+	configIniWrite.setValue(QString("/%1/width").arg(className), pWnd->geometry().width());
+	configIniWrite.setValue(QString("/%1/height").arg(className), pWnd->geometry().height());
 }
 
 void ConfigManager::LoadWindowSize(QWidget* pWnd)
@@ -20,12 +22,12 @@ void ConfigManager::LoadWindowSize(QWidget* pWnd)
 	QString className = pWnd->metaObject()->className();
 
 	QSettings configIniRead(mIniPath, QSettings::IniFormat);
-	int w = configIniRead.value(QString("/%1/width").arg(className), 1200).toInt();
-	int h = configIniRead.value(QString("/%1/height").arg(className), 750).toInt();
+	int x = configIniRead.value(QString("/%1/x").arg(className), 10).toInt();
+	int y = configIniRead.value(QString("/%1/y").arg(className), 10).toInt();
+	int w = configIniRead.value(QString("/%1/width").arg(className), 1080).toInt();
+	int h = configIniRead.value(QString("/%1/height").arg(className), 670).toInt();
 
-	if (w > 0 && h > 0){
-		pWnd->setGeometry(0, 0, w, h);
-	}
+	pWnd->setGeometry(x, y, w, h);
 }
 
 void ConfigManager::SaveParameter(Ui::Qt_urgClass* ui) {
@@ -48,8 +50,6 @@ void ConfigManager::SaveParameter(Ui::Qt_urgClass* ui) {
 	configIniWrite.setValue("/Paramater/distanceThreshold"	, ui->distanceThreshold_Input->value());
 	configIniWrite.setValue("/Paramater/DetectSize"			, ui->DetectSize_Input->value());
 	configIniWrite.setValue("/Paramater/SmoothFactor"		, ui->SmoothFactor_Input->value());
-	configIniWrite.setValue("/Paramater/ResolutionWidth"	, ui->ResolutionWidth_Input->value());
-	configIniWrite.setValue("/Paramater/ResolutionHeight"	, ui->ResolutionHeight_Input->value());
 
 	configIniWrite.setValue("/Paramater/cursoroffsetX"		, ui->cursoroffsetX_Input->value());
 	configIniWrite.setValue("/Paramater/cursoroffsetY"		, ui->cursoroffsetY_Input->value());	
@@ -74,8 +74,6 @@ void ConfigManager::LoadParameter(Ui::Qt_urgClass* ui) {
 	ui->distanceThreshold_Input->setValue(configIniRead.value("/Paramater/distanceThreshold", 300).toDouble());
 	ui->DetectSize_Input->setValue(configIniRead.value("/Paramater/DetectSize", 300).toDouble());
 	ui->SmoothFactor_Input->setValue(configIniRead.value("/Paramater/SmoothFactor", 0.05).toDouble());
-	ui->ResolutionWidth_Input->setValue(configIniRead.value("/Paramater/ResolutionWidth", 1920).toDouble());
-	ui->ResolutionHeight_Input->setValue(configIniRead.value("/Paramater/ResolutionHeight", 1080).toDouble());
 
 	ui->cursoroffsetX_Input->setValue(configIniRead.value("/Paramater/cursoroffsetX", 0).toDouble());
 	ui->cursoroffsetY_Input->setValue(configIniRead.value("/Paramater/cursoroffsetY", 0).toDouble());
