@@ -129,7 +129,6 @@
     <ClInclude Include="ConfigManager.hpp" />
     <ClInclude Include="DetectObject.hpp" />
     <QtMoc Include="qcustomplot.h" />
-    <ClInclude Include="Includes.h" />
     <ClInclude Include="md5_encode.h" />
     <ClInclude Include="RegisterManager.hpp" />
     <ClInclude Include="WinHIDController.hpp" />

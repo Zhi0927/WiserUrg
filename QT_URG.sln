@@ -5,16 +5,21 @@ VisualStudioVersion = 16.0.32413.511
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QT_URG", "QT_URG\QT_URG.vcxproj", "{4DCF29B3-FFDA-45D0-AE63-31B2A13582AF}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "QT_URG_Installer", "QT_URG_Installer\QT_URG_Installer.vdproj", "{6B5B280C-7764-4BD1-BEF8-1372EA17561F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4DCF29B3-FFDA-45D0-AE63-31B2A13582AF}.Debug|x64.ActiveCfg = Debug|x64
-		{4DCF29B3-FFDA-45D0-AE63-31B2A13582AF}.Debug|x64.Build.0 = Debug|x64
+		{4DCF29B3-FFDA-45D0-AE63-31B2A13582AF}.Debug|x64.ActiveCfg = Release|x64
+		{4DCF29B3-FFDA-45D0-AE63-31B2A13582AF}.Debug|x64.Build.0 = Release|x64
 		{4DCF29B3-FFDA-45D0-AE63-31B2A13582AF}.Release|x64.ActiveCfg = Release|x64
 		{4DCF29B3-FFDA-45D0-AE63-31B2A13582AF}.Release|x64.Build.0 = Release|x64
+		{6B5B280C-7764-4BD1-BEF8-1372EA17561F}.Debug|x64.ActiveCfg = Release
+		{6B5B280C-7764-4BD1-BEF8-1372EA17561F}.Debug|x64.Build.0 = Release
+		{6B5B280C-7764-4BD1-BEF8-1372EA17561F}.Release|x64.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

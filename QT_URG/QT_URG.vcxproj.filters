@@ -99,9 +99,6 @@
     <ClInclude Include="Vector3.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Includes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="WinHIDController.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
