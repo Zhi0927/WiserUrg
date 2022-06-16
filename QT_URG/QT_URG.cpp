@@ -7,7 +7,7 @@ QT_URG::QT_URG(QWidget *parent) : QWidget(parent), ui(new Ui::Qt_urgClass){
     //======================================= * Awake * ===========================================//
     ui->setupUi(this);
     this->setWindowIcon(QIcon("icon.png"));
-    this->setWindowTitle("WiserURG - version1.1");
+    this->setWindowTitle("WiserURG -version1.1");
 
     ConfigManager::Instance()->LoadWindowSize(this);
     ConfigManager::Instance()->LoadParameter(ui);
@@ -221,8 +221,8 @@ void QT_URG::ConnectTcp01_Button() {
             ui->Disconnect_Button_01->setEnabled(true);
         }
         else {
-            QMessageBox::information(this, tr("[Sensor01] Connection failed"), tr("Socket failed.\nPlease check if the IP you entered is correct!"));
             UrgNet01.reset(nullptr);
+            QMessageBox::information(this, tr("[Sensor01] Connection failed"), tr("Socket failed.\nPlease check if the IP you entered is correct!"));
         }
     }
 }
@@ -255,8 +255,8 @@ void QT_URG::ConnectTcp02_Button() {
             ui->Disconnect_Button_02->setEnabled(true);
         }
         else {
-            QMessageBox::information(this, tr("[Sensor02] Connection failed."), tr("Socket failed.\nPlease check if the IP you entered is correct!"));
             UrgNet02.reset(nullptr);
+            QMessageBox::information(this, tr("[Sensor02] Connection failed."), tr("Socket failed.\nPlease check if the IP you entered is correct!"));
         }
     }
 }
