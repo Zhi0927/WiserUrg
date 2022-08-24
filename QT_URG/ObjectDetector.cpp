@@ -172,8 +172,6 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
 void ObjectDetector::SensorPositionNormalize(vector3& input, bool flip) {
     input.x = ((input.x - parm.detctRect.xmin) / parm.detctRect.width);
     input.x = flip ? input.x : 1 - input.x;
-
-    //input.x = (1 - ((input.x - parm.detctRect.xmin) / parm.detctRect.width));
     input.y = (1 + ((input.y - parm.detctRect.ymin) / parm.detctRect.height));
 }
 

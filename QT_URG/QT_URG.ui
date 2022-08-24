@@ -485,7 +485,7 @@
         <double>50000.000000000000000</double>
        </property>
        <property name="value">
-        <double>180.000000000000000</double>
+        <double>0.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -521,7 +521,7 @@
         <double>50000.000000000000000</double>
        </property>
        <property name="value">
-        <double>-750.000000000000000</double>
+        <double>0.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -548,7 +548,7 @@
         <double>50000.000000000000000</double>
        </property>
        <property name="value">
-        <double>1520.000000000000000</double>
+        <double>1500.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -575,7 +575,7 @@
         <double>50000.000000000000000</double>
        </property>
        <property name="value">
-        <double>800.000000000000000</double>
+        <double>1000.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -624,7 +624,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Constraint Region</string>
+        <string>Constraint Area</string>
        </property>
       </widget>
      </item>
@@ -765,7 +765,7 @@
         <double>40.000000000000000</double>
        </property>
        <property name="value">
-        <double>7.000000000000000</double>
+        <double>15.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -954,7 +954,7 @@
         <double>5000.000000000000000</double>
        </property>
        <property name="value">
-        <double>10.000000000000000</double>
+        <double>0.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -1085,7 +1085,7 @@
         <double>5000.000000000000000</double>
        </property>
        <property name="value">
-        <double>10.000000000000000</double>
+        <double>0.000000000000000</double>
        </property>
       </widget>
      </item>

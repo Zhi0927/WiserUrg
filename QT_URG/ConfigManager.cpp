@@ -66,10 +66,10 @@ void ConfigManager::LoadParameter(Ui::Qt_urgClass* ui) {
 
 	ui->OffsetX_Input->setValue(configIniRead.value("/Paramater/OffsetX", 0).toDouble());
 	ui->OffsetY_Input->setValue(configIniRead.value("/Paramater/OffsetY", 0).toDouble());
-	ui->Width_Input->setValue(configIniRead.value("/Paramater/Width", 1000).toDouble());
+	ui->Width_Input->setValue(configIniRead.value("/Paramater/Width", 1500).toDouble());
 	ui->Height_Input->setValue(configIniRead.value("/Paramater/Heigh", 1000).toDouble());
 
-	ui->noiseLimit_Input->setValue(configIniRead.value("/Paramater/noiseLimit", 7).toDouble());
+	ui->noiseLimit_Input->setValue(configIniRead.value("/Paramater/noiseLimit", 15).toDouble());
 	ui->deltaLimit_Input->setValue(configIniRead.value("/Paramater/deltaLimit", 200).toDouble());
 	ui->distanceThreshold_Input->setValue(configIniRead.value("/Paramater/distanceThreshold", 300).toDouble());
 	ui->DetectSize_Input->setValue(configIniRead.value("/Paramater/DetectSize", 300).toDouble());

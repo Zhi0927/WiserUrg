@@ -20,8 +20,8 @@
 
 struct Detectparm {
 	Rect			detctRect					= Rect(-500, 1000, 500, 1000);	//Unit is MM, LeftTop
-	int				noiseLimit					= 7;
-	int				deltaLimit					= 100;	
+	int				noiseLimit					= 15;
+	int				deltaLimit					= 200;	
 	float			distanceThreshold			= 300;	
 	float			detectsize					= 500;
 	bool			useOffset					= false;
