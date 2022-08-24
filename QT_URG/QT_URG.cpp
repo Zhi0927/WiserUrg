@@ -45,6 +45,7 @@ QT_URG::QT_URG(QWidget *parent) : QWidget(parent), ui(new Ui::Qt_urgClass){
     connect(ui->SetParm_Button,       SIGNAL(clicked()),     this,  SLOT(setParm_Buttom()));
     connect(ui->UseOffset,            SIGNAL(clicked(bool)), this,  SLOT(useOffset(bool)));
     connect(ui->TouchEvent,           SIGNAL(clicked(bool)), this,  SLOT(useTouchEvent(bool)));
+    connect(ui->UseFlip,              SIGNAL(clicked(bool)), this,  SLOT(useFlip(bool)));
     connect(dataTimer,                SIGNAL(timeout()),     this,  SLOT(Update()));
     dataTimer->start(0);
 
@@ -130,7 +131,6 @@ void QT_URG::Update() {
 
     if (UrgNet01 != nullptr) {
         if (!UrgNet01->GetConnectState()) {
-            std::cout << "1x" << std::endl;
             DisconnectTcp01_Button();
             QMessageBox::information(this, tr("[Sensor01] Connection failed"), tr("Socket failed.\nPlease check if the IP you entered is correct!"));
         }
@@ -418,5 +418,9 @@ void QT_URG::useTouchEvent(bool checkstate) {
             UrgDetector->OnUpdataObjCallback    = nullptr;
         }
     }
+}
+
+void QT_URG::useFlip(bool checkstate) {
+    UrgDetector->parm.useFlip = checkstate;
 }
 

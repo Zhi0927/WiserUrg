@@ -37,7 +37,7 @@ ProcessedObject::ProcessedObject(const vector3& position, const float& objectPos
 		m_SmoothTime(objectPositionSmoothTime),
 		m_deltaTime(deltatime)
 {
-	kalmanV.setfilterValue(position);
+	//kalmanV.setfilterValue(position);
 }
 
 ProcessedObject::~ProcessedObject() {}

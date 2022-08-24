@@ -78,7 +78,7 @@
           </font>
          </property>
          <property name="text">
-          <string>DrawPostprocObject</string>
+          <string>DrawProcessObject</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -129,7 +129,7 @@
           </font>
          </property>
          <property name="text">
-          <string>DrawObject</string>
+          <string>DrawRawObject</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -624,7 +624,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Constraint Area</string>
+        <string>Constraint Region</string>
        </property>
       </widget>
      </item>
@@ -679,6 +679,26 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QCheckBox" name="UseFlip">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Flip</string>
        </property>
       </widget>
      </item>
@@ -997,6 +1017,12 @@
      </item>
      <item row="9" column="0">
       <widget class="QCheckBox" name="Usefilter">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="font">
         <font>
          <family>Arial</family>

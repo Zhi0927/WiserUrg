@@ -46,12 +46,10 @@ std::vector<RawObject> ObjectDetector::DetectRawObjects(const std::vector<long>&
             pos += parm.sensor02_originPos;
         }
 
-        if (!region.Contains(pos)) continue;
-
         float deltaA = abs(distances[i] - distances[i - 1]);
         float deltaB = abs(distances[i + 1] - distances[i]);
 
-        if (deltaA < parm.deltaLimit && deltaB < parm.deltaLimit) {
+        if (region.Contains(pos) && (deltaA < parm.deltaLimit && deltaB < parm.deltaLimit)) {
             if (!isGrouping) {
                 isGrouping = true;
 
@@ -122,7 +120,7 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
 
                     if (OnUpdataObjCallback != nullptr) {
                         vector3 pos = oldObj.getPosition();
-                        SensorPositionNormalize(pos);
+                        SensorPositionNormalize(pos, parm.useFlip);
                         OnUpdataObjCallback(pos);
                     }
                 }
@@ -149,7 +147,7 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
 
             if (OnNewObjectCallback != nullptr && OnUpdataObjCallback != nullptr) {
                 vector3 pos = newbie.getPosition();
-                SensorPositionNormalize(pos);
+                SensorPositionNormalize(pos, parm.useFlip);
                 OnUpdataObjCallback(pos);
                 OnNewObjectCallback();
             }
@@ -163,7 +161,7 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
 
             if (OnNewObjectCallback != nullptr && OnUpdataObjCallback != nullptr) {
                 vector3 pos = newbie.getPosition();
-                SensorPositionNormalize(pos);
+                SensorPositionNormalize(pos, parm.useFlip);
                 OnUpdataObjCallback(pos);
                 OnNewObjectCallback();
             }
@@ -171,8 +169,11 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
     }
 }
 
-void ObjectDetector::SensorPositionNormalize(vector3& input) {
-    input.x = (1 - ((input.x - parm.detctRect.xmin) / parm.detctRect.width));
+void ObjectDetector::SensorPositionNormalize(vector3& input, bool flip) {
+    input.x = ((input.x - parm.detctRect.xmin) / parm.detctRect.width);
+    input.x = flip ? input.x : 1 - input.x;
+
+    //input.x = (1 - ((input.x - parm.detctRect.xmin) / parm.detctRect.width));
     input.y = (1 + ((input.y - parm.detctRect.ymin) / parm.detctRect.height));
 }
 

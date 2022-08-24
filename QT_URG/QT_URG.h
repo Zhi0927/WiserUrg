@@ -41,6 +41,7 @@ private slots:
     void setParm_Buttom();
     void useOffset(bool checkstate);
     void useTouchEvent(bool checkstate);
+    void useFlip(bool checkstate);
 
     void Update();
 

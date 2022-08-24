@@ -46,7 +46,7 @@ public:
 	int						missingFrame			= 0;
 	bool					cleared					= false;
 	bool					useSmooth				= true;
-	Kalman<vector3>			kalmanV;
+	//Kalman<vector3>			kalmanV;
 
 private:
 	vector3					m_position;
