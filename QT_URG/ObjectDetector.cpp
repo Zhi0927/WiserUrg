@@ -46,10 +46,10 @@ std::vector<RawObject> ObjectDetector::DetectRawObjects(const std::vector<long>&
             pos += parm.sensor02_originPos;
         }
 
-        float deltaA = abs(distances[i] - distances[i - 1]);
-        float deltaB = abs(distances[i + 1] - distances[i]);
+        float delta1 = abs(distances[i] - distances[i - 1]);
+        float delta2 = abs(distances[i + 1] - distances[i]);
 
-        if (region.Contains(pos) && (deltaA < parm.deltaLimit && deltaB < parm.deltaLimit)) {
+        if (region.Contains(pos) && (delta1 < parm.deltaLimit && delta2 < parm.deltaLimit)) {
             if (!isGrouping) {
                 isGrouping = true;
 
@@ -99,33 +99,33 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
     if (m_processObject.size() != 0){
         for(size_t i =0; i < m_processObject.size(); ++i)
         {
-            auto& oldObj = m_processObject[i];
+            auto& preObj = m_processObject[i];
             std::map<std::string, float> objectMapWithDistance;
 
             for(size_t j = 0; j < newlyDetectedObjects.size(); ++j){
                 auto& newObj = newlyDetectedObjects[j];
-                float distance = vector3::Distance(newObj.getPosition(), oldObj.getPosition());
+                float distance = vector3::Distance(newObj.getPosition(), preObj.getPosition());
                 objectMapWithDistance[newObj.getGuid()] = distance;
             }
 
             if (objectMapWithDistance.size() <= 0){
-                oldObj.Update();
+                preObj.Update();
             }
             else{                
                 auto closest = std::min_element(objectMapWithDistance.begin(), objectMapWithDistance.end(), [](const auto& l, const auto& r) {return l.second < r.second; });
                 if (closest->second <= parm.distanceThreshold){
                     auto temp = std::find_if(newlyDetectedObjects.begin(), newlyDetectedObjects.end(), [&closest](auto& ele) { return ele.getGuid() == closest->first;});
-                    oldObj.Update(temp->getPosition());
+                    preObj.Update(temp->getPosition());
                     newlyDetectedObjects.erase(temp);
 
                     if (OnUpdataObjCallback != nullptr) {
-                        vector3 pos = oldObj.getPosition();
-                        SensorPositionNormalize(pos, parm.useFlip);
+                        vector3 pos = preObj.getPosition();
+                        SensorPositionNormalize(pos, parm.useFlipX, parm.useFlipY);
                         OnUpdataObjCallback(pos);
                     }
                 }
                 else{
-                    oldObj.Update();
+                    preObj.Update();
                 }
             }
         }
@@ -141,13 +141,13 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
                 }
             }
         }
-        for(auto& leftOverNewObject : newlyDetectedObjects){
-            ProcessedObject newbie(leftOverNewObject.getPosition(), parm.proObjSmoothTime, parm.delatime);
-            m_processObject.emplace_back(newbie);
+        for(auto& otherNewObject : newlyDetectedObjects){
+            ProcessedObject newProcess(otherNewObject.getPosition(), parm.proObjSmoothTime, parm.delatime);
+            m_processObject.emplace_back(newProcess);
 
             if (OnNewObjectCallback != nullptr && OnUpdataObjCallback != nullptr) {
-                vector3 pos = newbie.getPosition();
-                SensorPositionNormalize(pos, parm.useFlip);
+                vector3 pos = newProcess.getPosition();
+                SensorPositionNormalize(pos, parm.useFlipX, parm.useFlipY);
                 OnUpdataObjCallback(pos);
                 OnNewObjectCallback();
             }
@@ -156,12 +156,12 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
     }
     else {
         for(auto& obj : m_rawObjects){
-            ProcessedObject newbie(obj.getPosition(), parm.proObjSmoothTime, parm.delatime);
-            m_processObject.emplace_back(newbie);
+            ProcessedObject newProcess(obj.getPosition(), parm.proObjSmoothTime, parm.delatime);
+            m_processObject.emplace_back(newProcess);
 
             if (OnNewObjectCallback != nullptr && OnUpdataObjCallback != nullptr) {
-                vector3 pos = newbie.getPosition();
-                SensorPositionNormalize(pos, parm.useFlip);
+                vector3 pos = newProcess.getPosition();
+                SensorPositionNormalize(pos, parm.useFlipX, parm.useFlipY);
                 OnUpdataObjCallback(pos);
                 OnNewObjectCallback();
             }
@@ -169,10 +169,11 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
     }
 }
 
-void ObjectDetector::SensorPositionNormalize(vector3& input, bool flip) {
+void ObjectDetector::SensorPositionNormalize(vector3& input, bool flipX, bool flipY) {
     input.x = ((input.x - parm.detctRect.xmin) / parm.detctRect.width);
-    input.x = flip ? input.x : 1 - input.x;
+    input.x = flipX ? input.x : 1 - input.x;
     input.y = (1 + ((input.y - parm.detctRect.ymin) / parm.detctRect.height));
+    input.y = flipY ? 1- input.y : input.y;
 }
 
 

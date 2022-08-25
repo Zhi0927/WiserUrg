@@ -22,10 +22,10 @@ void ConfigManager::LoadWindowSize(QWidget* pWnd)
 	QString className = pWnd->metaObject()->className();
 
 	QSettings configIniRead(mIniPath, QSettings::IniFormat);
-	int x = configIniRead.value(QString("/%1/x").arg(className), 10).toInt();
-	int y = configIniRead.value(QString("/%1/y").arg(className), 10).toInt();
-	int w = configIniRead.value(QString("/%1/width").arg(className), 1080).toInt();
-	int h = configIniRead.value(QString("/%1/height").arg(className), 670).toInt();
+	int x = configIniRead.value(QString("/%1/x").arg(className), 50).toInt();
+	int y = configIniRead.value(QString("/%1/y").arg(className), 50).toInt();
+	int w = configIniRead.value(QString("/%1/width").arg(className), 1000).toInt();
+	int h = configIniRead.value(QString("/%1/height").arg(className), 600).toInt();
 
 	pWnd->setGeometry(x, y, w, h);
 }

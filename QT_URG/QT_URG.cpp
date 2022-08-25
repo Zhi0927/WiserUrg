@@ -27,7 +27,7 @@ QT_URG::QT_URG(QWidget *parent) : QWidget(parent), ui(new Ui::Qt_urgClass){
     });
 
     InitPlot();
-    setConstraintRegion_Button();
+    setConstraintRegion_Spin();
     setParm_Buttom();
 
     //======================================= * Start * ===========================================//
@@ -37,16 +37,20 @@ QT_URG::QT_URG(QWidget *parent) : QWidget(parent), ui(new Ui::Qt_urgClass){
     ui->Disconnect_Button_02->setEnabled(false);
 
     QTimer* dataTimer = new QTimer(this);
-    connect(ui->Connect_Button_01,    SIGNAL(clicked()),     this,  SLOT(ConnectTcp01_Button()));
-    connect(ui->Disconnect_Button_01, SIGNAL(clicked()),     this,  SLOT(DisconnectTcp01_Button()));
-    connect(ui->Connect_Button_02,    SIGNAL(clicked()),     this,  SLOT(ConnectTcp02_Button()));
-    connect(ui->Disconnect_Button_02, SIGNAL(clicked()),     this,  SLOT(DisconnectTcp02_Button()));
-    connect(ui->SetCR_Button,         SIGNAL(clicked()),     this,  SLOT(setConstraintRegion_Button()));
-    connect(ui->SetParm_Button,       SIGNAL(clicked()),     this,  SLOT(setParm_Buttom()));
-    connect(ui->UseOffset,            SIGNAL(clicked(bool)), this,  SLOT(useOffset(bool)));
-    connect(ui->TouchEvent,           SIGNAL(clicked(bool)), this,  SLOT(useTouchEvent(bool)));
-    connect(ui->UseFlip,              SIGNAL(clicked(bool)), this,  SLOT(useFlip(bool)));
-    connect(dataTimer,                SIGNAL(timeout()),     this,  SLOT(Update()));
+    connect(ui->Connect_Button_01,    SIGNAL(clicked()),            this,   SLOT(ConnectTcp01_Button()));
+    connect(ui->Disconnect_Button_01, SIGNAL(clicked()),            this,   SLOT(DisconnectTcp01_Button()));
+    connect(ui->Connect_Button_02,    SIGNAL(clicked()),            this,   SLOT(ConnectTcp02_Button()));
+    connect(ui->Disconnect_Button_02, SIGNAL(clicked()),            this,   SLOT(DisconnectTcp02_Button()));
+    connect(ui->OffsetX_Input,        SIGNAL(valueChanged(double)), this,   SLOT(setConstraintRegion_Spin()));
+    connect(ui->OffsetY_Input,        SIGNAL(valueChanged(double)), this,   SLOT(setConstraintRegion_Spin()));
+    connect(ui->Width_Input,          SIGNAL(valueChanged(double)), this,   SLOT(setConstraintRegion_Spin()));
+    connect(ui->Height_Input,         SIGNAL(valueChanged(double)), this,   SLOT(setConstraintRegion_Spin()));
+    connect(ui->SetParm_Button,       SIGNAL(clicked()),            this,   SLOT(setParm_Buttom()));
+    connect(ui->UseOffset,            SIGNAL(clicked(bool)),        this,   SLOT(useOffset(bool)));
+    connect(ui->TouchEvent,           SIGNAL(clicked(bool)),        this,   SLOT(useTouchEvent(bool)));
+    connect(ui->UseFlipX,             SIGNAL(clicked(bool)),        this,   SLOT(useFlipX(bool)));
+    connect(ui->UseFlipY,             SIGNAL(clicked(bool)),        this,   SLOT(useFlipY(bool)));
+    connect(dataTimer,                SIGNAL(timeout()),            this,   SLOT(Update()));
     dataTimer->start(0);
 
     std::cout << "Initial QT successful!" << std::endl;
@@ -274,7 +278,7 @@ void QT_URG::DisconnectTcp02_Button() {
     }
 }
 
-void QT_URG::setConstraintRegion_Button() {
+void QT_URG::setConstraintRegion_Spin() {
     UrgDetector->parm.detctRect.xmin    = -(ui->Width_Input->value() / 2) + ui->OffsetX_Input->value(); 
     UrgDetector->parm.detctRect.ymin    = ui->Height_Input->value() + ui->OffsetY_Input->value();
     UrgDetector->parm.detctRect.width   = ui->Width_Input->value();
@@ -420,7 +424,11 @@ void QT_URG::useTouchEvent(bool checkstate) {
     }
 }
 
-void QT_URG::useFlip(bool checkstate) {
-    UrgDetector->parm.useFlip = checkstate;
+void QT_URG::useFlipX(bool checkstate) {
+    UrgDetector->parm.useFlipX = checkstate;
+}
+
+void QT_URG::useFlipY(bool checkstate) {
+    UrgDetector->parm.useFlipY = checkstate;
 }
 

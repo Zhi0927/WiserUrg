@@ -28,7 +28,8 @@ struct Detectparm {
 	vector3			positionOffset				= vector3(0, 0, 0);
 	vector3			sensor02_originPos			= vector3(1500, 0, 0);
 	float			proObjSmoothTime			= 0.05f;
-	bool			useFlip						= false;
+	bool			useFlipX					= false;
+	bool			useFlipY					= false;
 
 	float			alldistanceSmoothfactor		= 0.5f;
 	int				alldistanceSmoothThreshold	= 200;
@@ -48,7 +49,7 @@ public:
 	const std::vector<RawObject>& GetRawObjectList() const;
 	const std::vector<ProcessedObject>& GetProcessObjects() const;
 
-	void SensorPositionNormalize(vector3& input, bool flip = false);
+	void SensorPositionNormalize(vector3& input, bool flipX = false, bool flipY = false);
 
 	void CacheDirections(int ScanSteps = 1081);
 

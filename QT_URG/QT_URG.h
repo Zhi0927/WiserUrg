@@ -37,11 +37,12 @@ private slots:
     void ConnectTcp02_Button();
     void DisconnectTcp02_Button();
 
-    void setConstraintRegion_Button();
+    void setConstraintRegion_Spin();
     void setParm_Buttom();
     void useOffset(bool checkstate);
     void useTouchEvent(bool checkstate);
-    void useFlip(bool checkstate);
+    void useFlipX(bool checkstate);
+    void useFlipY(bool checkstate);
 
     void Update();
 
