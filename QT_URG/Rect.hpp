@@ -15,15 +15,42 @@ public:
 	float height;
 
 public:
-	Rect();
-	Rect(const float rx, const float ry, const float rwidth, const float rheight);
-	Rect(const Rect& r);
+	Rect() :xmin(0), ymin(0), width(0), height(0) {}
+	Rect(const float rx, const float ry, const float rwidth, const float rheight) :xmin(rx), ymin(ry), width(rwidth), height(rheight) {}
+	Rect(const Rect& r) : xmin(r.xmin), ymin(r.ymin), width(r.width), height(r.height) {}
 
-	float xmax() const;
-	float ymax() const;
+	float xmax() const {
+		return xmin + width;
+	}
 
-	Rect& operator  = (const Rect& r);
-	bool Contains(const vector3& point) const;
-	std::vector<Rect> slice(bool inverse = false) const;
+	float ymax() const {
+		return ymin - height;
+	}
+
+	Rect& operator  = (const Rect& r) {
+		xmin = r.xmin;
+		ymin = r.ymin;
+		width = r.width;
+		height = r.height;
+
+		return *this;
+	}
+
+	bool Contains(const vector3& point) const {
+		return (point.x > xmin) && (point.x < xmax()) && (point.y < ymin) && (point.y > ymax());
+	}
+
+	std::vector<Rect> slice(bool inverse = false) const {
+		std::vector<Rect> result(2);
+		if (inverse) {
+			result[0] = Rect(xmin + (width / 2), ymin, width / 2, height);
+			result[1] = Rect(xmin, ymin, width / 2, height);
+		}
+		else {
+			result[0] = Rect(xmin, ymin, width / 2, height);
+			result[1] = Rect(xmin + (width / 2), ymin, width / 2, height);
+		}
+		return result;
+	}
 };
 #endif

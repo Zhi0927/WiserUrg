@@ -1,4 +1,4 @@
-#include "ObjectDetector.hpp"
+#include "ObjectDetector.h"
 
 
 ObjectDetector::ObjectDetector(){
@@ -100,12 +100,14 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
         for(size_t i =0; i < m_processObject.size(); ++i)
         {
             auto& preObj = m_processObject[i];
-            std::map<std::string, float> objectMapWithDistance;
+
+            auto comp = [](const RawObject& lhs, const RawObject& rhs) {return lhs.getGuid() < rhs.getGuid(); };
+            std::map<RawObject, float, decltype(comp)> objectMapWithDistance;
 
             for(size_t j = 0; j < newlyDetectedObjects.size(); ++j){
                 auto& newObj = newlyDetectedObjects[j];
                 float distance = vector3::Distance(newObj.getPosition(), preObj.getPosition());
-                objectMapWithDistance[newObj.getGuid()] = distance;
+                objectMapWithDistance[newObj] = distance;
             }
 
             if (objectMapWithDistance.size() <= 0){
@@ -114,7 +116,8 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
             else{                
                 auto closest = std::min_element(objectMapWithDistance.begin(), objectMapWithDistance.end(), [](const auto& l, const auto& r) {return l.second < r.second; });
                 if (closest->second <= parm.distanceThreshold){
-                    auto temp = std::find_if(newlyDetectedObjects.begin(), newlyDetectedObjects.end(), [&closest](auto& ele) { return ele.getGuid() == closest->first;});
+                    auto temp = std::find_if(newlyDetectedObjects.begin(), newlyDetectedObjects.end(), [&closest](auto& ele) { return ele == closest->first;});
+
                     preObj.Update(temp->getPosition());
                     newlyDetectedObjects.erase(temp);
 
@@ -172,8 +175,9 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
 void ObjectDetector::SensorPositionNormalize(vector3& input, bool flipX, bool flipY) {
     input.x = ((input.x - parm.detctRect.xmin) / parm.detctRect.width);
     input.x = flipX ? input.x : 1 - input.x;
-    input.y = (1 + ((input.y - parm.detctRect.ymin) / parm.detctRect.height));
-    input.y = flipY ? 1- input.y : input.y;
+
+    input.y = -((input.y - parm.detctRect.ymin) / parm.detctRect.height);
+    input.y = flipY ? input.y : 1 - input.y;
 }
 
 

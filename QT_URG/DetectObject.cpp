@@ -1,4 +1,4 @@
-#include "DetectObject.hpp"
+#include "DetectObject.h"
 
 RawObject::RawObject()
 	:	m_guid(GenerateGuid())
@@ -18,6 +18,15 @@ vector3 RawObject::getPosition(){
 	return m_position;
 }
 
+bool RawObject::operator < (const RawObject& rhs) const
+{
+	return m_guid < rhs.getGuid();
+}
+
+bool RawObject::operator == (const RawObject& rhs) const {
+	return m_guid == rhs.getGuid();
+}
+
 float RawObject::getDetectSize(){
 	vector3 pointA = posList[0];
 	vector3 pointB = posList[posList.size() - 1];;
@@ -33,9 +42,9 @@ std::string RawObject::getGuid() const {
 
 
 ProcessedObject::ProcessedObject(const vector3& position, const float& objectPositionSmoothTime, const float& deltatime)
-	:	m_position(position),
-		m_SmoothTime(objectPositionSmoothTime),
-		m_deltaTime(deltatime)
+		:	m_position(position),
+			m_SmoothTime(objectPositionSmoothTime),
+			m_deltaTime(deltatime)
 {
 	//kalmanV.setfilterValue(position);
 }
@@ -48,13 +57,13 @@ vector3 ProcessedObject::getPosition() const{
 }
 
 bool ProcessedObject::isClear() const {
-	return cleared;
+	return m_cleared;
 }
 
 void ProcessedObject::Update() {
-	missingFrame++;
-	if (missingFrame >= MISSING_FRAME_LIMIT){
-		cleared = true;
+	m_missingFrame++;
+	if (m_missingFrame >= MISSING_FRAME_LIMIT){
+		m_cleared = true;
 	}
 }
 
@@ -68,6 +77,6 @@ void ProcessedObject::Update(const vector3 newPos) {
 	else{
 		m_position = newPos;
 	}
-	missingFrame = 0;
+	m_missingFrame = 0;
 	m_deltaMovement = m_position - m_oldPosition;
 }

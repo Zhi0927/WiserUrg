@@ -1,4 +1,4 @@
-﻿#include "EthernetConnector.hpp"
+﻿#include "EthernetConnector.h"
 
 
 EthernetConnector::EthernetConnector(const std::string& ip, const int& port, std::mutex& lock_guard)

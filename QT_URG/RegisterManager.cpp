@@ -1,4 +1,4 @@
-﻿#include "RegisterManager.hpp"
+﻿#include "RegisterManager.h"
 #include <QSettings>
 
 

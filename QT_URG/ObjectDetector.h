@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <functional>
 
-#include "DetectObject.hpp"
+#include "DetectObject.h"
 #include "Rect.hpp"
 #include "Vector3.hpp"
 #include "Common.hpp"

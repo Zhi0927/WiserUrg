@@ -1,7 +1,7 @@
 ﻿#include "QT_URG.h"
 #include <QtWidgets/QApplication>
 #include <QInputDialog>
-#include "RegisterManager.hpp"
+#include "RegisterManager.h"
 
 int main(int argc, char *argv[]){
     QApplication a(argc, argv);

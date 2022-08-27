@@ -1,4 +1,4 @@
-#include "SCIP_library.hpp"
+#include "SCIP_library.h"
 
 std::string SCIP_Writer::MD(int start, int end, int grouping, int skips, int scans){
 	return "MD" + ToString(start, 4) + ToString(end, 4) + ToString(grouping, 2) + ToString(skips, 1) + ToString(scans, 2) + "\n";

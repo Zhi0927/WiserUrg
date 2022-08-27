@@ -40,9 +40,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Rect.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SCIP_library.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -50,12 +47,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ObjectDetector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Vector3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DetectObject.cpp">
@@ -81,34 +72,34 @@
     <ClInclude Include="Common.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DetectObject.hpp">
+    <ClInclude Include="DetectObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Rect.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SCIP_library.hpp">
+    <ClInclude Include="SCIP_library.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EthernetConnector.hpp">
+    <ClInclude Include="EthernetConnector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectDetector.hpp">
+    <ClInclude Include="ObjectDetector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Vector3.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WinHIDController.hpp">
+    <ClInclude Include="WinHIDController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ConfigManager.hpp">
+    <ClInclude Include="ConfigManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RegisterManager.hpp">
+    <ClInclude Include="RegisterManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="md5_encode.h">

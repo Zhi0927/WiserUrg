@@ -1,4 +1,4 @@
-﻿#include "WinHIDController.hpp"
+﻿#include "WinHIDController.h"
 
 void MouseSimulator::move(float dx, float dy)
 {

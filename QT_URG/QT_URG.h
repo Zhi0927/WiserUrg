@@ -1,11 +1,11 @@
 #ifndef ZHI_QT_URGRUN_H_
 #define ZHI_QT_URGRUN_H_
 
-#include "EthernetConnector.hpp"
-#include "SCIP_library.hpp"
-#include "ObjectDetector.hpp"
-#include "WinHIDController.hpp"
-#include "ConfigManager.hpp"
+#include "EthernetConnector.h"
+#include "SCIP_library.h"
+#include "ObjectDetector.h"
+#include "WinHIDController.h"
+#include "ConfigManager.h"
 
 #include <QtWidgets/QWidget>
 #include "ui_QT_URG.h"

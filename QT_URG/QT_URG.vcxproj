@@ -106,18 +106,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Common.cpp" />
     <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="DetectObject.cpp" />
     <ClCompile Include="md5_encode.cpp" />
     <ClCompile Include="RegisterManager.cpp" />
     <ClCompile Include="WinHIDController.cpp" />
     <ClCompile Include="qcustomplot.cpp" />
-    <ClCompile Include="Rect.cpp" />
     <ClCompile Include="SCIP_library.cpp" />
     <ClCompile Include="EthernetConnector.cpp" />
     <ClCompile Include="ObjectDetector.cpp" />
-    <ClCompile Include="Vector3.cpp" />
     <QtRcc Include="QT_URG.qrc" />
     <QtUic Include="QT_URG.ui" />
     <QtMoc Include="QT_URG.h" />
@@ -126,17 +123,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.hpp" />
-    <ClInclude Include="ConfigManager.hpp" />
-    <ClInclude Include="DetectObject.hpp" />
+    <ClInclude Include="ConfigManager.h" />
+    <ClInclude Include="DetectObject.h" />
     <QtMoc Include="qcustomplot.h" />
     <ClInclude Include="md5_encode.h" />
-    <ClInclude Include="RegisterManager.hpp" />
-    <ClInclude Include="WinHIDController.hpp" />
+    <ClInclude Include="RegisterManager.h" />
+    <ClInclude Include="WinHIDController.h" />
     <ClInclude Include="Rect.hpp" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="SCIP_library.hpp" />
-    <ClInclude Include="EthernetConnector.hpp" />
-    <ClInclude Include="ObjectDetector.hpp" />
+    <ClInclude Include="SCIP_library.h" />
+    <ClInclude Include="EthernetConnector.h" />
+    <ClInclude Include="ObjectDetector.h" />
     <ClInclude Include="Vector3.hpp" />
   </ItemGroup>
   <ItemGroup>

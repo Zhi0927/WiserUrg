@@ -8,7 +8,7 @@
 #include <WS2tcpip.h>
 #pragma comment(lib, "ws2_32.lib")
  
-#include "SCIP_library.hpp"
+#include "SCIP_library.h"
 #include "Common.hpp"
 
 

@@ -17,6 +17,9 @@ public:
 
 	vector3 getPosition();
 
+	bool operator < (const RawObject& rhs) const;
+	bool operator == (const RawObject& rhs) const;
+
 public:
 	std::vector<long>				distList;
 	std::vector<vector3>			posList;
@@ -42,9 +45,6 @@ public:
 
 public:
 	static constexpr int	MISSING_FRAME_LIMIT		= 10;
-
-	int						missingFrame			= 0;
-	bool					cleared					= false;
 	bool					useSmooth				= true;
 	//Kalman<vector3>			kalmanV;
 
@@ -55,5 +55,7 @@ private:
 	vector3					m_currentVelocity		= vector3(0.f, 0.f, 0.f);
 	float					m_SmoothTime			= 0.2f;
 	float					m_deltaTime				= 0.015f;
+	int						m_missingFrame			= 0;
+	bool					m_cleared				= false;
 };
 #endif
