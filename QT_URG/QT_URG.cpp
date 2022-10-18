@@ -15,6 +15,7 @@ QT_URG::QT_URG(QWidget *parent) : QWidget(parent), ui(new Ui::Qt_urgClass){
     UrgDetector.reset(new ObjectDetector());
     UrgMouse.reset(new MouseSimulator());
     UrgKeyBoard.reset(new HotkeyManager());
+    KalmanF.reset(new KalmanFilter<long>());
 
     UrgDetector->CacheDirections(UrgDetector->parm.ScaneStep);
     Directions = UrgDetector->GetDirection();

@@ -10,33 +10,6 @@
 #include <iomanip>
 #include "Vector3.hpp"
 
-//template <typename T>
-//class Kalman { 
-//public:
-//    T kalmanFilterFun(const T& new_value) {
-//        T predictValue = filterValue * A + B * u;
-//        P = A * A * P + Q;
-//        kalmanGain = P * H / (P * H * H + R);
-//        filterValue = predictValue + (new_value - predictValue) * kalmanGain;
-//        P = (1 - kalmanGain * H) * P;
-//        return filterValue;
-//    }
-//    void setfilterValue(const T& init_value) {
-//        filterValue = init_value;
-//    }
-//
-//private:
-//    T filterValue;;
-//    float kalmanGain;
-//    float A = 1;
-//    float H = 1;
-//    float Q = 1e-5;
-//    float R = 1e-4;
-//    float P = 0.1;
-//    float B = 1;
-//    float u = 0;
-//};
-
 template<typename T>
 class KalmanFilter {
 public:
@@ -96,7 +69,7 @@ public:
         R               = 1e-4f;
     }
 
-public:
+private:
     bool  isFirst       = true;
     bool  haveSetFirst  = false;
     float xhat          = 0;
