@@ -116,7 +116,7 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
             else{                
                 auto closest = std::min_element(objectMapWithDistance.begin(), objectMapWithDistance.end(), [](const auto& l, const auto& r) {return l.second < r.second; });
                 if (closest->second <= parm.distanceThreshold){
-                    auto temp = std::find_if(newlyDetectedObjects.begin(), newlyDetectedObjects.end(), [&closest](auto& ele) { return ele == closest->first;});
+                    auto temp = std::find_if(newlyDetectedObjects.begin(), newlyDetectedObjects.end(), [&closest](auto& element) { return element == closest->first;});
 
                     preObj.Update(temp->getPosition());
                     newlyDetectedObjects.erase(temp);
@@ -144,12 +144,14 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
                 }
             }
         }
+
         for(auto& otherNewObject : newlyDetectedObjects){
             ProcessedObject newProcess(otherNewObject.getPosition(), parm.proObjSmoothTime, parm.delatime);
             m_processObject.emplace_back(newProcess);
 
             if (OnNewObjectCallback != nullptr && OnUpdataObjCallback != nullptr) {
                 vector3 pos = newProcess.getPosition();
+
                 SensorPositionNormalize(pos, parm.useFlipX, parm.useFlipY);
                 OnUpdataObjCallback(pos);
                 OnNewObjectCallback();
@@ -164,6 +166,7 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
 
             if (OnNewObjectCallback != nullptr && OnUpdataObjCallback != nullptr) {
                 vector3 pos = newProcess.getPosition();
+
                 SensorPositionNormalize(pos, parm.useFlipX, parm.useFlipY);
                 OnUpdataObjCallback(pos);
                 OnNewObjectCallback();

@@ -10,31 +10,100 @@
 #include <iomanip>
 #include "Vector3.hpp"
 
-template <typename T>
-class Kalman { 
+//template <typename T>
+//class Kalman { 
+//public:
+//    T kalmanFilterFun(const T& new_value) {
+//        T predictValue = filterValue * A + B * u;
+//        P = A * A * P + Q;
+//        kalmanGain = P * H / (P * H * H + R);
+//        filterValue = predictValue + (new_value - predictValue) * kalmanGain;
+//        P = (1 - kalmanGain * H) * P;
+//        return filterValue;
+//    }
+//    void setfilterValue(const T& init_value) {
+//        filterValue = init_value;
+//    }
+//
+//private:
+//    T filterValue;;
+//    float kalmanGain;
+//    float A = 1;
+//    float H = 1;
+//    float Q = 1e-5;
+//    float R = 1e-4;
+//    float P = 0.1;
+//    float B = 1;
+//    float u = 0;
+//};
+
+template<typename T>
+class KalmanFilter {
 public:
-    T kalmanFilterFun(const T& new_value) {
-        T predictValue = filterValue * A + B * u;
-        P = A * A * P + Q;
-        kalmanGain = P * H / (P * H * H + R);
-        filterValue = predictValue + (new_value - predictValue) * kalmanGain;
-        P = (1 - kalmanGain * H) * P;
-        return filterValue;
-    }
-    void setfilterValue(const T& init_value) {
-        filterValue = init_value;
+    void Filter(std::vector<T>& zInput) {
+        float P = 1.f;
+
+        for (size_t i = 1; i < zInput.size(); i++) {
+            float xhatminus = zInput[i - 1];
+            float Pminus = P + Q;
+            float K = Pminus / (Pminus + R);
+            zInput[i] = (T)(xhatminus + K * (zInput[i] - xhatminus));
+            P = (1 - K) * Pminus;
+        }
     }
 
-private:
-    T filterValue;;
-    float kalmanGain;
-    float A = 1;
-    float H = 1;
-    float Q = 0.05;
-    float R = 0.1;
-    float P = 0.1;
-    float B = 1;
-    float u = 0;
+    T Filter(T z1)
+    {
+        if (isFirst)
+        {
+            isFirst = false;
+            if (haveSetFirst == false) {
+                Z0 = z1;
+            }
+            xhat = Z0;
+            P = 1;
+        }
+
+        float xhatminus = xhat;
+        float Pminus = P + Q;
+        float K = Pminus / (Pminus + R);
+        xhat = xhatminus + K * (z1 - xhatminus);
+        P = (1 - K) * Pminus;
+
+        return (T)xhat;
+    }
+
+    void SetFirst(float zv) {
+        Z0 = zv;
+        haveSetFirst = true;
+    }
+
+    void SetQ(float Qv) {
+        Q = Qv;
+    }
+
+    void SetR(float Rv) {
+        R = Rv;
+    }
+
+    void Reset(){
+        isFirst         = true;
+        haveSetFirst    = false;
+        xhat            = 0;
+        Z0              = 0;
+        P               = 0;
+        Q               = 1e-5f; 
+        R               = 1e-4f;
+    }
+
+public:
+    bool  isFirst       = true;
+    bool  haveSetFirst  = false;
+    float xhat          = 0;
+    float P             = 0;
+    float Z0            = 0;
+    float Q             = 1e-5;
+    float R             = 1e-4;
 };
 
 template<typename T>

@@ -9,7 +9,7 @@ QT_URG::QT_URG(QWidget *parent) : QWidget(parent), ui(new Ui::Qt_urgClass){
     this->setWindowIcon(QIcon("icon.png"));
     this->setWindowTitle("WiserURG -version1.1");
 
-    ConfigManager::Instance()->LoadWindowSize(this);
+    //ConfigManager::Instance()->LoadWindowSize(this);
     ConfigManager::Instance()->LoadParameter(ui);
 
     UrgDetector.reset(new ObjectDetector());
@@ -170,9 +170,11 @@ void QT_URG::UrgMain() {
     lockurg.unlock();
 
     if (ui->Usefilter->isChecked()) {
-        SmoothRealtime(Origindistance01, Previewdistance01, UrgDetector->parm.alldistanceSmoothfactor, UrgDetector->parm.alldistanceSmoothThreshold);
+        //SmoothRealtime(Origindistance01, Previewdistance01, UrgDetector->parm.alldistanceSmoothfactor, UrgDetector->parm.alldistanceSmoothThreshold);
+        KalmanF->Filter(Origindistance01);
         if (UrgNet02 != nullptr) {
-            SmoothRealtime(Origindistance02, Previewdistance02, UrgDetector->parm.alldistanceSmoothfactor, UrgDetector->parm.alldistanceSmoothThreshold);
+            //SmoothRealtime(Origindistance02, Previewdistance02, UrgDetector->parm.alldistanceSmoothfactor, UrgDetector->parm.alldistanceSmoothThreshold);
+            KalmanF->Filter(Origindistance02);
         }
     }
 

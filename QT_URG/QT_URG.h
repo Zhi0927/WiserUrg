@@ -66,6 +66,7 @@ private:
     std::unique_ptr<HotkeyManager>		UrgKeyBoard;
     std::unique_ptr<EthernetConnector>	UrgNet01;
     std::unique_ptr<EthernetConnector>	UrgNet02;
+    std::unique_ptr<KalmanFilter<long>> KalmanF;
     std::mutex                          distance_guard;
 
     std::vector<long>					Origindistance01;
