@@ -45,9 +45,7 @@ ProcessedObject::ProcessedObject(const vector3& position, const float& objectPos
 		:	m_position(position),
 			m_SmoothTime(objectPositionSmoothTime),
 			m_deltaTime(deltatime)
-{
-	//kalmanV.setfilterValue(position);
-}
+{}
 
 ProcessedObject::~ProcessedObject() {}
 
@@ -71,7 +69,6 @@ void ProcessedObject::Update(const vector3 newPos) {
 	m_oldPosition = m_position;
 
 	if (useSmooth) {
-		//m_position = kalmanV.kalmanFilterFun(m_position);
 		m_position = vector3::SmoothDamp(m_position, newPos, m_currentVelocity, m_SmoothTime, m_deltaTime);
 	}
 	else{

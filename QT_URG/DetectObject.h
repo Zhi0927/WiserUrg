@@ -46,7 +46,6 @@ public:
 public:
 	static constexpr int	MISSING_FRAME_LIMIT		= 10;
 	bool					useSmooth				= true;
-	//Kalman<vector3>			kalmanV;
 
 private:
 	vector3					m_position;

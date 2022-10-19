@@ -156,7 +156,6 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
                 OnUpdataObjCallback(pos);
                 OnNewObjectCallback();
             }
-
         }
     }
     else {
@@ -176,10 +175,10 @@ void ObjectDetector::ProcessingObjects(std::vector<RawObject>& newlyDetectedObje
 }
 
 void ObjectDetector::SensorPositionNormalize(vector3& input, bool flipX, bool flipY) {
-    input.x = ((input.x - parm.detctRect.xmin) / parm.detctRect.width);
+    input.x = ((input.x - parm.detctRect.x) / parm.detctRect.width);
     input.x = flipX ? input.x : 1 - input.x;
 
-    input.y = -((input.y - parm.detctRect.ymin) / parm.detctRect.height);
+    input.y = -((input.y - parm.detctRect.y) / parm.detctRect.height);
     input.y = flipY ? input.y : 1 - input.y;
 }
 

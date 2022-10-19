@@ -2,9 +2,12 @@
 #include <QMessageBox>
 
 
+#pragma region Constructor
+
 QT_URG::QT_URG(QWidget *parent) : QWidget(parent), ui(new Ui::Qt_urgClass){
 
-    //======================================= * Awake * ===========================================//
+#pragma region Awake
+
     ui->setupUi(this);
     this->setWindowIcon(QIcon("icon.png"));
     this->setWindowTitle("WiserURG -version1.1");
@@ -31,7 +34,10 @@ QT_URG::QT_URG(QWidget *parent) : QWidget(parent), ui(new Ui::Qt_urgClass){
     setConstraintRegion_Spin();
     setParm_Buttom();
 
-    //======================================= * Start * ===========================================//
+#pragma endregion
+
+#pragma region Start
+
     ui->Connect_Button_01->setEnabled(true);
     ui->Disconnect_Button_01->setEnabled(false);
     ui->Connect_Button_02->setEnabled(true);
@@ -55,21 +61,76 @@ QT_URG::QT_URG(QWidget *parent) : QWidget(parent), ui(new Ui::Qt_urgClass){
     dataTimer->start(0);
 
     std::cout << "Initial QT successful!" << std::endl;
+
+#pragma endregion
+
 }
 
-//======================================== * Loop * =============================================//
+#pragma endregion
+
+#pragma region Loop
+
 void QT_URG::Update() {
+#pragma region FPS -Start
     static QTime time(QTime::currentTime());
     double key = time.elapsed() / 1000.0;
     static double lastFpsKey = 0;
     static int frameCount;
     ++frameCount;
+#pragma endregion
 
-    UrgMain();
+#pragma region Main
+
+    Origindistance01.clear();
+    Origindistance02.clear();
+    if (UrgNet01 == nullptr && UrgNet02 == nullptr) return;
+
+    std::unique_lock<std::mutex> lockurg(distance_guard);
+    if (UrgNet01 != nullptr) {
+        if (UrgNet01->recv_distances.size() <= 0) return;
+        Origindistance01 = UrgNet01->recv_distances;
+    }
+    if (UrgNet02 != nullptr) {
+        if (UrgNet02->recv_distances.size() <= 0) return;
+        Origindistance02 = UrgNet02->recv_distances;
+    }
+    lockurg.unlock();
+
+    if (ui->Usefilter->isChecked()) {
+        //SmoothRealtime(Origindistance01, Previewdistance01, UrgDetector->parm.alldistanceSmoothfactor, UrgDetector->parm.alldistanceSmoothThreshold);
+        KalmanF->Filter(Origindistance01);
+        if (UrgNet02 != nullptr) {
+            //SmoothRealtime(Origindistance02, Previewdistance02, UrgDetector->parm.alldistanceSmoothfactor, UrgDetector->parm.alldistanceSmoothThreshold);
+            KalmanF->Filter(Origindistance02);
+        }
+    }
+
+    if (UrgNet01 != nullptr && UrgNet02 != nullptr) {
+        auto regions = UrgDetector->parm.detctRect.slice(RegionInverse);
+        auto resultRawObjs_part1 = std::move(UrgDetector->DetectRawObjects(Origindistance01, regions[0]));
+        auto resultRawObjs_part2 = std::move(UrgDetector->DetectRawObjects(Origindistance02, regions[1], true));
+        resultRawObjs_part1.insert(resultRawObjs_part1.end(), resultRawObjs_part2.begin(), resultRawObjs_part2.end());
+        UrgDetector->ProcessingObjects(resultRawObjs_part1);
+    }
+    else {
+        if (UrgNet01 != nullptr) {
+            auto resultRawObjs = std::move(UrgDetector->DetectRawObjects(Origindistance01, UrgDetector->parm.detctRect));
+            UrgDetector->ProcessingObjects(resultRawObjs);
+        }
+        else if (UrgNet02 != nullptr) {
+            auto resultRawObjs = std::move(UrgDetector->DetectRawObjects(Origindistance02, UrgDetector->parm.detctRect, true));
+            UrgDetector->ProcessingObjects(resultRawObjs);
+        }
+    }
+
+
     const std::vector<RawObject>& rawObjectList         = UrgDetector->GetRawObjectList();
     const std::vector<ProcessedObject>& detectedObjects = UrgDetector->GetProcessObjects();
 
-    //================================ * Draw * ====================================//
+#pragma endregion
+
+#pragma region Draw
+
     if (UrgNet01 != nullptr || UrgNet02 != nullptr) {
         clearAllPlotData();
         setAllPlotData();
@@ -132,7 +193,9 @@ void QT_URG::Update() {
         }
         ui->plot->replot();
     } 
-    //==============================================================================//
+#pragma endregion
+
+#pragma region Warning
 
     if (UrgNet01 != nullptr) {
         if (!UrgNet01->GetConnectState()) {
@@ -147,58 +210,22 @@ void QT_URG::Update() {
         }
     }
 
+#pragma endregion
+
+#pragma region FPS -End
     float FPS = frameCount / (key - lastFpsKey);
     FPSItem->setText(QString("FPS: %1").arg(FPS, 0, 'f', 0));
     UrgDetector->parm.delatime = 1 / FPS;
     lastFpsKey = key;
     frameCount = 0;
+#pragma endregion
 }
 
-void QT_URG::UrgMain() {
-    Origindistance01.clear();
-    Origindistance02.clear();
-    if (UrgNet01 == nullptr && UrgNet02 == nullptr) return;
+#pragma endregion
 
-    std::unique_lock<std::mutex> lockurg(distance_guard);
-    if (UrgNet01 != nullptr) {
-        if (UrgNet01->recv_distances.size() <= 0) return;
-        Origindistance01 = UrgNet01->recv_distances;
-    }
-    if (UrgNet02 != nullptr) {
-        if (UrgNet02->recv_distances.size() <= 0) return;
-        Origindistance02 = UrgNet02->recv_distances;
-    }
-    lockurg.unlock();
 
-    if (ui->Usefilter->isChecked()) {
-        //SmoothRealtime(Origindistance01, Previewdistance01, UrgDetector->parm.alldistanceSmoothfactor, UrgDetector->parm.alldistanceSmoothThreshold);
-        KalmanF->Filter(Origindistance01);
-        if (UrgNet02 != nullptr) {
-            //SmoothRealtime(Origindistance02, Previewdistance02, UrgDetector->parm.alldistanceSmoothfactor, UrgDetector->parm.alldistanceSmoothThreshold);
-            KalmanF->Filter(Origindistance02);
-        }
-    }
+#pragma region Destructor & Close Events
 
-    if (UrgNet01 != nullptr && UrgNet02 != nullptr) {
-        auto regions = UrgDetector->parm.detctRect.slice(RegionInverse);
-        auto resultRawObjs_part1 = std::move(UrgDetector->DetectRawObjects(Origindistance01, regions[0]));
-        auto resultRawObjs_part2 = std::move(UrgDetector->DetectRawObjects(Origindistance02, regions[1], true));
-        resultRawObjs_part1.insert(resultRawObjs_part1.end(), resultRawObjs_part2.begin(), resultRawObjs_part2.end());
-        UrgDetector->ProcessingObjects(resultRawObjs_part1);
-    }
-    else {
-        if (UrgNet01 != nullptr) {
-            auto resultRawObjs = std::move(UrgDetector->DetectRawObjects(Origindistance01, UrgDetector->parm.detctRect));
-            UrgDetector->ProcessingObjects(resultRawObjs);
-        }
-        else if (UrgNet02 != nullptr) {
-            auto resultRawObjs = std::move(UrgDetector->DetectRawObjects(Origindistance02, UrgDetector->parm.detctRect, true));
-            UrgDetector->ProcessingObjects(resultRawObjs);
-        }
-    }
-}
-
-//======================================== * Quit * =============================================//
 QT_URG::~QT_URG() {
     delete ui;
     UrgDetector.reset(nullptr);
@@ -214,7 +241,10 @@ void QT_URG::closeEvent(QCloseEvent* event) {
     QWidget::closeEvent(event);
 }
 
-//======================================= * Button * ============================================//
+#pragma endregion
+
+#pragma region Button Event
+
 void QT_URG::ConnectTcp01_Button() {
     if (UrgNet01 == nullptr) {
         UrgNet01.reset(new EthernetConnector(ui->IP_Input_01->text().toStdString(), ui->Port_number_input_01->value(), std::ref(distance_guard)));
@@ -281,16 +311,6 @@ void QT_URG::DisconnectTcp02_Button() {
     }
 }
 
-void QT_URG::setConstraintRegion_Spin() {
-    UrgDetector->parm.detctRect.xmin    = -(ui->Width_Input->value() / 2) + ui->OffsetX_Input->value(); 
-    UrgDetector->parm.detctRect.ymin    = ui->Height_Input->value() + ui->OffsetY_Input->value();
-    UrgDetector->parm.detctRect.width   = ui->Width_Input->value();
-    UrgDetector->parm.detctRect.height  = ui->Height_Input->value();
-
-    Rect rect = UrgDetector->parm.detctRect;
-    drawRect(rect, Qt::red);
-}
-
 void QT_URG::setParm_Buttom() {
     UrgDetector->parm.noiseLimit            = ui->noiseLimit_Input->value();
     UrgDetector->parm.deltaLimit            = ui->deltaLimit_Input->value();
@@ -299,7 +319,10 @@ void QT_URG::setParm_Buttom() {
     UrgDetector->parm.proObjSmoothTime      = ui->SmoothFactor_Input->value();
 }
 
-//===================================== * Plot Methods * ========================================//
+#pragma endregion
+
+#pragma region Plot Methods
+
 void QT_URG::InitPlot() {
     ui->plot->setInteraction(QCP::iRangeDrag, true);
     ui->plot->setInteraction(QCP::iRangeZoom, true);
@@ -380,8 +403,8 @@ void QT_URG::drawRect(const Rect& rect, QColor color) {
         RectItem->topLeft->setType(QCPItemPosition::ptPlotCoords);
         RectItem->bottomRight->setType(QCPItemPosition::ptPlotCoords);
     }
-    RectItem->topLeft->setCoords(rect.xmin, rect.ymin);
-    RectItem->bottomRight->setCoords(rect.xmax(), rect.ymax());
+    RectItem->topLeft->setCoords(rect.x, rect.y);
+    RectItem->bottomRight->setCoords(rect.xMax(), rect.yMax());
 
     ui->plot->replot();
 }
@@ -401,7 +424,10 @@ void QT_URG::drawLabel(QPointer<QCPItemText>& item, const float x, const float y
     ui->plot->replot();
 }
 
-//======================================= * Check * =============================================//
+#pragma endregion
+
+#pragma region CheckBox EVents
+
 void QT_URG::useOffset(bool checkstate) {
     UrgDetector->parm.useOffset = checkstate;
     if (checkstate) {
@@ -434,4 +460,20 @@ void QT_URG::useFlipX(bool checkstate) {
 void QT_URG::useFlipY(bool checkstate) {
     UrgDetector->parm.useFlipY = checkstate;
 }
+
+#pragma endregion
+
+#pragma region Spin Events
+
+void QT_URG::setConstraintRegion_Spin() {
+    UrgDetector->parm.detctRect.x = -(ui->Width_Input->value() / 2) + ui->OffsetX_Input->value();
+    UrgDetector->parm.detctRect.y = ui->Height_Input->value() + ui->OffsetY_Input->value();
+    UrgDetector->parm.detctRect.width = ui->Width_Input->value();
+    UrgDetector->parm.detctRect.height = ui->Height_Input->value();
+
+    Rect rect = UrgDetector->parm.detctRect;
+    drawRect(rect, Qt::red);
+}
+
+#pragma endregion
 

@@ -26,8 +26,6 @@ private:
     void setAllPlotData();
     void clearAllPlotData();
 
-    void UrgMain();
-
 protected:
     void closeEvent(QCloseEvent* event);
 
@@ -36,13 +34,14 @@ private slots:
     void DisconnectTcp01_Button();
     void ConnectTcp02_Button();
     void DisconnectTcp02_Button();
-
-    void setConstraintRegion_Spin();
     void setParm_Buttom();
+
     void useOffset(bool checkstate);
     void useTouchEvent(bool checkstate);
     void useFlipX(bool checkstate);
     void useFlipY(bool checkstate);
+
+    void setConstraintRegion_Spin();
 
     void Update();
 

@@ -9,97 +9,97 @@
 struct alignas(float) Rect {
 
 public:
-	float xmin;
-	float ymin;
+	float x;		//left
+	float y;		//top
 	float width;
 	float height;
 
 public:
-	Rect() :xmin(0), ymin(0), width(0), height(0) {}
-	Rect(const float rx, const float ry, const float rwidth, const float rheight) :xmin(rx), ymin(ry), width(rwidth), height(rheight) {}
-	Rect(const Rect& r) : xmin(r.xmin), ymin(r.ymin), width(r.width), height(r.height) {}
+	Rect() :x(0), y(0), width(0), height(0) {}
+	Rect(const float rx, const float ry, const float rwidth, const float rheight) :x(rx), y(ry), width(rwidth), height(rheight) {}
+	Rect(const Rect& rect) : x(rect.x), y(rect.y), width(rect.width), height(rect.height) {}
+	Rect(const vector3& position, const vector3& size) : x(position.x), y(position.y), width(size.x), height(size.y) {}
+
 
 	static Rect zero() {
 		return Rect(0, 0, 0, 0);
 	}
 
-	static Rect MinMaxRect(float rxmin, float rymin, float rxmax, float rymax) {
-		return Rect(rxmin, rymin, rxmax - rxmin, rymax - rymin);
-	}
-
 	void Set(float rx, float ry, float rwidth, float rheight) {
-		xmin	= rx;
-		ymin	= ry;
+		x		= rx;
+		y		= ry;
 		width	= rwidth;
 		height	= rheight;
 	}
 
 	vector3 position() const {
-		return vector3(xmin, ymin, 0);
+		return vector3(x, y, 0);
 	}
-
 	void position(const vector3& value) {
-		xmin = value.x;
-		ymin = value.y;
+		x = value.x;
+		y = value.y;
 	}
 
 	vector3 center() const {
-		return vector3(xmin + width / 2, ymin + height / 2, 0);
+		return vector3(x + width / 2, y - height / 2, 0);
 	}
-
 	void center(const vector3& value) {
-		xmin = value.x - width / 2;
-		ymin = value.y - height / 2;
+		x = value.x - width / 2;
+		y = value.y + height / 2;
 	}
 
 	vector3 size() const {
 		return vector3(width, height, 0);
 	}
-
-	void size(vector3 value) {
-		width = value.x;
+	void size(const vector3& value) {
+		width  = value.x;
 		height = value.y;
 	}
 
-	void xmin(float value) {
-		float oldxmax = xmax();
-		xmin = value;
-		width = oldxmax - xmin;
+	void SetX(float value) {
+		float oldxmax = xMax();
+		x = value;
+		width = oldxmax - x;
+	}
+	void SetY(float value) {
+		float oldymax = yMax();
+		y = value;
+		height = y - oldymax;
 	}
 
-	void ymin(float value) {
-		float oldymax = ymax();
-		ymin = value;
-		height = oldymax - ymin;
+	// Right - Bottom
+	float xMax() const {
+		return x + width;
+	}
+	void xMax(float value) {
+		width = value - x;
+	}
+	float yMax() const {
+		return y - height;
+	}
+	void yMax(float value) {
+		height = y - value;
 	}
 
-	float xmax() const {
-		return xmin + width;
-	}
-
-	void xmax(float value) {
-		width = value - xmin;
-	}
-
-	float ymax() const {
-		return ymin - height;
-	}
-
-	void ymax(float value) {
-		height = value - ymin;
-	}
-
-	Rect& operator  = (const Rect& r) {
-		xmin = r.xmin;
-		ymin = r.ymin;
-		width = r.width;
+	Rect& operator = (const Rect& r) {
+		x	   = r.x;
+		y	   = r.y;
+		width  = r.width;
 		height = r.height;
 
 		return *this;
 	}
 
+	bool operator == (const Rect& r) const {
+		return (x == r.x) && (y == r.y) && (width == r.width) && (height == r.height);
+	}
+
+	bool operator != (const Rect& r) const {
+		return !(*this == r);
+	}
+
 	bool Contains(const vector3& point) const {
-		return (point.x > xmin) && (point.x < xmax()) && (point.y < ymin) && (point.y > ymax());
+		return (point.x >= x) && (point.x < xMax()) && (point.y <= y) && (point.y > yMax());
 	}
 
 	bool Contains(const vector3& point, bool allowInverse) const {
@@ -107,31 +107,45 @@ public:
 			return Contains(point);
 		}
 
-		bool xAxis = width  < 0.f && (point.x <= xmin) && (point.x > xmax()) || width  >= 0.f && (point.x >= xmin) && (point.x < xmax());
-		bool yAxis = height < 0.f && (point.y <= ymin) && (point.y > ymax()) || height >= 0.f && (point.y >= ymin) && (point.y < ymax());
+		bool xAxis = width  < 0.f && (point.x <= x) && (point.x > xMax()) || width  >= 0.f && (point.x >= x) && (point.x < xMax());
+		bool yAxis = height < 0.f && (point.y >= y) && (point.y < yMax()) || height >= 0.f && (point.y <= y) && (point.y > yMax());
 
 		return xAxis && yAxis;
 	}
 
-	static Rect OrderMinMax(Rect rect) {
-		if (rect.xmin > rect.xmax()) {
-			float temp = rect.xmin;
-			rect.xmin = rect.xmax();
-			rect.xmax() = temp;
-
+	static void OrderMinMax(Rect& rect) {
+		if (rect.x > rect.xMax()) {
+			float temp = rect.x;
+			rect.x = rect.xMax();
+			rect.xMax(temp);
 		}
+
+		if (rect.y < rect.yMax()) {
+			float temp = rect.y;
+			rect.y = rect.yMax();
+			rect.yMax(temp);
+		}
+	}
+
+	bool Overlaps(const Rect& other) {
+		return (other.xMax() > x && other.x < xMax() && other.yMax() < y && other.y > yMax());  
+	}
+
+	bool Overlaps(const Rect& other, bool allowInverse) {
+		Rect self = *this;
+		Rect otherR = other;
+		if (allowInverse) {
+			OrderMinMax(self);
+			OrderMinMax(otherR);
+		}
+		return self.Overlaps(other);
 	}
 
 	std::vector<Rect> slice(bool inverse = false) const {
 		std::vector<Rect> result(2);
-		if (inverse) {
-			result[0] = Rect(xmin + (width / 2), ymin, width / 2, height);
-			result[1] = Rect(xmin, ymin, width / 2, height);
-		}
-		else {
-			result[0] = Rect(xmin, ymin, width / 2, height);
-			result[1] = Rect(xmin + (width / 2), ymin, width / 2, height);
-		}
+		result[0] = inverse ? Rect(x + (width / 2), y, width / 2, height) : Rect(x, y, width / 2, height);
+		result[1] = inverse ? Rect(x, y, width / 2, height)				  : Rect(x + (width / 2), y, width / 2, height);
+
 		return result;
 	}
 };
