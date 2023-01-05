@@ -17,10 +17,10 @@ public:
         float P = 1.f;
 
         for (size_t i = 1; i < zInput.size(); i++) {
-            float xhatminus = zInput[i - 1];
+            float Xhatminus = zInput[i - 1];
             float Pminus = P + Q;
             float K = Pminus / (Pminus + R);
-            zInput[i] = (T)(xhatminus + K * (zInput[i] - xhatminus));
+            zInput[i] = (T)(Xhatminus + K * (zInput[i] - Xhatminus));
             P = (1 - K) * Pminus;
         }
     }
@@ -37,10 +37,10 @@ public:
             P = 1;
         }
 
-        float xhatminus = xhat;
+        float Xhatminus = xhat;
         float Pminus = P + Q;
         float K = Pminus / (Pminus + R);
-        xhat = xhatminus + K * (z1 - xhatminus);
+        xhat = Xhatminus + K * (z1 - Xhatminus);
         P = (1 - K) * Pminus;
 
         return (T)xhat;
@@ -66,7 +66,7 @@ public:
         Z0              = 0;
         P               = 0;
         Q               = 1e-5f; 
-        R               = 1e-4f;
+        R               = 1e-4f; 
     }
 
 private:
@@ -75,8 +75,8 @@ private:
     float xhat          = 0;
     float P             = 0;
     float Z0            = 0;
-    float Q             = 1e-5;
-    float R             = 1e-4;
+    float Q             = 1e-5; //estimation variance
+    float R             = 1e-4; //meaxurement variance
 };
 
 template<typename T>

@@ -10,9 +10,9 @@ QT_URG::QT_URG(QWidget *parent) : QWidget(parent), ui(new Ui::Qt_urgClass){
 
     ui->setupUi(this);
     this->setWindowIcon(QIcon("icon.png"));
-    this->setWindowTitle("WiserURG -version1.1");
+    this->setWindowTitle("WiserURG -version 1.2");
 
-    //ConfigManager::Instance()->LoadWindowSize(this);
+    ConfigManager::Instance()->LoadWindowSize(this);
     ConfigManager::Instance()->LoadParameter(ui);
 
     UrgDetector.reset(new ObjectDetector());
@@ -72,11 +72,10 @@ QT_URG::QT_URG(QWidget *parent) : QWidget(parent), ui(new Ui::Qt_urgClass){
 
 void QT_URG::Update() {
 #pragma region FPS -Start
+
     static QTime time(QTime::currentTime());
     double key = time.elapsed() / 1000.0;
-    static double lastFpsKey = 0;
-    static int frameCount;
-    ++frameCount;
+
 #pragma endregion
 
 #pragma region Main
@@ -122,7 +121,6 @@ void QT_URG::Update() {
             UrgDetector->ProcessingObjects(resultRawObjs);
         }
     }
-
 
     const std::vector<RawObject>& rawObjectList         = UrgDetector->GetRawObjectList();
     const std::vector<ProcessedObject>& detectedObjects = UrgDetector->GetProcessObjects();
@@ -213,11 +211,20 @@ void QT_URG::Update() {
 #pragma endregion
 
 #pragma region FPS -End
-    float FPS = frameCount / (key - lastFpsKey);
-    FPSItem->setText(QString("FPS: %1").arg(FPS, 0, 'f', 0));
-    UrgDetector->parm.delatime = 1 / FPS;
-    lastFpsKey = key;
-    frameCount = 0;
+
+    static double lastFpsKey = 0;
+    static int frameCount;
+    ++frameCount;
+
+    if (key - lastFpsKey > 2) {
+        double FPS = frameCount / (key - lastFpsKey);
+        FPSItem->setText(QString("FPS: %1").arg(FPS, 0, 'f', 0));
+        UrgDetector->parm.delatime = 1 / FPS;
+
+        lastFpsKey = key;
+        frameCount = 0;
+    }
+
 #pragma endregion
 }
 

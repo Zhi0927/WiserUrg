@@ -46,16 +46,16 @@ private slots:
     void Update();
 
 public:
-    QColor distanceColor01              = Qt::green;
-    QColor distanceColor02              = Qt::yellow;
-    QColor disboarderColor              = Qt::magenta;
-    QColor objectColor                  = Qt::gray;
-    QColor objectboarderColor           = Qt::darkGray;
-    QColor objectPointColor             = Qt::blue;
-    QColor processedObjectColor         = Qt::cyan;  
-    QColor processedObjectboarderColor  = Qt::darkCyan;
-    QColor RectColor                    = Qt::red;
-    QColor LabelColor                   = Qt::black;
+    QColor                              distanceColor01                 = Qt::green;
+    QColor                              distanceColor02                 = Qt::yellow;
+    QColor                              disboarderColor                 = Qt::magenta;
+    QColor                              objectColor                     = Qt::gray;
+    QColor                              objectboarderColor              = Qt::darkGray;
+    QColor                              objectPointColor                = Qt::blue;
+    QColor                              processedObjectColor            = Qt::cyan;  
+    QColor                              processedObjectboarderColor     = Qt::darkCyan;
+    QColor                              RectColor                       = Qt::red;
+    QColor                              LabelColor                      = Qt::black;
 
 private:
     Ui::Qt_urgClass* ui;
@@ -74,19 +74,20 @@ private:
     std::vector<long>					Previewdistance02;
     std::vector<vector3>                Directions;
 
-    bool                                RegionInverse           = false;  //part1 left, part2 right
 
-    QVector<double>                     PointX01,  PointY01;
-    QVector<double>                     PointX02,  PointY02;
-    QVector<double>                     RawObjX,   RawObjY;
-    QVector<double>                     PosObjX,   PosObjY;
-    QVector<double>                     ObjPointX, ObjPointY;
+    QVector<double>                     PointX01  ,PointY01;
+    QVector<double>                     PointX02  ,PointY02;
+    QVector<double>                     RawObjX   ,RawObjY;
+    QVector<double>                     PosObjX   ,PosObjY;
+    QVector<double>                     ObjPointX ,ObjPointY;
 
-    QPointer<QCPItemRect>               RectItem                = nullptr;
-    QPointer<QCPItemText>               FPSItem                 = nullptr;
-    QPointer<QCPItemText>               LabelItem01             = nullptr;
-    QPointer<QCPItemText>               LabelItem02             = nullptr;
-    QPointer<QCPCurve>                  Curveitem01             = nullptr;
-    QPointer<QCPCurve>                  Curveitem02             = nullptr;
+    QPointer<QCPItemRect>               RectItem                        = nullptr;
+    QPointer<QCPItemText>               FPSItem                         = nullptr;
+    QPointer<QCPItemText>               LabelItem01                     = nullptr;
+    QPointer<QCPItemText>               LabelItem02                     = nullptr;
+    QPointer<QCPCurve>                  Curveitem01                     = nullptr;
+    QPointer<QCPCurve>                  Curveitem02                     = nullptr;
+
+    bool                                RegionInverse                   = false;  //part1 left, part2 right
 };
 #endif
