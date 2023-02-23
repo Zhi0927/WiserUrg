@@ -16,7 +16,8 @@
 #include "Vector3.hpp"
 #include "Common.hpp"
 
-#define M_DELTA_ANGLE (M_PI * 2 / 1440) 
+#define M_DELTA_ANGLE		(M_PI * 2 / 1440) 
+#define SCAN_STEP			1081
 
 struct Detectparm {
 	Rect			detctRect					= Rect(-500, 1000, 500, 1000);	//Unit is MM, LeftTop
@@ -35,7 +36,7 @@ struct Detectparm {
 	int				alldistanceSmoothThreshold	= 200;
 
 	float			delatime					= 0.015f;
-	int				ScaneStep					= 1081;
+	//int				ScaneStep					= 1081;
 };
 
 

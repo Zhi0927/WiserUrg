@@ -1,5 +1,5 @@
-﻿#ifndef ZHI_UTILS_H_
-#define ZHI_UTILS_H_
+﻿#ifndef ZHI_COMMON_H_
+#define ZHI_COMMON_H_
 
 #include "ObjBase.h"
 #include <iostream>
@@ -8,9 +8,26 @@
 #include <vector>
 #include <sstream>
 #include <iomanip>
+#include <type_traits>
+
 #include "Vector3.hpp"
 
-template<typename T>
+#ifndef NDEBUG
+#define ASSERT(condition, message)                                                                          \
+    do {                                                                                                    \
+        if (! (condition)) {                                                                                \
+            std::cerr << "Assertion failed`" #condition "` at " << __FILE__                                 \
+                      << "function " << __FUNCTION__ <<": " << __LINE__ << "."<<std::endl                   \
+                      << message << std::endl;                                                              \
+            std::terminate();                                                                               \
+        }                                                                                                   \
+    } while (false)
+#else
+#define ASSERT(condition, message) do {} while (false)
+#endif
+
+
+template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type>
 class KalmanFilter {
 public:
     void Filter(std::vector<T>& zInput) {
@@ -46,16 +63,16 @@ public:
         return (T)xhat;
     }
 
-    void SetFirst(float zv) {
+    void SetFirst(T zv) {
         Z0 = zv;
         haveSetFirst = true;
     }
 
-    void SetQ(float Qv) {
+    void SetQ(T Qv) {
         Q = Qv;
     }
 
-    void SetR(float Rv) {
+    void SetR(T Rv) {
         R = Rv;
     }
 

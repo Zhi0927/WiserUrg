@@ -106,6 +106,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Cluster2D.cpp" />
     <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="DetectObject.cpp" />
     <ClCompile Include="md5_encode.cpp" />
@@ -122,10 +123,12 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Cluster2D.h" />
     <ClInclude Include="Common.hpp" />
     <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="DetectObject.h" />
     <QtMoc Include="qcustomplot.h" />
+    <ClInclude Include="KdTree2D.hpp" />
     <ClInclude Include="md5_encode.h" />
     <ClInclude Include="RegisterManager.h" />
     <ClInclude Include="WinHIDController.h" />
