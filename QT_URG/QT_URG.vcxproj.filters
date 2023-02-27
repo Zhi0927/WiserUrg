@@ -67,9 +67,6 @@
     <ClCompile Include="RegisterManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Cluster2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.hpp">
@@ -106,12 +103,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="md5_encode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="KdTree2D.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cluster2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
