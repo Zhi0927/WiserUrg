@@ -18,7 +18,8 @@ public:
 	Rect() :x(0), y(0), width(0), height(0) {}
 	Rect(const float rx, const float ry, const float rwidth, const float rheight) :x(rx), y(ry), width(rwidth), height(rheight) {}
 	Rect(const Rect& rect) : x(rect.x), y(rect.y), width(rect.width), height(rect.height) {}
-	Rect(const vector3& position, const vector3& size) : x(position.x), y(position.y), width(size.x), height(size.y) {}
+	Rect(const vector3& lefttop, const vector3& rightbottom) : x(lefttop.x), y(lefttop.y), width(abs(rightbottom.x - lefttop.x)), height(abs(rightbottom.y - lefttop.y)) {}
+	Rect(const vector3& position, size_t width, size_t height) : x(position.x), y(position.y), width(width), height(height) {}
 
 
 	static Rect zero() {

@@ -36,7 +36,6 @@ struct Detectparm {
 	int				alldistanceSmoothThreshold	= 200;
 
 	float			delatime					= 0.015f;
-	//int				ScaneStep					= 1081;
 };
 
 

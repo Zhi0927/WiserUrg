@@ -127,11 +127,11 @@ struct alignas(float) vector3
 	float& operator [](int idx) {
 		switch (idx)
 		{
-		case 1:
+		case 0:
 			return x;
-		case 2:
+		case 1:
 			return y;
-		case 3:
+		case 2:
 			return z;
 		default:
 			std::cerr << "vector index out of range!";
