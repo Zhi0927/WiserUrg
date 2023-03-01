@@ -20,7 +20,7 @@ QT_URG::QT_URG(QWidget *parent) : QWidget(parent), ui(new Ui::Qt_urgClass){
     UrgKeyBoard.reset(new HotkeyManager());
     KalmanF.reset(new KalmanFilter<long>());
 
-    UrgDetector->CacheDirections(SCAN_STEP);
+    UrgDetector->CacheDirections();
     Directions = UrgDetector->GetDirection();
     UrgKeyBoard->Init([&](uint32_t process_id, uint32_t key_id, bool ctrl_pressed, bool shift_pressed) {
         if ((char)key_id == 'A' && ctrl_pressed && shift_pressed) {

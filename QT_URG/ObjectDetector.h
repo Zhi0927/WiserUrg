@@ -51,7 +51,7 @@ public:
 
 	void SensorPositionNormalize(vector3& input, bool flipX = false, bool flipY = false);
 
-	void CacheDirections(int ScanSteps = 1081);
+	void CacheDirections();
 
 	std::vector<RawObject> DetectRawObjects(const std::vector<long>& distances, const Rect& region, bool subsensor = false);
 	void ProcessingObjects(std::vector<RawObject>& newlyDetectedObjects);

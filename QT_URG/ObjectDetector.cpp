@@ -20,9 +20,9 @@ const std::vector<ProcessedObject>& ObjectDetector::GetProcessObjects() const {
     return m_processObject;
 }
 
-void ObjectDetector::CacheDirections(int ScanSteps) {
+void ObjectDetector::CacheDirections() {
     float offset = M_DELTA_ANGLE * 540;     
-    m_directions.resize(ScanSteps);
+    m_directions.resize(SCAN_STEP);
     for (size_t i = 0; i < m_directions.size(); i++){
         float a = M_DELTA_ANGLE * i + offset;
         m_directions[i] = vector3(-cos(a), -sin(a), 0); 

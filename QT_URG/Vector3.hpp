@@ -8,7 +8,6 @@
 #include <limits>
 #include <sstream>
 
-
 #define M_PI 3.14159265358979323846
 
 #define Deg2Rad (M_PI * 2.f/360.f)
@@ -26,11 +25,19 @@ struct alignas(float) vector3
 	vector3() : x(0), y(0), z(0) { }
 
 	vector3(const float vx, const float vy, const float vz) : x(vx), y(vy), z(vz) { }
+	
+	vector3(const float vx, const float vy) : x(vx), y(vy), z(0) {}
 
 	vector3(const vector3& v) : x(v.x), y(v.y), z(v.z) { }
 
 	void setzero() {
 		x = y = z = 0;
+	}
+
+	void setConstant(float f) {
+		x = f;
+		y = f;
+		z = f;
 	}
 
 	static vector3 zero() {
@@ -141,6 +148,22 @@ struct alignas(float) vector3
 
 	int size() {
 		return 3;
+	}
+
+	vector3 cwiseMin(const vector3& v) {
+		float retx = (std::min)(x, v.x);
+		float rety = (std::min)(y, v.y);
+		float retz = (std::min)(z, v.z);
+
+		return vector3(retx, rety, retz);
+	}
+
+	vector3 cwiseMax(const vector3& v) {
+		float retx = (std::max)(x, v.x);
+		float rety = (std::max)(y, v.y);
+		float retz = (std::max)(z, v.z);
+
+		return vector3(retx, rety, retz);
 	}
 
 	float magnitude() const {
