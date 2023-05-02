@@ -231,7 +231,7 @@ inline std::string trim(const std::string& str) {
     if (pos_end == std::string::npos)
         return str;
 
-    ret = str.substr(pos_begin, pos_end - pos_begin);
+    ret = str.substr(pos_begin, pos_end - pos_begin + 1);
 
     return ret;
 }
